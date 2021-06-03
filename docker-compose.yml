@@ -1,0 +1,169 @@
+version: '3'
+
+networks:
+  redsistema:
+
+services:
+  sistema:
+    build:
+      context: .
+      dockerfile: ./docker/nginx.dockerfile
+    container_name: nginx_in
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www/html:delegated
+    depends_on:
+      - php
+      - openldap
+      - mysql
+      - mailhog
+    networks:
+      - redsistema
+
+  mysql:
+    image: mysql
+    container_name: mysql_in
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: innovanda
+      MYSQL_USER: innousuario
+      MYSQL_PASSWORD: 12abcd34
+      MYSQL_ROOT_PASSWORD: djfue45oRT33jjd6Ew
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - redsistema
+
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/php.dockerfile
+    container_name: php_in
+    volumes:
+      - ./src:/var/www/html:delegated
+    networks:
+      - redsistema
+
+#  redis:
+#    image: redis:alpine
+#    container_name: redis
+#    restart: unless-stopped
+#    ports:
+#      - 6379:6379
+#    networks:
+#      - laravel
+
+  composer:
+    build:
+      context: .
+      dockerfile: ./docker/composer.dockerfile
+    container_name: composer_in
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    user: laravel
+    entrypoint: ['composer', '--ignore-platform-reqs']
+    networks:
+      - redsistema
+
+  npm:
+    image: node:16-alpine3.11
+    container_name: npm_in
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    entrypoint: ['npm']
+    networks:
+      - redsistema
+
+  artisan:
+    build:
+      context: .
+      dockerfile: ./docker/php.dockerfile
+    container_name: artisan_in
+    volumes:
+      - ./src:/var/www/html:delegated
+    depends_on:
+      - mysql
+    working_dir: /var/www/html
+    user: laravel
+    entrypoint: ['php', '/var/www/html/artisan']
+    networks:
+      - redsistema
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog_in
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - redsistema
+
+  openldap:
+    image: osixia/openldap:1.5.0
+    container_name: openldap
+    environment:
+      LDAP_LOG_LEVEL: "256"
+      LDAP_ORGANISATION: "Innovanda"
+      LDAP_DOMAIN: "innovanda.org"
+      LDAP_BASE_DN: ""
+      LDAP_ADMIN_PASSWORD: "admin"
+      LDAP_CONFIG_PASSWORD: "config"
+      LDAP_READONLY_USER: "false"
+      #LDAP_READONLY_USER_USERNAME: "readonly"
+      #LDAP_READONLY_USER_PASSWORD: "readonly"
+      LDAP_RFC2307BIS_SCHEMA: "false"
+      LDAP_BACKEND: "mdb"
+      LDAP_TLS: "false"
+      #LDAP_TLS_CRT_FILENAME: "ldap.crt"
+      #LDAP_TLS_KEY_FILENAME: "ldap.key"
+      #LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
+      #LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
+      #LDAP_TLS_ENFORCE: "false"
+      #LDAP_TLS_CIPHER_SUITE: "SECURE256:-VERS-SSL3.0"
+      #LDAP_TLS_VERIFY_CLIENT: "demand"
+      LDAP_REPLICATION: "false"
+      #LDAP_REPLICATION_CONFIG_SYNCPROV: 'binddn="cn=admin,cn=config" bindmethod=simple credentials="$$LDAP_CONFIG_PASSWORD" searchbase="cn=config" type=refreshAndPersist retry="60 +" timeout=1 starttls=critical'
+      #LDAP_REPLICATION_DB_SYNCPROV: 'binddn="cn=admin,$$LDAP_BASE_DN" bindmethod=simple credentials="$$LDAP_ADMIN_PASSWORD" searchbase="$$LDAP_BASE_DN" type=refreshAndPersist interval=00:00:00:10 retry="60 +" timeout=1 starttls=critical'
+      #LDAP_REPLICATION_HOSTS: "#PYTHON2BASH:['ldap://ldap.example.org','ldap://ldap2.example.org']"
+      KEEP_EXISTING_CONFIG: "false"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+      LDAP_SSL_HELPER_PREFIX: "ldap"
+    tty: true
+    stdin_open: true
+    volumes:
+      - /var/lib/ldap
+      - /etc/ldap/slapd.d
+      - /container/service/slapd/assets/certs/
+    ports:
+      - "389:389"
+      - "636:636"
+    # For replication to work correctly, domainname and hostname must be
+    # set correctly so that "hostname"."domainname" equates to the
+    # fully-qualified domain name for the host.
+    domainname: "innovanda.org"
+    hostname: "ldap"
+    networks:
+      - redsistema
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+      PHPLDAPADMIN_HTTPS: "false"
+    ports:
+      - "8080:80"
+    depends_on:
+      - openldap
+    networks:
+      - redsistema

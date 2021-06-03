@@ -1,0 +1,62 @@
+// valores
+$separacionContenido: 86px;
+
+nav.innovanda_cabecera{
+    position:fixed;
+    width: 100%;
+    z-index: 100;
+    left: 0;
+    top: 0;
+}
+
+div.innovanda_contenido{
+    margin-top: $separacionContenido;
+    padding-top:10px;
+}
+
+/**
+    administración
+*/
+
+// menú
+.menu{
+    justify-content: center !important;
+}
+.menuusuario{
+    justify-content:flex-end !important;
+}
+.menuusuario span.usuario{
+    margin-right:15px;
+}
+
+// login
+div.cuadroLogin{
+    display: flex;
+    padding-top: 50px;
+    //margin-top: 50px;
+}
+div.cuadroLogin div{
+    flex: 1 1;
+}
+div.cuadroLogin div:nth-child(2) {
+    max-width: 400px;
+}
+div.cuadroLogin div:nth-child(2) div{
+    margin-bottom: 20px;
+}
+div.cuadroLogin div.centrar{
+    text-align: center;
+}
+
+// diálogo
+div.cuadroError{
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+// botón añadir
+div.anadir{
+   margin: 10px 0;
+   text-align: center;
+   width: 100%; 
+}
