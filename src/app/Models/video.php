@@ -6,16 +6,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Canal extends Model
+class video extends Model
 {
+    //use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
-        'channelid', 'nombre', 'descripcion', 'fecha', 'imagen', 'actualizado'
+        'videoid', 'titulo', 'descripcion', 'fecha', 'imagen', 'idlistarep', 'actualizado'
     ];
 
     protected $casts = [
         'fecha' => 'datetime',
-        'actualizado' => 'datetime'
+        'actualizado' => 'datetime',
     ];
 }

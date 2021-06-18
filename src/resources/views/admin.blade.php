@@ -38,9 +38,8 @@
                     <!-- menú -->
                     <div class="btn-group" role="group" aria-label="Men&uacute;">
                         <a class="btn btn-outline-dark" href="/admin/canales" role="button">Canales</a>
-                        <a class="btn btn-outline-dark" href="#" role="button">Listas de reproducci&oacute;n</a>
-                        <a class="btn btn-outline-dark" href="#" role="button">Categor&iacute;as</a>
-                        <a class="btn btn-outline-dark" href="#" role="button">V&iacute;deos</a>
+                        <a class="btn btn-outline-dark" href="/admin/categorias" role="button">Categor&iacute;as</a>
+                        <a class="btn btn-outline-dark" href="/admin/videos" role="button">V&iacute;deos</a>
                     </div>
                     @endauth
                 </div>

@@ -42,3 +42,11 @@ Para añadir un canal tenemos las siguientes posibilidades de entrada en el form
     2. Dirección URL con carácteres transformados: `https://www.youtube.com/c/GarajeHerm%C3%A9tico/*`
   
 Para eliminar un canal pulsar sobre el icono de la papelera en el mismo.
+
+## Tareas en segundo plano ##
+Para que se ejecuten las tareas en segundo plano hay que ejecutar los siguientes comandos:
+~~~
+docker-compose run --rm artisan schedule:worker
+docker-compose run --rm artisan queue:worker
+~~~
+El primero se encarga de planificar las tareas e introducirlas en la cola de trabajo. El segunda ejecuta los comandos de la cola de trabajo.

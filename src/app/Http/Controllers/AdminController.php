@@ -19,21 +19,42 @@ class AdminController extends Controller
     }
 
     /**
-     * Página administración de canales y listas de reproducción
+     * Página administración de canales 
      *
      * @return Renderable
      */
     public function canales()
     {
-        //DatosYoutube::getDatosVideoPorId('SKrrIdSvnQI');
-        //dd(Auth::guard('admin')->user());
         return view('admincanales',
             [
                 'usuario' => Auth::guard('admin')->user()->name,
             ]);
     }
 
-    
+    /**
+     * Página administración de categorías 
+     *
+     * @return Renderable
+     */
+    public function categorias()
+    {
+        return view('admincategorias',
+            [
+                'usuario' => Auth::guard('admin')->user()->name,
+            ]);
+    }
 
+    /**
+     * Página administración de vídeos 
+     *
+     * @return Renderable
+     */
+    public function videos()
+    {
+        return view('adminvideos',
+            [
+                'usuario' => Auth::guard('admin')->user()->name,
+            ]);
+    }
 }
 ?>

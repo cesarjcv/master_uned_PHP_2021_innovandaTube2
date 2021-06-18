@@ -5,10 +5,25 @@ namespace App\Innovanda;
 use Illuminate\Support\Facades\Config;
 use Google\Client;
 use App\Models\Canal;
+use App\Models\ListaReproduccion;
+use App\Models\Video;
 use Illuminate\Support\Facades\Log;
 
 class DatosYoutube
 {
+    private $cliente; // cliente de Google API
+
+    /**
+     * constructor
+     */
+    public function __construct()
+    {
+        // cliente de youtube
+        $this->cliente = new Client();
+        $this->cliente->setApplicationName(Config::get('youtube.youtube_app_name'));
+        $this->cliente->setDeveloperKey(Config::get('youtube.youtube_key'));
+    }
+    
     static public function getDatosVideoPorId($id)
     {
         $cliente = new Client();
@@ -29,15 +44,12 @@ class DatosYoutube
      * @param string $id  id de canal
      * @return Canal|null
      */
-    static public function getDatosCanalPorId($id)
+    public function getDatosCanalPorId($id)
     {
-        // cliente de youtube
-        $cliente = new Client();
-        $cliente->setApplicationName(Config::get('youtube.youtube_app_name'));
-        $cliente->setDeveloperKey(Config::get('youtube.youtube_key'));
+        
 
         // obtener dato de canal por ChannelID
-        $servicio = new \Google_Service_YouTube($cliente);
+        $servicio = new \Google_Service_YouTube($this->cliente);
         $optParams = array('id' => $id);
         $resultado = $servicio->channels->listChannels("snippet", $optParams);
 
@@ -50,6 +62,7 @@ class DatosYoutube
             $canal->descripcion = $resultado->items[0]->snippet->description;
             $canal->fecha = str_replace(array("T", "Z"), array(" ", ""), $resultado->items[0]->snippet->publishedAt);
             $canal->imagen = $resultado->items[0]->snippet->thumbnails->medium->url;
+            $canal->etagDatos = $resultado->items[0]->etag;
             
             return $canal;
         }
@@ -61,15 +74,10 @@ class DatosYoutube
      * @param string $usuario  usuario de canal
      * @return Canal|null
      */
-    static public function getDatosCanalesPorUsuario($usuario)
+    public function getDatosCanalesPorUsuario($usuario)
     {
-        // crear cliente de youtube
-        $cliente = new Client();
-        $cliente->setApplicationName(Config::get('youtube.youtube_app_name'));
-        $cliente->setDeveloperKey(Config::get('youtube.youtube_key'));
-
         // buscar lista de canales por usuarios
-        $servicio = new \Google_Service_YouTube($cliente);
+        $servicio = new \Google_Service_YouTube($this->cliente);
         $optParams = array('forUsername' => $usuario);
         $resultado = $servicio->channels->listChannels("snippet", $optParams);
 
@@ -85,6 +93,7 @@ class DatosYoutube
                 $canal->descripcion = $resultado->items[$i]->snippet->description;
                 $canal->fecha = str_replace(array("T", "Z"), array(" ", ""), $resultado->items[$i]->snippet->publishedAt);
                 $canal->imagen = $resultado->items[$i]->snippet->thumbnails->medium->url;
+                $canal->etagDatos = $resultado->items[$i]->etag;
                 $canales[] = $canal;
             }
             
@@ -98,7 +107,7 @@ class DatosYoutube
      * @param string $url  
      * @return Canal|null
      */
-    static public function getDatosCanalPorCURL($url)
+    public function getDatosCanalPorCURL($url)
     {
         $vcurl = curl_init($url); // Inicia sesión cURL
         curl_setopt($vcurl, CURLOPT_RETURNTRANSFER, TRUE); // Configura cURL para devolver el resultado como cadena
@@ -119,12 +128,12 @@ class DatosYoutube
 
         // buscar el nodo "meta" que contiene la información referida al channelid
         $codigo = "";
-        $nodos = $selector->query('//meta[@itemprop="channelId"]');
+        $nodos = $selector->query('//meta[@itemprop="channelId"]'); // buscar nodo con: itemprop="channelId"
         if ($nodos->length == 1)
         {
             foreach($nodos[0]->attributes as $at)
             {
-                if ($at->name == "content")
+                if ($at->name == "content") // leer propiedad content (id de canal) de etiqueta
                 {
                     $codigo = $at->value;
                     break;
@@ -133,7 +142,131 @@ class DatosYoutube
         }
         else return null;
 
-        return DatosYoutube::getDatosCanalPorId($codigo);
+        return $this->getDatosCanalPorId($codigo); // buscar datos de canal por channelid
+    }
+
+    /**
+     * Obtener lista de reproducción de videos subidos de un canal por el channelid
+     * @param string $id  id de canal en base de datos
+     * @param string $channelid identificador de canal en Youtube
+     * @return ListaReproduccion|null
+     */
+    public function getListaSubidosCanalPorId($id, $channelid)
+    {
+        // obtener dato de canal por ChannelID
+        $servicio = new \Google_Service_YouTube($this->cliente);
+        $optParams = array('id' => $channelid);
+        // lista de videos subidos
+        $resultado = $servicio->channels->listChannels("contentDetails", $optParams);
+
+        if ($resultado->pageInfo->totalResults == 1)
+        {
+            // crear objeto lista de reproducción con datos
+            $lr = new ListaReproduccion();
+            $lr->listid = $resultado->items[0]->contentDetails->relatedPlaylists->uploads;
+            $lr->idcanal = $id;
+            $lr->nombre = "lista videos cargados";
+            $lr->descripcion = "";
+            $lr->fecha = null;
+            $lr->imagen = "";
+            $lr->etagDatos = $resultado->items[0]->etag;
+            
+            return $lr;
+        }
+        else return null;
+    }
+
+    /**
+     * Obtener listas de reproducción creadas en un canal por el channelid
+     * @param string $id  id de canal en base de datos
+     * @param string $channelid identificador de canal en Youtube
+     * @param string $etag valor etag para lista reproducción de canal. Para conocer si cambió listas de reproducción desde última consulta.
+     * @return ListaReproduccion[]|null
+     */
+    public function getListasReproduccionCanalPorId($id, $channelid, &$etag)
+    {
+        $lrTotal = array();
+        // obtener datos de listas de reproducción por ChannelID
+        $servicio = new \Google_Service_YouTube($this->cliente);
+        $nextToken = ""; // almacena valor de token, para cuando el tamaño del listado requiere varias llamadas al servidor
+        do
+        {
+            // obnter listado de listas de reproducción del canal
+            $optParams = array('channelId' => $channelid, 'pageToken' => $nextToken, 'maxResults' => '5');
+            $resultado = $servicio->playlists->listPlaylists("snippet", $optParams);
+
+            // comprobar valor etag devuelto
+            // si el igual, la lista de reproducciones no se modificaron desde la última consulta
+            if ($resultado->etag == $etag) return null;
+
+            if ($resultado->pageInfo->totalResults > 0)
+            {
+                foreach ($resultado->items as $item)
+                {
+                    // crear objeto lista de reproducción con datos
+                    $lr = new ListaReproduccion();
+                    $lr->listid = $item->id;
+                    $lr->idcanal = $id;
+                    $lr->nombre = $item->snippet->title;
+                    $lr->descripcion = $item->snippet->description;
+                    $lr->fecha = $item->snippet->publishedAt;
+                    $lr->imagen = $item->snippet->thumbnails->default->url;
+                    $lr->etagDatos = $item->etag;
+                    $lrTotal[] = $lr;
+                }
+            }
+            $nextToken = $resultado->nextPageToken;
+        }
+        while (strlen($nextToken) > 0); // seguir enviando solicitudes mientras queden resultados por recuperar
+        $etag = $resultado->etag;
+        return $lrTotal;
+    }
+
+    /**
+     * Obtener videos de listas de reproducción por el listid
+     * @param string $id  id de lsita de reproducción en base de datos
+     * @param string $listid identificador de lista en Youtube
+     * @param string $etag valor etag para videos de lista reproducción. Para conocer si cambió el listado de videos desde última consulta.
+     * @return Videos[]|null
+     */
+    public function getVideosListaReproduccionPorId($id, $listid, &$etag)
+    {
+        $vTotal = array();
+        // obtener datos de listas de reproducción por ChannelID
+        $servicio = new \Google_Service_YouTube($this->cliente);
+        $nextToken = ""; // almacena valor de token, para cuando el tamaño del listado requiere varias llamadas al servidor
+        do
+        {
+            // obtener videos de lista de reproducción
+            $optParams = array('playlistId' => $listid, 'pageToken' => $nextToken, 'maxResults' => '5');
+            $resultado = $servicio->playlistItems->listPlaylistItems("snippet", $optParams);
+
+            // comprobar valor etag devuelto
+            // si el igual, la lista de reproducción no se modificó desde la última consulta
+            if ($resultado->etag == $etag) return null;
+
+            if ($resultado->pageInfo->totalResults > 0)
+            {
+                foreach ($resultado->items as $item)
+                {
+                    // crear objeto vídeo con datos
+                    $v = new Video();
+                    $v->videoid = $item->snippet->resourceId->videoId;
+                    $v->idlistarep = $id;
+                    $v->titulo = $item->snippet->title;
+                    $v->descripcion = $item->snippet->description;
+                    $v->fecha = $item->snippet->publishedAt;
+                    $v->imagen = $item->snippet->thumbnails->medium->url;
+                    $v->etagDatos = $item->etag;
+                    $v->embedHtml = "";
+                    $vTotal[] = $v;
+                }
+            }
+            $nextToken = $resultado->nextPageToken;
+        }
+        while (strlen($nextToken) > 0); // seguir enviando solicitudes mientras queden resultados por recuperar
+        $etag = $resultado->etag;
+        return $vTotal;
     }
 }
 ?>

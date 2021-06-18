@@ -1,17 +1,20 @@
 <template>
-    <div class="modal fade" :id="identificador" tabindex="-1" role="dialog" aria-labelledby="NuevoCanal" aria-hidden="true">
+    <div class="modal fade" :id="identificador" tabindex="-1" role="dialog" aria-labelledby="NuevaCategoria" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">A&ntilde;adir nuevo canal</h5>
+                <h5 class="modal-title">Modificar categor&iacute;a</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Cerrar">
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                <label for="datocanal">URL o c&oacute;digo de canal</label>
-                <input type="text" class="form-control" id="datocanal" name="datocanal" placeholder="URL o código" value="" v-model="codigo" v-bind:disabled="trabajando">
+                <label for="datocanal">Nombre de categor&iacute;a</label>
+                <input type="text" class="form-control" id="datocat" name="datocat" placeholder="Nombre" value="" v-model="nombre" v-bind:disabled="trabajando" maxlength="100">
+                <label for="datocanal" style='margin-top:15px'>Descripci&oacute;n</label>
+                <textarea class="form-control" id="descat" name="descat" value="" v-model="descrip" v-bind:disabled="trabajando" maxlength="250">
+                </textarea>
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
                     <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
@@ -26,7 +29,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" @click="nuevoCanal()" v-bind:disabled="trabajando">
+                <button type="button" class="btn btn-success" @click="modCategoria()" v-bind:disabled="trabajando">
                     <span v-if="trabajando" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>{{ textoBotonAceptar }}
                 </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" v-bind:disabled="trabajando">Cancelar</button>
@@ -41,12 +44,15 @@
     export default {
         /**
          * Identificador para la ventana modal
+         * datos de categoría a modificar
          */
-        props:['identificador'],
+        props:['identificador', 'categoria'],
 
         data(){
             return {
-                codigo: "", // texto del cuadro del formulario
+                id: 0,
+                nombre: "", // texto del cuadro del formulario
+                descrip: "", // texto de la descripción
                 avisoVisible: false, // ¿se ve aviso de error?
                 textoAviso: "", // texto para aviso de error
                 trabajando: false, // Esperando respuesta del servidor en una operación
@@ -54,7 +60,6 @@
             }
         },
         mounted() {
-
             this.$nextTick(function () {
                 // Código que se ejecutará solo después de
                 // haber renderizado la vista completa
@@ -67,20 +72,20 @@
         },
         methods:{
             /**
-             * Enviar datos a API para crear nueva entrada de canal en base de datos
+             * Enviar datos a API para crear nueva categoría en base de datos
              */
-            nuevoCanal() 
+            modCategoria() 
             {
                 // parámetros a enviar
-                const parametros = {dato: this.codigo};
+                const parametros = {id: this.id, nombre: this.nombre, des: this.descrip};
 
-                // modificar interfaz a estado "ocupado"
+                // mostrar interfaz en modo "ocupado"
                 this.trabajando = true;
-                this.textoBotonAceptar = "Cargando...";
+                this.textoBotonAceptar = "Modificando...";
                 this.avisoVisible = false;
 
-                // llamada a API de aplicación para insertar Canal
-                axios.post('/api/canal', parametros).then((respuesta) => 
+                // llamada a API de aplicación para modificar categoría
+                axios.put('/api/categoria/' + this.id, parametros).then((respuesta) => 
                 {
                     if (respuesta.data.error) // error en operación
                     {
@@ -90,11 +95,10 @@
                     }
                     else
                     {
-                        const canal = respuesta.data;
-                        this.codigo = "";
-                        this.$emit('nuevoCanal', canal); // enviar a componente padre datos de nuevo canal
+                        const categoria = respuesta.data;
+                        this.$emit('modCat', categoria); // enviar a componente padre datos de categoría
                     }
-                    // restaurar la interfaz
+                    // recuperar interfaz normal
                     this.trabajando = false;
                     this.textoBotonAceptar = "Aceptar";
                 });
@@ -105,7 +109,9 @@
              */
             limpiar()
             {
-                this.codigo = "";
+                this.id = this.categoria.id;
+                this.nombre = this.categoria.nombre;
+                this.descrip = this.categoria.descripcion;
                 this.avisoVisible = false;
             }
         },

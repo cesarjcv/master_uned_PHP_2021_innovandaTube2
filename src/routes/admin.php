@@ -28,6 +28,8 @@ Route::prefix('admin')->group(function ()
     {
         Route::get('/', 'AdminController@canales'); 
         Route::get('/canales', 'AdminController@canales');
+        Route::get('/categorias', 'AdminController@categorias');
+        Route::get('/videos', 'AdminController@videos');
     });
 });
 ?>

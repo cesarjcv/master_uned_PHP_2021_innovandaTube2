@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCanalsTable extends Migration
+class CreateListaReproduccionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,17 @@ class CreateCanalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('canals', function (Blueprint $table) {
+        Schema::create('lista_reproduccions', function (Blueprint $table) {
             $table->id();
-            $table->string('channelid', 25)->unique();
-            $table->string('nombre', 100);
+            $table->string('listid', 36)->unique();
+            $table->string('nombre', 200);
             $table->text('descripcion')->nullable();
-            $table->dateTime('fecha')->nulable();
+            $table->dateTime('fecha')->nullable();
             $table->string('imagen', 150)->nullable();
+            $table->foreignId('idcanal')->constrained('canals')->onUpdate('cascade')->onDelete('cascade');
             $table->datetime('actualizado')->default("1000-01-01 00:00:00");
             $table->string('etagDatos', 28)->nullable();
-            $table->string('etagListas', 28)->nullable();
+            $table->string('etagVideos', 28)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -35,6 +36,6 @@ class CreateCanalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('canals');
+        Schema::dropIfExists('lista_reproduccions');
     }
 }

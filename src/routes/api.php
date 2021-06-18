@@ -20,6 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 /*Route::middleware(['ldapauth'])->group(function () 
 {*/
-    Route::apiResource('/canal', 'CanalController'); 
-        //Route::get('/canales', 'AdminController@canales');
+    Route::apiResource('/canal', 'CanalController');
+    Route::put('/categoria/cambiovisibilidad/{idcategoria}', 'CategoriaController@cambiarVisible');
+    Route::apiResource('/categoria', 'CategoriaController');
+    Route::apiResource('/video', 'VideoController');
+    Route::get('/video/categorias/{idvideo}', 'VideoController@listaCategorias');    
 /*});*/

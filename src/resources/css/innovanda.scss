@@ -60,3 +60,28 @@ div.anadir{
    text-align: center;
    width: 100%; 
 }
+
+// caja categoría
+div.catOculta{
+    opacity: 0.6;
+}
+div.catOculta .card-body{
+    background-color: #ddd;
+}
+
+// videos
+button.categoriaVideo{
+    border-radius:0.25rem;
+    font-size: 1rem;
+    padding:0.375rem 0.75rem;
+    border:1px solid #198754;
+    background-color: transparent;
+    vertical-align: middle;
+    text-decoration: none;
+    text-align: center;
+    line-height: 1.5;
+    font-weight: 400;
+    display: inline-block;
+    color: #198754;
+    cursor: default;
+}

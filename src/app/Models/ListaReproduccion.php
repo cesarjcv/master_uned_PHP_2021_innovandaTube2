@@ -6,16 +6,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Canal extends Model
+class ListaReproduccion extends Model
 {
+    //use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
-        'channelid', 'nombre', 'descripcion', 'fecha', 'imagen', 'actualizado'
+        'listid', 'nombre', 'descripcion', 'fecha', 'imagen', 'idcanal', 'actualizado'
     ];
 
     protected $casts = [
         'fecha' => 'datetime',
-        'actualizado' => 'datetime'
+        'actualizado' => 'datetime',
     ];
 }

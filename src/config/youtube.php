@@ -17,5 +17,13 @@ return [
     */
 
     'youtube_key' => env('YOUTUBE_KEY', ''),
+
+    /*
+    |-------------------------------------------------------------------------
+    | tiempos para actualizar infromación de Youtube
+    |-------------------------------------------------------------------------
+    */
+    'youtube_tiempo_actualizar_canal' => env('YOUTUBE_HORAS_CANAL', 5),
+    'youtube_tiempo_actualizar_lista' => env('YOUTUBE_HORAS_LISTA', 5),
 ];
 ?>
