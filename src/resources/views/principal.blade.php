@@ -26,7 +26,7 @@
             }
         </style>
     </head>
-    <body class="antialiased">
+    <body class="antialiased" style='background: #404040;'>
         <div id='app'>
             <!-- cabecera -->        
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm innovanda_cabecera">
@@ -45,11 +45,9 @@
             </nav>
             <!-- contenido -->
             <div class='innovanda_contenido'>
-                {{$contenido}}
-                <iframe width="400" height="300"
-    src="https://www.youtube.com/embed/a3ICNMQW7Ok?controls=1">
-</iframe>
-            <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+                @yield('contenido')
+
+            <!--<div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
                 @if (Route::has('login'))
                     <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
                         @auth
@@ -155,7 +153,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
             </div>
         </div>
     </body>

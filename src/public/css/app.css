@@ -10851,6 +10851,87 @@ div.innovanda_contenido {
 }
 
 /**
+* Listados de página principal
+*/
+div.tituloCategoria {
+  background: #404040;
+  font-size: 15px;
+}
+
+div.barravideos {
+  padding-top: 5px;
+  background: #404040;
+  min-height: 240px;
+}
+
+div.barravideos > ul {
+  padding: 15px 40px 2.3em;
+  transition: all 0.6s ease-in-out 0ms;
+}
+
+div.gradientContainer {
+  background: linear-gradient(180deg, transparent 0, transparent 33%, rgba(0, 0, 0, 0.8));
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00000000",endColorstr="#bf000000",GradientType=0);
+}
+
+/*.horizontal-padding{
+    padding: 15px 2% 2.3em;
+}
+.movement {
+    transition: all 0.6s ease-in-out 0ms;
+}*/
+li.video {
+  width: 308px;
+  flex-shrink: 0;
+  z-index: 1;
+  cursor: pointer;
+  list-style: none;
+}
+
+li.video:hover {
+  margin-top: 4px;
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+li.video:hover .titulo {
+  opacity: 1;
+}
+
+div.contenedorflecha {
+  cursor: pointer;
+  display: block;
+  background: #161616;
+  height: 180px;
+  width: 40px;
+  position: absolute;
+  opacity: 0.4;
+  margin-top: 20px;
+  z-index: 12;
+}
+
+div.contenedorflecha:hover {
+  opacity: 1;
+}
+
+div.contenedorflecha.derecha {
+  right: 0px;
+}
+
+div.contenedorflecha.izquierda {
+  left: 0px;
+}
+
+span.flecha {
+  position: absolute;
+  margin-top: 85px;
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 25px;
+  font-family: sans-serif;
+}
+
+/**
     administración
 */
 .menu {
@@ -10919,4 +11000,9 @@ button.categoriaVideo {
   display: inline-block;
   color: #198754;
   cursor: default;
+}
+
+div.selCat {
+  max-height: 550px;
+  overflow: auto;
 }

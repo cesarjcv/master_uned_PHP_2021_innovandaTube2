@@ -26,8 +26,7 @@ class PrincipalController extends Controller
     {
         //DatosYoutube::getDatosVideoPorId('SKrrIdSvnQI');
         
-        return view('principal',
-            ['contenido' => 'prueba']);
+        return view('principalinicio');
     }
 
     /**

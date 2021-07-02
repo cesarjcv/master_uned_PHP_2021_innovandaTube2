@@ -18,11 +18,16 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/categoria/{idcategoria}/videos', 'CategoriaController@videosPorCategoria');
+Route::put('/categoria/porid', 'CategoriaController@categoriasPorID');
+Route::put('/categoria/convideo', 'CategoriaController@categoriasConVideo');
+
 /*Route::middleware(['ldapauth'])->group(function () 
 {*/
     Route::apiResource('/canal', 'CanalController');
     Route::put('/categoria/cambiovisibilidad/{idcategoria}', 'CategoriaController@cambiarVisible');
     Route::apiResource('/categoria', 'CategoriaController');
     Route::apiResource('/video', 'VideoController');
-    Route::get('/video/categorias/{idvideo}', 'VideoController@listaCategorias');    
+    Route::put('/video/categorias/{idvideo}', 'VideoController@establecerCategorias');    
 /*});*/
+

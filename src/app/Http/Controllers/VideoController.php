@@ -26,8 +26,19 @@ class VideoController extends Controller
     /**
      * Listado de categorias de un video
      */
-    public function listaCategorias(Request $request, $id)
+    /*public function listaCategorias(Request $request, $id)
     {
         return DB::table('videocategorias')->select('idcategoria')->where('idvideo', $id)->get();
+    }*/
+    public function establecerCategorias(Request $request, $id)
+    {
+        // eliminar lista de categorías actuales
+        DB::table('videocategorias')->where('idvideo', $id)->delete();
+
+        // insertar nueva lista de categorías
+        foreach ($request->cat as $idcat)
+        {
+            DB::table('videocategorias')->insert(['idvideo' => $id, 'idcategoria' => $idcat]);
+        }
     }
 }

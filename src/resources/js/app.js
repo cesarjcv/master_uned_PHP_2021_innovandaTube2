@@ -6,6 +6,10 @@ import Vue from 'vue'
 
 // Página principal
 Vue.component('principal-buscar-componente', require('./componentesVue/principal/PrincipalBuscarComponent.vue').default);
+Vue.component('listas-horizontales-componente', require('./componentesVue/principal/ListasHorizontalesComponente.vue').default);
+Vue.component('carrusel-componente', require('./componentesVue/principal/CarruselComponente.vue').default);
+Vue.component('video-carrusel-componente', require('./componentesVue/principal/VideoCarruselComponente.vue').default);
+Vue.component('flecha-componente', require('./componentesVue/principal/FlechaComponente.vue').default);
 
 // Administración
 /* canales */
@@ -20,6 +24,8 @@ Vue.component('dialogo-mod-categoria-componente', require('./componentesVue/Admi
 /* videos */
 Vue.component('admin-videos-componente', require('./componentesVue/Admin/AdminVideosComponente.vue').default);
 Vue.component('entrada-video-componente', require('./componentesVue/Admin/EntradaVideoComponente.vue').default);
+Vue.component('dialogo-video-categorias-componente', require('./componentesVue/Admin/DialogoVideoCategoriasComponente.vue').default);
+Vue.component('dialogo-previsualizar-video-componente', require('./componentesVue/Admin/DialogoPrevisualizarVideoComponente.vue').default);
 /* diálogos */
 Vue.component('dialogo-confirmacion-componente', require('./componentesVue/Admin/DialogoConfirmacionComponente.vue').default);
 

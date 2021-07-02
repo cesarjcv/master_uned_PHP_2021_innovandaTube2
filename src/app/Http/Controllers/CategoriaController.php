@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use App\Models\Categoria;
+use App\Models\Video;
+
+use Illuminate\Support\Facades\Log;
 
 class CategoriaController extends Controller
 {
@@ -126,5 +130,46 @@ class CategoriaController extends Controller
     {
         $categoria = Categoria::find($id);
         $categoria->delete();
+    }
+
+    /**
+     * Listado de videos por categorías solicitadas
+     * GET /api/categoria/{idcategoria}/videos
+     * @param Request $request
+     * @param int $id id de categoría
+     * @return Video[]
+     */
+    public function videosPorCategoria(Request $request, $id)
+    {
+        /*$salida = array();
+        //Log::channel('single')->info($request);
+        foreach($request->listas as $idlista)
+        {
+            $salida[$idlista]['categoria'] = DB::table('categorias')->select('nombre')->where('id', $idlista)->get();
+            $salida[$idlista]['videos'] = DB::table('videocategorias')->select('videos.id as id', 'videoid', 'titulo', 'descripcion', 'imagen')->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('idcategoria', $idlista)->get();
+        }
+        return $salida;*/
+        return DB::table('videocategorias')->select('videos.id as id', 'videoid', 'titulo', 'descripcion', 'imagen')->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('idcategoria', $id)->get(); 
+        //return $request;
+    }
+
+    /**
+     * Categorias por id
+     * PUT /api/categoria/porid
+     * @param Request $request
+     * 
+     * @return Categoria
+     */
+    public function categoriasPorID(Request $request)
+    {
+        return Categoria::whereIn('id', $request->listas)->get();
+    }
+
+    /**
+     * Categorias con video
+     */
+    public function categoriasConVideo()
+    {
+        return Categoria::join('videocategorias', 'categorias.id', '=', 'videocategorias.idcategoria')->where('categorias.visible', true)->select('id', 'nombre', 'descripcion')->distinct()->get();
     }
 }
