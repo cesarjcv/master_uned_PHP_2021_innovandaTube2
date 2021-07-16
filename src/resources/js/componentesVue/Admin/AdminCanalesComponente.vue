@@ -10,7 +10,7 @@
         <dialogo-confirmacion-componente id="conf" texto="¿Seguro que quiere eliminar este canal y todos sus videos asociados?"
             v-on:respuesta="respuestaEliminar"></dialogo-confirmacion-componente>
 
-        <div class="container">
+        <div class="container-fluid">
             <div class="row row-cols-auto">
                 <entrada-canal-componente v-for="canal in canales" :key="canal.id" :canal="canal" v-on:eliminar="eliminar">
                 </entrada-canal-componente>

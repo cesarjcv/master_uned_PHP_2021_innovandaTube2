@@ -82,10 +82,12 @@
                 // llamada a API de aplicación para insertar Canal
                 axios.post('/api/canal', parametros).then((respuesta) => 
                 {
+                    console.log(respuesta);
                     if (respuesta.data.error) // error en operación
                     {
                         // mostrar mensaje de error
-                        this.textoAviso = respuesta.data.error;
+                        if (typeof respuesta.data.error === "object") this.textoAviso = respuesta.data.error.original.error;
+                        else this.textoAviso = respuesta.data.error;
                         this.avisoVisible = true;
                     }
                     else

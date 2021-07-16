@@ -7,7 +7,7 @@
 
         <div class="barravideos overflow-hidden">
             <ul class="w-100 d-flex" v-bind:style="{ transform: 'translate3d('+ posicion.x + 'px, 0px, 0px)' }">
-                <video-carrusel-componente v-for="video in videos" :key="video.id" :video="video">
+                <video-carrusel-componente v-for="video in videos" :key="video.id" :video="video" @verVideo="verVideo">
                 </video-carrusel-componente>
             </ul>
         </div>
@@ -122,6 +122,11 @@ export default {
                 this.flechas[1].visible = true;
             }
         },
+        verVideo(video)
+        {
+            console.log("carrusel");
+            this.$emit('verVideo', video); // enviar a componente padre datos de video a reproducir
+        }
 
     }
 }

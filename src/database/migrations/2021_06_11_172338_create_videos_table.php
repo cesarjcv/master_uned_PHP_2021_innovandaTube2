@@ -23,7 +23,9 @@ class CreateVideosTable extends Migration
             $table->foreignId('idlistarep')->constrained('lista_reproduccions')->onUpdate('cascade')->onDelete('cascade');
             $table->datetime('actualizado')->default("1000-01-01 00:00:00");
             $table->string('etagDatos', 28)->nullable();
-            $table->text('embedHtml');
+            //$table->text('embedHtml');
+            $table->float('proporcion', 6, 4)->default(1.0);
+            $table->integer('duracion')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -12,11 +12,10 @@ class ListaReproduccion extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'listid', 'nombre', 'descripcion', 'fecha', 'imagen', 'idcanal', 'actualizado'
+        'listid', 'idcanal', 'actualizado'
     ];
 
     protected $casts = [
-        'fecha' => 'datetime',
         'actualizado' => 'datetime',
     ];
 }

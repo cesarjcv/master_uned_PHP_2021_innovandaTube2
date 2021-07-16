@@ -25,5 +25,6 @@ return [
     */
     'youtube_tiempo_actualizar_canal' => env('YOUTUBE_HORAS_CANAL', 5),
     'youtube_tiempo_actualizar_lista' => env('YOUTUBE_HORAS_LISTA', 5),
+    'youtube_tiempo_actualizar_video' => env('YOUTUBE_HORAS_VIDEO', 24),
 ];
 ?>

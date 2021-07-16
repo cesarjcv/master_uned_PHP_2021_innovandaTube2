@@ -1,7 +1,7 @@
 <template>
-    <li class="video">
-        <div class="text-white m-1 position-relative">
-            <div class="gradientContainer w-100 h-100 position-absolute">
+    <li class="video" @click="verVideo()">
+        <div class="text-white m-1 position-relative"> 
+            <div class="gradientContainer w-100 h-100 position-absolute" >
                 <span class="d-block position-absolute fixed-bottom titulo">{{ video.titulo }}</span>
             </div>
             <img class="border-0 w-100" v-bind:src="video.imagen" alt="">
@@ -21,9 +21,17 @@ export default {
         return {}
     },
     mounted() {
-        console.log('Videos mounted.')
+        //console.log('Videos mounted.')
     },
     methods: {
+        /**
+         * Se pulsa con ratón. Ver vídeo.
+         */
+        verVideo()
+        {
+            console.log("videocarrusel");
+            this.$emit('verVideo', this.video); // enviar a componente padre datos de video a reproducir
+        }
         /*getImgUrl(hash) {
             return url_youtube + hash + '/mqdefault.jpg'
         },

@@ -19,12 +19,12 @@ div.innovanda_contenido{
 */
 
 div.tituloCategoria {
-    background: #404040;
+    background: #04552a;
     font-size: 15px;
 }
 div.barravideos{
     padding-top: 5px;
-    background: #404040;
+    background: #007336;
     min-height: 240px;
 }
 div.barravideos > ul{
@@ -163,3 +163,32 @@ div.selCat{
     max-height: 550px;
     overflow: auto;
 }
+i.iconoInfo{
+    scale: 150%;
+    cursor: pointer;
+}
+div.cuadroInfo{
+    display:none;
+    position:absolute;
+    left:0;
+    top:0;
+    background-color:#ffffff;
+    //width:100px;
+    //height:100px;
+    z-index:150;
+    opacity: 0.95;
+    margin: 1rem;
+    overflow-y: scroll;
+}
+div.cuadroInfo h2{
+    margin: 10px 14px;
+}
+div.cuadroInfo p{
+    margin-left: 14px;
+    margin-right: 14px;;
+}
+// contenedor
+/*.container-sinlimite{
+    max-width: 95%;
+    margin:0 auto;
+}*/

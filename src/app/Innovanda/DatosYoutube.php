@@ -24,7 +24,7 @@ class DatosYoutube
         $this->cliente->setDeveloperKey(Config::get('youtube.youtube_key'));
     }
     
-    static public function getDatosVideoPorId($id)
+    /*static public function getDatosVideoPorId($id)
     {
         $cliente = new Client();
         $cliente->setApplicationName(Config::get('youtube.youtube_app_name'));
@@ -37,7 +37,7 @@ class DatosYoutube
         $results = $servicio->videos->listVideos("snippet", $optParams);
 
         var_dump($results);
-    }
+    }*/
 
     /**
      * Obtener los datos de un canal por el channelid
@@ -165,11 +165,11 @@ class DatosYoutube
             $lr = new ListaReproduccion();
             $lr->listid = $resultado->items[0]->contentDetails->relatedPlaylists->uploads;
             $lr->idcanal = $id;
-            $lr->nombre = "lista videos cargados";
-            $lr->descripcion = "";
-            $lr->fecha = null;
-            $lr->imagen = "";
-            $lr->etagDatos = $resultado->items[0]->etag;
+            //$lr->nombre = "lista videos cargados";
+            //$lr->descripcion = "";
+            //$lr->fecha = null;
+            //$lr->imagen = "";
+            //$lr->etagDatos = $resultado->items[0]->etag;
             
             return $lr;
         }
@@ -183,7 +183,7 @@ class DatosYoutube
      * @param string $etag valor etag para lista reproducción de canal. Para conocer si cambió listas de reproducción desde última consulta.
      * @return ListaReproduccion[]|null
      */
-    public function getListasReproduccionCanalPorId($id, $channelid, &$etag)
+    /*public function getListasReproduccionCanalPorId($id, $channelid, &$etag)
     {
         $lrTotal = array();
         // obtener datos de listas de reproducción por ChannelID
@@ -220,7 +220,7 @@ class DatosYoutube
         while (strlen($nextToken) > 0); // seguir enviando solicitudes mientras queden resultados por recuperar
         $etag = $resultado->etag;
         return $lrTotal;
-    }
+    }*/
 
     /**
      * Obtener videos de listas de reproducción por el listid
@@ -238,7 +238,7 @@ class DatosYoutube
         do
         {
             // obtener videos de lista de reproducción
-            $optParams = array('playlistId' => $listid, 'pageToken' => $nextToken, 'maxResults' => '5');
+            $optParams = array('playlistId' => $listid, 'pageToken' => $nextToken, 'maxResults' => '50');
             $resultado = $servicio->playlistItems->listPlaylistItems("snippet", $optParams);
 
             // comprobar valor etag devuelto
@@ -257,8 +257,8 @@ class DatosYoutube
                     $v->descripcion = $item->snippet->description;
                     $v->fecha = $item->snippet->publishedAt;
                     $v->imagen = $item->snippet->thumbnails->medium->url;
-                    $v->etagDatos = $item->etag;
-                    $v->embedHtml = "";
+                    //$v->etagDatos = $item->etag;
+                    //$v->embedHtml = "";
                     $vTotal[] = $v;
                 }
             }
@@ -267,6 +267,108 @@ class DatosYoutube
         while (strlen($nextToken) > 0); // seguir enviando solicitudes mientras queden resultados por recuperar
         $etag = $resultado->etag;
         return $vTotal;
+    }
+
+    /**
+     * Obtener datos de un listado de vídeos
+     * @param string $videos  lista de vídeos
+     * @return Videos[]|null
+     */
+    public function getDatosVideos($videos)
+    {
+        $gruposVideos = array_chunk($videos, 50); // dividir el listado en grupos de 50 elementos
+        // obtener datos de vídeos
+        $servicio = new \Google_Service_YouTube($this->cliente);
+        // recorrer todos los grupos
+        foreach($gruposVideos as $grupoactual)
+        {
+            $ids = array();
+
+            foreach($grupoactual as $vactual) $ids[] = $vactual->videoid;
+            //Log::channel('single')->info(count($ids));
+            $optParams = array('id' => implode(",", $ids), 'maxResults' => '50', 'maxHeight' => '1000', 'maxWidth' => '1000');
+            //foreach($ids as $idff) Log::channel('single')->info($idff);
+            //Log::channel('single')->info($optParams);
+            //return;
+            //continue;
+
+            $resultado = $servicio->videos->listVideos("snippet, contentDetails, player", $optParams);
+            //Log::channel('single')->info("Resultados: " . $resultado->pageInfo->totalResults);
+            if ($resultado->pageInfo->totalResults > 0)
+            {
+                
+                foreach ($resultado->items as $item)
+                {
+                    //Log::channel('single')->info("actual: " . $item->id);
+                    $videoid = $item->id;
+                    // buscar el video en el listado por videoid
+                    foreach($grupoactual as $vactual)
+                    {
+                        if ($vactual->videoid == $videoid)
+                        {
+                            if ($vactual->etagDatos != $item->etag) // hay cambios desde la última descarga del servidor
+                            {
+                                $vactual->titulo = $item->snippet->title;
+                                $vactual->descripcion = $item->snippet->description;
+                                //$v->fecha = $item->snippet->publishedAt;
+                                $vactual->imagen = $item->snippet->thumbnails->medium->url;
+                                $t = new \DateInterval($item->contentDetails->duration);
+                                $vactual->duracion = $t->s + ($t->i * 60) + ($t->h * 3600) + ($t->d * 86400);
+                                $vactual->proporcion = floatval($item->player->embedWidth) / floatval($item->player->embedHeight);
+                                $vactual->actualizado = date('Y-m-d H:i:s');
+                                $vactual->etagDatos = $item->etag;
+                                $vactual->save(); // actualizar base de datos
+                            }
+                            break; // parar recorrido de listado
+                        }
+                    }
+                    /*// crear objeto vídeo con datos
+                    $v = new Video();
+                    $v->videoid = $item->snippet->resourceId->videoId;
+                    $v->idlistarep = $id;
+                    $v->titulo = $item->snippet->title;
+                    $v->descripcion = $item->snippet->description;
+                    $v->fecha = $item->snippet->publishedAt;
+                    $v->imagen = $item->snippet->thumbnails->medium->url;
+                    //$v->etagDatos = $item->etag;
+                    //$v->embedHtml = "";
+                    $vTotal[] = $v;*/
+                }
+            }
+        }
+        /*$nextToken = ""; // almacena valor de token, para cuando el tamaño del listado requiere varias llamadas al servidor
+        do
+        {
+            // obtener videos de lista de reproducción
+            $optParams = array('playlistId' => $listid, 'pageToken' => $nextToken, 'maxResults' => '50');
+            $resultado = $servicio->playlistItems->listPlaylistItems("snippet", $optParams);
+
+            // comprobar valor etag devuelto
+            // si el igual, la lista de reproducción no se modificó desde la última consulta
+            if ($resultado->etag == $etag) return null;
+
+            if ($resultado->pageInfo->totalResults > 0)
+            {
+                foreach ($resultado->items as $item)
+                {
+                    // crear objeto vídeo con datos
+                    $v = new Video();
+                    $v->videoid = $item->snippet->resourceId->videoId;
+                    $v->idlistarep = $id;
+                    $v->titulo = $item->snippet->title;
+                    $v->descripcion = $item->snippet->description;
+                    $v->fecha = $item->snippet->publishedAt;
+                    $v->imagen = $item->snippet->thumbnails->medium->url;
+                    //$v->etagDatos = $item->etag;
+                    //$v->embedHtml = "";
+                    $vTotal[] = $v;
+                }
+            }
+            $nextToken = $resultado->nextPageToken;
+        }
+        while (strlen($nextToken) > 0); // seguir enviando solicitudes mientras queden resultados por recuperar
+        $etag = $resultado->etag;
+        return $vTotal;*/
     }
 }
 ?>

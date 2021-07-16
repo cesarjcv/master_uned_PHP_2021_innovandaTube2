@@ -47,6 +47,9 @@ class DescargaDatosYoutube implements ShouldQueue, ShouldBeUnique
 
         // recupración datos de listas de reproducción
         $this->gestionListasReproduccion();
+
+        // recuperación datos de vídeos
+        $this->gestionVideos();
     }
 
     /**
@@ -75,15 +78,15 @@ class DescargaDatosYoutube implements ShouldQueue, ShouldBeUnique
                     $lista->save();
                 }
                 // obtener listas de reproducción creadas en el canal
-                $etag = "";
-                $listasR = $this->youtube->getListasReproduccionCanalPorId($canal->id, $canal->channelid, $etag);
+                //$etag = "";
+                /*$listasR = $this->youtube->getListasReproduccionCanalPorId($canal->id, $canal->channelid, $etag);
                 foreach($listasR as $l)
                 {
                     $l->save();
-                }
+                }*/
                 // poner fecha de actualización
                 $canal->actualizado = date('Y-m-d H:i:s');
-                $canal->etagListas = $etag;
+                //$canal->etagListas = $etag;
                 $canal->save(); // atualizar base de datos
             }
             else
@@ -109,8 +112,9 @@ class DescargaDatosYoutube implements ShouldQueue, ShouldBeUnique
                         $canal->actualizado = date('Y-m-d H:i:s');
                     }
                     
+                    // Por ahora solamente lista principal
                     // leer listas, actualizar datos e insertar nuevas
-                    $etag = $canal->etagListas;
+                    /*$etag = $canal->etagListas;
                     $listasR = $this->youtube->getListasReproduccionCanalPorId($canal->id, $canal->channelid, $etag);
                     if ($listasR !== null) // las listas se modificaron desde la última consulta
                     {
@@ -131,7 +135,7 @@ class DescargaDatosYoutube implements ShouldQueue, ShouldBeUnique
                         }
                         $canal->etagListas = $etag;
                         
-                    }
+                    }*/
                     $canal->save(); // guardar en base de datos
                 }
                 
@@ -206,29 +210,94 @@ class DescargaDatosYoutube implements ShouldQueue, ShouldBeUnique
         foreach($listas as $lista)
         {
             if (preg_match("/^UU[a-z,A-Z,0-9,_,-]*$/", $lista->listid)) // solamente lista de videos subidos
-            if ($lista->actualizado == "1000-01-01 00:00:00") // nunca se ha recuperado información de videos de esta lista de reproducción 
             {
-                // obtener videos de lista de reproducción 
-                $etag = "";
-                $videos = $this->youtube->getVideosListaReproduccionPorId($lista->id, $lista->listid, $etag);
-                foreach($videos as $video)
+                if ($lista->actualizado == "1000-01-01 00:00:00") // nunca se ha recuperado información de videos de esta lista de reproducción 
                 {
-                    ////////////////////////////////
-                    // comprobar que no esta ya insertado
-                    ///////////////////////
-                    $video->save();
+                    // obtener videos de lista de reproducción 
+                    $etag = "";
+                    $videos = $this->youtube->getVideosListaReproduccionPorId($lista->id, $lista->listid, $etag);
+                    foreach($videos as $video)
+                    {
+                        $video->save();
+                    }
+                    // poner fecha de actualización
+                    $lista->actualizado = date('Y-m-d H:i:s');
+                    $lista->etagVideos= $etag;
+                    $lista->save(); // atualizar base de datos
                 }
-                // poner fecha de actualización
-                $lista->actualizado = date('Y-m-d H:i:s');
-                $lista->etagVideos= $etag;
-                $lista->save(); // atualizar base de datos
+                else
+                {
+                    // comprobar si paso el tiempo determinado para volver a leer datos y listas de reproducción del canal
+                    /*if ($canal->actualizado < $valorT)
+                    {
+                        // leer datos de canal de yotube
+                        $c = $this->youtube->getDatosCanalPorId($canal->channelid);
+                        // comprobar si hay datos actualizados
+                        if ($c->etagDatos == $canal->etagDatos)
+                        {
+                            // los datos son los mismos de la última consulta
+                            $canal->actualizado = date('Y-m-d H:i:s'); // actualizar fecha de actualizado de información
+                        }
+                        else
+                        {
+                            // actualizar datos
+                            $canal->nombre = $c->nombre;
+                            $canal->descripcion = $c->descripcion;
+                            $canal->imagen = $c->imagen;
+                            $canal->etagDatos = $c->etagDatos;
+                            $canal->actualizado = date('Y-m-d H:i:s');
+                        }
+                        
+                        // leer listas, actualizar datos e insertar nuevas
+                        $etag = $canal->etagListas;
+                        $listasR = $this->youtube->getListasReproduccionCanalPorId($canal->id, $canal->channelid, $etag);
+                        if ($listasR !== null) // las listas se modificaron desde la última consulta
+                        {
+
+                        }
+                        $canal->save(); // guardar en base de datos
+                    }*/
+                    
+                }
+            }
+        }
+    }
+
+    /**
+     * Datos sobre vídeos de Youtube
+     * 
+     * @return void
+     */
+    private function gestionVideos()
+    {
+        $videos = Video::all(); // listado de vídeos
+
+        // calcular el valor de tiempo límite para buscar actualización de canal
+        // ahora - x horas
+        $tiempoReferencia = new \DateTime();
+        $tiempoReferencia->sub(new \DateInterval("PT" . Config::get('youtube.youtube_tiempo_actualizar_video') . "H"));
+        $valorT = $tiempoReferencia->format('Y-m-d H:i:s');
+
+        $videosnuevos = Array();
+        $videosactualizar = Array();
+
+        foreach($videos as $video)
+        {
+            if ($video->actualizado == "1000-01-01 00:00:00") // nunca se ha recuperado información de video
+            {
+                // añadir al listado de videos nuevos (para recuperar información posteriormente)
+                $videosnuevos[] = $video;
+                
             }
             else
             {
-                // comprobar si paso el tiempo determinado para volver a leer datos y listas de reproducción del canal
-                /*if ($canal->actualizado < $valorT)
+                // comprobar si paso el tiempo determinado para volver a leer datos de video
+                if ($video->actualizado < $valorT)
                 {
-                    // leer datos de canal de yotube
+                    // añadir al listado para actualizar
+                    $videosactualizar[] = $video;
+                    
+                    /*// leer datos de canal de yotube
                     $c = $this->youtube->getDatosCanalPorId($canal->channelid);
                     // comprobar si hay datos actualizados
                     if ($c->etagDatos == $canal->etagDatos)
@@ -246,17 +315,15 @@ class DescargaDatosYoutube implements ShouldQueue, ShouldBeUnique
                         $canal->actualizado = date('Y-m-d H:i:s');
                     }
                     
-                    // leer listas, actualizar datos e insertar nuevas
-                    $etag = $canal->etagListas;
-                    $listasR = $this->youtube->getListasReproduccionCanalPorId($canal->id, $canal->channelid, $etag);
-                    if ($listasR !== null) // las listas se modificaron desde la última consulta
-                    {
-
-                    }
-                    $canal->save(); // guardar en base de datos
-                }*/
+ 
+                    $canal->save(); // guardar en base de datos*/
+                }
                 
             }
         }
+        //Log::channel('single')->info(count($videosnuevos));
+        //Log::channel('single')->info(count($videosactualizar));
+        $this->youtube->getDatosVideos($videosnuevos);
+        $this->youtube->getDatosVideos($videosactualizar);
     }
 }

@@ -26,7 +26,7 @@
             }
         </style>
     </head>
-    <body class="antialiased" style='background: #404040;'>
+    <body class="antialiased" style='background: #007336;'>
         <div id='app'>
             <!-- cabecera -->        
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm innovanda_cabecera">

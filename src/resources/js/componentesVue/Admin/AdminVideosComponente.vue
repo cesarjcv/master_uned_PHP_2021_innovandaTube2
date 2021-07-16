@@ -1,27 +1,18 @@
 <template>
     <div>
-        <!--<div class='anadir'>
-            <button class="btn btn-primary" @click="abrirNuevoCanal()">Añadir canal</button>
-        </div>-->
 
         <dialogo-video-categorias-componente identificador="dialogoVideoCategorias" :categorias="categorias" ref="dialogoCat"
             :videoid="catVideoid"  v-on:seleccionCat="categoriasSeleccionadas"  :trabajando="selCatTrabajando">
-            <!-- :catActuales="catCategorias"  -->
         </dialogo-video-categorias-componente>
 
         <dialogo-previsualizar-video-componente identificador="dialogoPrevisualizar" :idvideo="videoidPrev">
         </dialogo-previsualizar-video-componente>
 
-        <!--v-show="nuevovisible" -->
-        <!--<dialogo-confirmacion-componente id="conf" texto="¿Seguro que quiere eliminar este canal y todos sus videos asociados?"
-            v-on:respuesta="respuestaEliminar"></dialogo-confirmacion-componente>-->
-
-        <div class="container">
+        <div class="container-fluid">
             <div class="row row-cols-auto">
                 <entrada-video-componente v-for="video in videos" :key="video.id" :video="video" :categorias="categorias" 
                     v-on:selCategorias="seleccionCategorias"  v-on:preVideo="preVideo">
-                    <!-- :catActuales="catCategorias" -->
-                </entrada-video-componente>
+                 </entrada-video-componente>
             </div>
         </div>
 
