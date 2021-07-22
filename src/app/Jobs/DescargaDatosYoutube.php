@@ -13,6 +13,7 @@ use App\Innovanda\DatosYoutube;
 use App\Models\ListaReproduccion;
 use App\Models\Video;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Log;
 
@@ -227,36 +228,50 @@ class DescargaDatosYoutube implements ShouldQueue, ShouldBeUnique
                 }
                 else
                 {
-                    // comprobar si paso el tiempo determinado para volver a leer datos y listas de reproducción del canal
-                    /*if ($canal->actualizado < $valorT)
+                    // comprobar si paso el tiempo determinado para volver a leer lista de vídeos del canal
+                    if ($lista->actualizado < $valorT)
                     {
                         // leer datos de canal de yotube
-                        $c = $this->youtube->getDatosCanalPorId($canal->channelid);
+                        //$c = $this->youtube->getDatosCanalPorId($canal->channelid);
+                        $etag = $lista->etag;
+                        $videos = $this->youtube->getVideosListaReproduccionPorId($lista->id, $lista->listid, $etag);
                         // comprobar si hay datos actualizados
-                        if ($c->etagDatos == $canal->etagDatos)
+                        if (count($videos) == 0)
                         {
                             // los datos son los mismos de la última consulta
-                            $canal->actualizado = date('Y-m-d H:i:s'); // actualizar fecha de actualizado de información
+                            $lista->actualizado = date('Y-m-d H:i:s'); // actualizar fecha de actualizado de información
                         }
                         else
                         {
-                            // actualizar datos
-                            $canal->nombre = $c->nombre;
+                            // lista de videos actuales
+                            $idVideosAct = DB::table('videos')->select("videoid")->where("idlistarep",$lista->id );
+                            // nueva lista de videos
+                            $idVideosN = array();
+                            foreach($videos as $v) $idVideosAct[] = $v->videoid;
+
+                            // comparar listas
+                            $eliminar = array_diff($idVideosAct, $idVideosN); // lista de videos a eliminar
+                            $insertar = array_diff($idVideosN, $idVideosAct); // lista de videos a insertar
+
+                            Log::channel('single')->info("eliminar: " + count($eliminar));
+                            Log::channel('single')->info("insertar: " + count($insertar));
+                            /*$canal->nombre = $c->nombre;
                             $canal->descripcion = $c->descripcion;
-                            $canal->imagen = $c->imagen;
-                            $canal->etagDatos = $c->etagDatos;
+                            $canal->imagen = $c->imagen;*/
+                            // actualizar datos
+                            $lista->etagDatos = $etag;
                             $canal->actualizado = date('Y-m-d H:i:s');
                         }
-                        
+                        /*
                         // leer listas, actualizar datos e insertar nuevas
                         $etag = $canal->etagListas;
                         $listasR = $this->youtube->getListasReproduccionCanalPorId($canal->id, $canal->channelid, $etag);
                         if ($listasR !== null) // las listas se modificaron desde la última consulta
                         {
 
-                        }
-                        $canal->save(); // guardar en base de datos
-                    }*/
+                        }*/
+                        $lista->save(); // guardar en base de datos*/
+                    }
                     
                 }
             }

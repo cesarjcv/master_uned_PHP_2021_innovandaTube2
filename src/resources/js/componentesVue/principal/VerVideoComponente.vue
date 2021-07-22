@@ -8,35 +8,23 @@
                         </iframe>
                         <div class="cuadroInfo" :width="dimVideo.ancho" :height="dimVideo.alto">
                             <button type="button" class="btn-close" aria-label="Close" @click="mostrarInfo()" style="margin-left:10px;"></button>
+                            <div class="info_estadistica">
+                                <i class="bi bi-play-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Número de reproducciones"></i>{{reproducciones}}
+                                <i class="bi bi-hand-thumbs-up" data-bs-toggle="tooltip" data-bs-placement="top" title="Votos positivos"></i>{{megusta}}
+                                <i class="bi bi-hand-thumbs-down" data-bs-toggle="tooltip" data-bs-placement="top" title="Votos negativos"></i>{{nomegusta}}
+                            </div>
+                            
                             <h2>{{titulo}}</h2>
                             <p v-html="descripcion"></p>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer" style="flex-wrap:nowrap;">
-<!--                    <div class="btn-group dropup">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    Acción
-  </button>
-
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#">Favorito</a></li>
-    <li><a class="dropdown-item" href="#">Me gusta</a></li>
-    <li><a class="dropdown-item" href="#">No me gusta</a></li>
-  </ul>
-</div>
-                    <i class="bi bi-hand-thumbs-down"></i>
-                    <i class="bi bi-hand-thumbs-up"></i>
-                        
-                    <i class="bi bi-star"></i>
-                    <i class="bi bi-star-fill"></i>-->
-                     <div style="height:46px; overflow:clip; text-overflow:ellipsis; margin-right:30px; position:relative;">
-                         <div style="position: absolute; right:0; bottom:0; color: #0000ff; cursor:pointer;" @click="mostrarInfo()">Ver más...</div>
-                         <h5>{{titulo}}</h5>
-                         <span v-html="descripcion"></span>
-                         </div>  
-                    
-                    <!--<i class="bi bi-info-circle iconoInfo" @click="mostrarInfo()"></i>-->
+                    <div class="ver_video_texto_inf">
+                        <div class="ver_mas" @click="mostrarInfo()">Ver más...</div>
+                        <h5>{{titulo}}</h5>
+                        <span v-html="descripcion"></span>
+                    </div>  
                     <button type="button" class="btn btn-secondary" @click="cerrarVentana()">Cerrar</button>
                 </div>
             </div>
@@ -72,6 +60,9 @@
                 },
                 titulo: "",
                 descripcion: "",
+                reproducciones: 0,
+                megusta: 0,
+                nomegusta: 0,
             }
         },
         created() {
@@ -82,6 +73,7 @@
         },
         mounted()
         {
+            // cálculo de tamaños de elementos de ventana que restan zona de reproducción
             this.mHorizontal = 2 * this.dim.margenLateral + 2 * this.dim.margenVideo;
             this.mVertical = 2 * this.dim.margenVertical + 2 * this.dim.margenVideo + 2 * this.dim.margenBotones + this.dim.altoBotones + this.dim.margenInferior;
 
@@ -89,19 +81,29 @@
         },
 
         methods:{
+            /**
+             * Establecer el vídeo a reproducir
+             */
             setVideo(videoact)
             {
                 this.video = videoact;
-                this.url = "https://www.youtube.com/embed/" + this.video.videoid;
+                this.url = "https://www.youtube.com/embed/" + this.video.videoid; // url de youtube
                 this.titulo = this.video.titulo;
                 this.descripcion = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />");
+                this.reproducciones = this.video.estrep;
+                this.megusta = this.video.estgusta;
+                this.nomegusta = this.video.estnogusta;
                 this.cambioTamano();
-                //console.log(this.video);
+
             },
+            /**
+             * Calcular las dimensiones de los elementos de la ventana de reproducción según el tamaño de la zona vislble del navegador
+             */
             cambioTamano()
             {
                 if (this.video != null)
                 {
+                    // calcular dimensiones del frame de vídeo
                     if (document.documentElement.clientWidth/document.documentElement.clientHeight > parseFloat(this.video.proporcion))
                     {
                         this.dimVideo.alto = document.documentElement.clientHeight - this.mVertical;
@@ -112,6 +114,7 @@
                         this.dimVideo.ancho = document.documentElement.clientWidth - this.mHorizontal;
                         this.dimVideo.alto = parseInt(this.dimVideo.ancho / parseFloat(this.video.proporcion));
                     }
+                    // ancho ventana flotante
                     this.ancho = "max-width:" +  (this.dimVideo.ancho + 2 * this.dim.margenLateral) + "px";
 
                     // cuadro de información
@@ -119,10 +122,6 @@
                     c.style.width = this.dimVideo.ancho + "px";
                     c.style.height = this.dimVideo.alto + "px";
                 }
-                //console.log(this.dimVideo.ancho + "X" + this.dimVideo.alto + " - " + this.video.proporcion);
-                //this.nv = Math.floor((document.documentElement.clientWidth - 40)/this.anchoVideo);
-                // cálcular el límite de desplazamiento según número de videos
-                //this.limite = -(this.anchoVideo * (this.videos.length - this.nv));
             },
             /**
              * cerrar la ventana
@@ -137,11 +136,21 @@
                 let m = bootstrap.Modal.getInstance(d);    
                 m.hide();
             },
+            /**
+             * Alternar entre mostrar/ocultar capa de información de vídeo
+             */
             mostrarInfo()
             {
                 let c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
                 if (c.style.display == "block") c.style.display = "none";
                 else c.style.display = "block";
+            },
+            /**
+             * Ocultar capa que muestra información de vídeo
+             */
+            ocultarInfo()
+            {
+                document.getElementById(this.identificador).querySelector(".cuadroInfo").style.display = "none";
             }
         },
     };

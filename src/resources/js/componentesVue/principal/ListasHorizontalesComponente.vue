@@ -40,6 +40,7 @@ export default {
             this.$refs.videorep.setVideo(video);
             // abrir ventana de reproducción de video
             let d = document.getElementById('ventanaVideo');
+            this.$refs.videorep.ocultarInfo();
             let x = new bootstrap.Modal(d, {backdrop: 'static'});
             x.show();
         }

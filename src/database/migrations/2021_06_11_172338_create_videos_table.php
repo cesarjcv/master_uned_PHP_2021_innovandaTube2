@@ -26,6 +26,11 @@ class CreateVideosTable extends Migration
             //$table->text('embedHtml');
             $table->float('proporcion', 6, 4)->default(1.0);
             $table->integer('duracion')->default(0);
+            $table->integer('estrep')->default(0);
+            $table->integer('estgusta')->default(0);
+            $table->integer('estnogusta')->default(0);
+            $table->integer('estfav')->default(0);
+            $table->integer('estcom')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

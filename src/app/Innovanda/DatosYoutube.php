@@ -292,7 +292,7 @@ class DatosYoutube
             //return;
             //continue;
 
-            $resultado = $servicio->videos->listVideos("snippet, contentDetails, player", $optParams);
+            $resultado = $servicio->videos->listVideos("snippet, contentDetails, player, statistics", $optParams);
             //Log::channel('single')->info("Resultados: " . $resultado->pageInfo->totalResults);
             if ($resultado->pageInfo->totalResults > 0)
             {
@@ -315,6 +315,13 @@ class DatosYoutube
                                 $t = new \DateInterval($item->contentDetails->duration);
                                 $vactual->duracion = $t->s + ($t->i * 60) + ($t->h * 3600) + ($t->d * 86400);
                                 $vactual->proporcion = floatval($item->player->embedWidth) / floatval($item->player->embedHeight);
+                                // estadísticas
+                                $vactual->estrep = $item->statistics->viewCount; // Cantidad de veces que se ha reproducido el vídeo.
+                                $vactual->estgusta = $item->statistics->likeCount; // Número de usuarios que indicaron que les gustó el video, dándole una calificación positiva.
+                                $vactual->estnogusta = $item->statistics->dislikeCount; // Número de usuarios que indicaron que no les gustó el video, dándole una calificación negativa.
+                                $vactual->estfav = $item->statistics->favoriteCount; // Número de usuarios que actualmente tienen marcado el video como video favorito.
+                                $vactual->estcom = $item->statistics->commentCount; // Número de comentarios del video.
+
                                 $vactual->actualizado = date('Y-m-d H:i:s');
                                 $vactual->etagDatos = $item->etag;
                                 $vactual->save(); // actualizar base de datos

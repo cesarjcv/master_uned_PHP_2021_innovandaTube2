@@ -149,7 +149,7 @@ class CategoriaController extends Controller
             $salida[$idlista]['videos'] = DB::table('videocategorias')->select('videos.id as id', 'videoid', 'titulo', 'descripcion', 'imagen')->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('idcategoria', $idlista)->get();
         }
         return $salida;*/
-        return DB::table('videocategorias')->select('videos.id as id', 'videoid', 'titulo', 'descripcion', 'imagen', 'proporcion', 'duracion')->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('idcategoria', $id)->get(); 
+        return DB::table('videocategorias')->select('videos.id as id', 'videoid', 'titulo', 'descripcion', 'imagen', 'proporcion', 'duracion', 'estrep', 'estgusta', 'estnogusta', 'fecha')->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('idcategoria', $id)->get(); 
         //return $request;
     }
 

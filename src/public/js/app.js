@@ -6444,6 +6444,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['categoria'],
   data: function data() {
@@ -6492,7 +6497,12 @@ __webpack_require__.r(__webpack_exports__);
 
       _this.vistaFlechas(); // visibilidad flechas
 
-    });
+    }); // activar viñetas de ayuda para botones del título
+
+    var tooltipTriggerList = [].slice.call(this.$refs.titulo.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    }); //console.log(tooltipList);
   },
   methods: {
     /**
@@ -6550,6 +6560,34 @@ __webpack_require__.r(__webpack_exports__);
     verVideo: function verVideo(video) {
       console.log("carrusel");
       this.$emit('verVideo', video); // enviar a componente padre datos de video a reproducir
+    },
+
+    /**
+     * Ordena por fecha de publicación los vídeos, primero los más recientes
+     */
+    ordenFecha: function ordenFecha() {
+      //console.log(this.videos);
+      this.videos.sort(function comparar(elemento1, elemento2) {
+        if (elemento1.fecha > elemento2.fecha) return -1;else if (elemento1.fecha < elemento2.fecha) return 1;else return 0;
+      }); //console.log(this.videos);
+    },
+
+    /**
+     * Ordena los vídeos por mayor número de votos positivos
+     */
+    ordenVotos: function ordenVotos() {
+      this.videos.sort(function comparar(elemento1, elemento2) {
+        if (elemento1.estgusta > elemento2.estgusta) return -1;else if (elemento1.estgusta < elemento2.estgusta) return 1;else return 0;
+      });
+    },
+
+    /**
+     * Ordena los vídeo por número de reproducciones, primero el más reproducido
+     */
+    ordenRepro: function ordenRepro() {
+      this.videos.sort(function comparar(elemento1, elemento2) {
+        if (elemento1.estrep > elemento2.estrep) return -1;else if (elemento1.estrep < elemento2.estrep) return 1;else return 0;
+      });
     }
   }
 });
@@ -6576,13 +6614,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  /**
+   * datos de flechas
+   */
   props: ['flecha'],
   data: function data() {
     return {
@@ -6651,6 +6686,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$refs.videorep.setVideo(video); // abrir ventana de reproducción de video
 
       var d = document.getElementById('ventanaVideo');
+      this.$refs.videorep.ocultarInfo();
       var x = new bootstrap.Modal(d, {
         backdrop: 'static'
       });
@@ -6768,18 +6804,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * - Identificador para la ventana modal
@@ -6805,7 +6829,10 @@ __webpack_require__.r(__webpack_exports__);
         alto: 360
       },
       titulo: "",
-      descripcion: ""
+      descripcion: "",
+      reproducciones: 0,
+      megusta: 0,
+      nomegusta: 0
     };
   },
   created: function created() {
@@ -6815,38 +6842,48 @@ __webpack_require__.r(__webpack_exports__);
     window.removeEventListener("resize", this.cambioTamano);
   },
   mounted: function mounted() {
+    // cálculo de tamaños de elementos de ventana que restan zona de reproducción
     this.mHorizontal = 2 * this.dim.margenLateral + 2 * this.dim.margenVideo;
     this.mVertical = 2 * this.dim.margenVertical + 2 * this.dim.margenVideo + 2 * this.dim.margenBotones + this.dim.altoBotones + this.dim.margenInferior;
     this.cambioTamano();
   },
   methods: {
+    /**
+     * Establecer el vídeo a reproducir
+     */
     setVideo: function setVideo(videoact) {
       this.video = videoact;
-      this.url = "https://www.youtube.com/embed/" + this.video.videoid;
+      this.url = "https://www.youtube.com/embed/" + this.video.videoid; // url de youtube
+
       this.titulo = this.video.titulo;
       this.descripcion = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />");
-      this.cambioTamano(); //console.log(this.video);
+      this.reproducciones = this.video.estrep;
+      this.megusta = this.video.estgusta;
+      this.nomegusta = this.video.estnogusta;
+      this.cambioTamano();
     },
+
+    /**
+     * Calcular las dimensiones de los elementos de la ventana de reproducción según el tamaño de la zona vislble del navegador
+     */
     cambioTamano: function cambioTamano() {
       if (this.video != null) {
+        // calcular dimensiones del frame de vídeo
         if (document.documentElement.clientWidth / document.documentElement.clientHeight > parseFloat(this.video.proporcion)) {
           this.dimVideo.alto = document.documentElement.clientHeight - this.mVertical;
           this.dimVideo.ancho = parseInt(this.dimVideo.alto * parseFloat(this.video.proporcion));
         } else {
           this.dimVideo.ancho = document.documentElement.clientWidth - this.mHorizontal;
           this.dimVideo.alto = parseInt(this.dimVideo.ancho / parseFloat(this.video.proporcion));
-        }
+        } // ancho ventana flotante
+
 
         this.ancho = "max-width:" + (this.dimVideo.ancho + 2 * this.dim.margenLateral) + "px"; // cuadro de información
 
         var c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
         c.style.width = this.dimVideo.ancho + "px";
         c.style.height = this.dimVideo.alto + "px";
-      } //console.log(this.dimVideo.ancho + "X" + this.dimVideo.alto + " - " + this.video.proporcion);
-      //this.nv = Math.floor((document.documentElement.clientWidth - 40)/this.anchoVideo);
-      // cálcular el límite de desplazamiento según número de videos
-      //this.limite = -(this.anchoVideo * (this.videos.length - this.nv));
-
+      }
     },
 
     /**
@@ -6861,9 +6898,20 @@ __webpack_require__.r(__webpack_exports__);
       var m = bootstrap.Modal.getInstance(d);
       m.hide();
     },
+
+    /**
+     * Alternar entre mostrar/ocultar capa de información de vídeo
+     */
     mostrarInfo: function mostrarInfo() {
       var c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
       if (c.style.display == "block") c.style.display = "none";else c.style.display = "block";
+    },
+
+    /**
+     * Ocultar capa que muestra información de vídeo
+     */
+    ocultarInfo: function ocultarInfo() {
+      document.getElementById(this.identificador).querySelector(".cuadroInfo").style.display = "none";
     }
   }
 });
@@ -6892,8 +6940,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//let url_youtube = "https://img.youtube.com/vi/";
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  /**
+   * datos de vídeo
+   */
   props: ['video'],
   data: function data() {
     return {};
@@ -6905,7 +6955,7 @@ __webpack_require__.r(__webpack_exports__);
      * Se pulsa con ratón. Ver vídeo.
      */
     verVideo: function verVideo() {
-      console.log("videocarrusel");
+      //console.log("videocarrusel");
       this.$emit('verVideo', this.video); // enviar a componente padre datos de video a reproducir
     }
     /*getImgUrl(hash) {
@@ -39300,14 +39350,63 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("div", { staticClass: "text-light tituloCategoria m-0 p-2 pl-5 " }, [
-        _vm._v(
-          _vm._s(_vm.categoria.nombre) +
-            " : " +
-            _vm._s(_vm.videos.length) +
-            " vídeos"
-        )
-      ]),
+      _c(
+        "div",
+        {
+          ref: "titulo",
+          staticClass: "text-light tituloCategoria m-0 p-2 pl-5 "
+        },
+        [
+          _vm._v(
+            "\n        " +
+              _vm._s(_vm.categoria.nombre) +
+              " : " +
+              _vm._s(_vm.videos.length) +
+              " vídeos\n        "
+          ),
+          _c("i", {
+            staticClass: "bi bi-calendar3",
+            attrs: {
+              "data-bs-toggle": "tooltip",
+              "data-bs-placement": "top",
+              title: "Ordenar por fecha de publicación"
+            },
+            on: {
+              click: function($event) {
+                return _vm.ordenFecha()
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("i", {
+            staticClass: "bi bi-hand-thumbs-up",
+            attrs: {
+              "data-bs-toggle": "tooltip",
+              "data-bs-placement": "top",
+              title: "Ordenar por mayor número de votos positivos"
+            },
+            on: {
+              click: function($event) {
+                return _vm.ordenVotos()
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("i", {
+            staticClass: "bi bi-eye",
+            attrs: {
+              "data-bs-toggle": "tooltip",
+              "data-bs-placement": "top",
+              title: "Ordenar por número de reproducciones"
+            },
+            on: {
+              click: function($event) {
+                return _vm.ordenRepro()
+              }
+            }
+          })
+        ]
+      ),
       _vm._v(" "),
       _vm._l(_vm.flechas, function(flecha) {
         return _c("flecha-componente", {
@@ -39377,69 +39476,11 @@ var render = function() {
         [
           _c("span", { staticClass: "flecha text-white" }, [
             _vm.flecha.sentido == "i"
-              ? _c(
-                  "svg",
-                  {
-                    staticClass: "bi bi-chevron-double-left",
-                    attrs: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: "16",
-                      height: "16",
-                      fill: "currentColor",
-                      viewBox: "0 0 16 16"
-                    }
-                  },
-                  [
-                    _c("path", {
-                      attrs: {
-                        "fill-rule": "evenodd",
-                        d:
-                          "M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("path", {
-                      attrs: {
-                        "fill-rule": "evenodd",
-                        d:
-                          "M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
-                      }
-                    })
-                  ]
-                )
+              ? _c("i", { staticClass: "bi bi-chevron-double-left" })
               : _vm._e(),
             _vm._v(" "),
             _vm.flecha.sentido == "d"
-              ? _c(
-                  "svg",
-                  {
-                    staticClass: "bi bi-chevron-double-right",
-                    attrs: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: "16",
-                      height: "16",
-                      fill: "currentColor",
-                      viewBox: "0 0 16 16"
-                    }
-                  },
-                  [
-                    _c("path", {
-                      attrs: {
-                        "fill-rule": "evenodd",
-                        d:
-                          "M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("path", {
-                      attrs: {
-                        "fill-rule": "evenodd",
-                        d:
-                          "M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
-                      }
-                    })
-                  ]
-                )
+              ? _c("i", { staticClass: "bi bi-chevron-double-right" })
               : _vm._e()
           ])
         ]
@@ -39618,6 +39659,43 @@ var render = function() {
                       }
                     }),
                     _vm._v(" "),
+                    _c("div", { staticClass: "info_estadistica" }, [
+                      _c("i", {
+                        staticClass: "bi bi-play-btn",
+                        attrs: {
+                          "data-bs-toggle": "tooltip",
+                          "data-bs-placement": "top",
+                          title: "Número de reproducciones"
+                        }
+                      }),
+                      _vm._v(
+                        _vm._s(_vm.reproducciones) +
+                          "\n                            "
+                      ),
+                      _c("i", {
+                        staticClass: "bi bi-hand-thumbs-up",
+                        attrs: {
+                          "data-bs-toggle": "tooltip",
+                          "data-bs-placement": "top",
+                          title: "Votos positivos"
+                        }
+                      }),
+                      _vm._v(
+                        _vm._s(_vm.megusta) + "\n                            "
+                      ),
+                      _c("i", {
+                        staticClass: "bi bi-hand-thumbs-down",
+                        attrs: {
+                          "data-bs-toggle": "tooltip",
+                          "data-bs-placement": "top",
+                          title: "Votos negativos"
+                        }
+                      }),
+                      _vm._v(
+                        _vm._s(_vm.nomegusta) + "\n                        "
+                      )
+                    ]),
+                    _vm._v(" "),
                     _c("h2", [_vm._v(_vm._s(_vm.titulo))]),
                     _vm._v(" "),
                     _c("p", {
@@ -39635,44 +39713,26 @@ var render = function() {
                 staticStyle: { "flex-wrap": "nowrap" }
               },
               [
-                _c(
-                  "div",
-                  {
-                    staticStyle: {
-                      height: "46px",
-                      overflow: "clip",
-                      "text-overflow": "ellipsis",
-                      "margin-right": "30px",
-                      position: "relative"
-                    }
-                  },
-                  [
-                    _c(
-                      "div",
-                      {
-                        staticStyle: {
-                          position: "absolute",
-                          right: "0",
-                          bottom: "0",
-                          color: "#0000ff",
-                          cursor: "pointer"
-                        },
-                        on: {
-                          click: function($event) {
-                            return _vm.mostrarInfo()
-                          }
+                _c("div", { staticClass: "ver_video_texto_inf" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass: "ver_mas",
+                      on: {
+                        click: function($event) {
+                          return _vm.mostrarInfo()
                         }
-                      },
-                      [_vm._v("Ver más...")]
-                    ),
-                    _vm._v(" "),
-                    _c("h5", [_vm._v(_vm._s(_vm.titulo))]),
-                    _vm._v(" "),
-                    _c("span", {
-                      domProps: { innerHTML: _vm._s(_vm.descripcion) }
-                    })
-                  ]
-                ),
+                      }
+                    },
+                    [_vm._v("Ver más...")]
+                  ),
+                  _vm._v(" "),
+                  _c("h5", [_vm._v(_vm._s(_vm.titulo))]),
+                  _vm._v(" "),
+                  _c("span", {
+                    domProps: { innerHTML: _vm._s(_vm.descripcion) }
+                  })
+                ]),
                 _vm._v(" "),
                 _c(
                   "button",

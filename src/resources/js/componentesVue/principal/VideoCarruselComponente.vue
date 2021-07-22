@@ -11,10 +11,10 @@
 
 <script>
 
-//let url_youtube = "https://img.youtube.com/vi/";
-
 export default {
-
+    /**
+     * datos de vídeo
+     */
     props: ['video'],
 
     data() {
@@ -29,7 +29,7 @@ export default {
          */
         verVideo()
         {
-            console.log("videocarrusel");
+            //console.log("videocarrusel");
             this.$emit('verVideo', this.video); // enviar a componente padre datos de video a reproducir
         }
         /*getImgUrl(hash) {
