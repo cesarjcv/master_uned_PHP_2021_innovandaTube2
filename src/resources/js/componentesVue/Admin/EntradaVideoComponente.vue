@@ -47,15 +47,7 @@
         {
             // ajustar saltos de línea
             if (this.video.descripcion) this.des = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />");
-            //console.log(this.categorias);
-            // cargar listado de categorías del video
-            /*axios.get('/api/video/categorias/' + this.video.id).then((response) => 
-            {
-                this.catVideos = response.data;
-                //console.log(response);
-                //console.log(this.catVideos);
-            });*/
-        },
+         },
 
         methods:{
             /**
@@ -75,15 +67,9 @@
              */
             nombreCategoria(idcategoria)
             {
-                /*console.log(this.video.categorias);
-                console.log(this.categorias);
-                console.log(idcategoria);*/
                 for(var i=0; i < this.categorias.length; i++)
                 {
-                    //console.log(i);
                     if (this.categorias[i].id == idcategoria) return this.categorias[i].nombre;
-
-                    
                 }
                 return null;
             },
@@ -92,7 +78,6 @@
              */
             selCategorias()
             {
-                //console.log("pulsar cat");
                 this.$emit('selCategorias', this.video.id, this.video.categorias);
             },
             /**
@@ -100,8 +85,7 @@
              */
             preVideo()
             {
-                console.log("pulsar prev");
-                this.$emit('preVideo', this.video.videoid);
+                this.$emit('preVideo', this.video);
             },
         }
     }

@@ -23,7 +23,7 @@
             <!-- cabecera -->        
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm innovanda_cabecera">
                 <div class="container">
-                    <img src="{{ asset('img/logo.png') }}" class='logo'/>
+                    <img src="{{ asset('img/LogoAdminFlix.png') }}" class='logo'/>
                 </div>
                 <div class='container menu'>
                     @auth('admin')

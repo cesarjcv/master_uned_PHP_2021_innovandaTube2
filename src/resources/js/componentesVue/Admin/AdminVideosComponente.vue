@@ -5,7 +5,7 @@
             :videoid="catVideoid"  v-on:seleccionCat="categoriasSeleccionadas"  :trabajando="selCatTrabajando">
         </dialogo-video-categorias-componente>
 
-        <dialogo-previsualizar-video-componente identificador="dialogoPrevisualizar" :idvideo="videoidPrev">
+        <dialogo-previsualizar-video-componente identificador="dialogoPrevisualizar" ref="prevideo">
         </dialogo-previsualizar-video-componente>
 
         <div class="container-fluid">
@@ -164,17 +164,11 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
             },
             /**
              * Se recibe de componente hijo orden de abrir ventana para ver video.
-             * @param string videoid identificador en youtube del video
+             * @param string video datos del video
              */
-            preVideo(videoid) {
-                console.log(videoid);
-                this.videoidPrev = videoid;
-                //this.catVideoid = idVideo;
-                //this.catCategorias = categorias.slice(0);
-                //console.log(categorias);
-                //console.log(this.catCategorias);
-                //this.canalEliminar = idCanal;
-                // abrir ventana de confirmación
+            preVideo(video) {
+                this.$refs.prevideo.setVideo(video);
+
                 let d = document.getElementById('dialogoPrevisualizar');
                 let x = new bootstrap.Modal(d, {backdrop: 'static'});
                 x.show();

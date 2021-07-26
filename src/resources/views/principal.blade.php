@@ -23,7 +23,7 @@
             <!-- cabecera -->        
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm innovanda_cabecera">
                 <div class="container">
-                    <img src="{{ asset('img/logo.png') }}" class='logo'/>
+                    <img src="{{ asset('img/LogoAdminFlix.png') }}" class='logo'/>
                     <a class="navbar-brand" href="{{ url('/') }}">
                         {{ config('app.name', 'Laravel') }}
                     </a>
@@ -43,8 +43,8 @@
         <script type='text/javascript'>
         document.body.onload = function()
         {
+            // código bootstrap para elementos de notas emergentes de ayuda
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                //console.log(tooltipTriggerList);
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {return new bootstrap.Tooltip(tooltipTriggerEl)});
         };
         </script>

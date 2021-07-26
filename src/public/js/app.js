@@ -5445,17 +5445,10 @@ __webpack_require__.r(__webpack_exports__);
 
     /**
      * Se recibe de componente hijo orden de abrir ventana para ver video.
-     * @param string videoid identificador en youtube del video
+     * @param string video datos del video
      */
-    preVideo: function preVideo(videoid) {
-      console.log(videoid);
-      this.videoidPrev = videoid; //this.catVideoid = idVideo;
-      //this.catCategorias = categorias.slice(0);
-      //console.log(categorias);
-      //console.log(this.catCategorias);
-      //this.canalEliminar = idCanal;
-      // abrir ventana de confirmación
-
+    preVideo: function preVideo(video) {
+      this.$refs.prevideo.setVideo(video);
       var d = document.getElementById('dialogoPrevisualizar');
       var x = new bootstrap.Modal(d, {
         backdrop: 'static'
@@ -5954,78 +5947,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * - Identificador para la ventana modal
-   * - Listado de todas las categorías
-   * - id de categorías de video actual
-   * - valor lógico que indica que se está esperando repuesta del servidor
    */
-  props: ['identificador', 'idvideo'],
+  props: ['identificador'],
   data: function data() {
     return {
-      url: "" //catVideos: [], // categorías del video
-
+      url: "",
+      video: null
     };
-  },
-  mounted: function mounted() {
-    this.url = "https://www.youtube.com/embed/1w7OgIMMRc4"; // + this.idvideo;
-
-    console.log(this.idvideo); // ajustar saltos de línea
-    //if (this.video.descripcion) this.des = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />");
-    //console.log(this.categorias);
-    // cargar listado de categorías del video
-
-    /*axios.get('/api/video/categorias/' + this.video.id).then((response) => 
-    {
-        this.catVideos = response.data;
-        //console.log(response);
-        //console.log(this.catVideos);
-    });*/
   },
   methods: {
     /**
-     * Marcar las categorías del vídeo actual
-     * @param int idCat identificadro de la categoría a comporbar
-     * @return string|null
+     * Establecer el vídeo a reproducir
      */
-
-    /*seleccionado(idcat)
-    {
-        // recorrer todas las categorías del vídeo
-        for (var i=0; i < this.catActuales.length; i++) 
-            if (this.catActuales[i].idcategoria == idcat) // si coincide un valor, marcar
-            {
-                //console.log(idcat);
-                return "checked";
-            }
-        return null;
-    },*/
-
-    /**
-     * Enviar a componente padre listado de categorías seleccionadas para el vídeo
-     */
-
-    /*guardarCategoriasSel()
-    {
-        // buscar los elementos marcados
-        let lista = document.getElementById(this.identificador).querySelectorAll(".form-check-input:checked");
-         let salida = new Array(); // lista de id de categorías
-        for (let i=0; i < lista.length; i++)
-        {
-            salida.push(lista[i].dataset.idcat); // añadir a vector de salida
-        }
-        this.$emit('seleccionCat', salida); // enviar a componente padre datos de categorías seleccionadas
-    }*/
+    setVideo: function setVideo(videoact) {
+      this.video = videoact;
+      this.url = "https://www.youtube.com/embed/" + this.video.videoid; // url de youtube
+    }
   }
 });
 
@@ -6358,15 +6298,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     // ajustar saltos de línea
-    if (this.video.descripcion) this.des = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />"); //console.log(this.categorias);
-    // cargar listado de categorías del video
-
-    /*axios.get('/api/video/categorias/' + this.video.id).then((response) => 
-    {
-        this.catVideos = response.data;
-        //console.log(response);
-        //console.log(this.catVideos);
-    });*/
+    if (this.video.descripcion) this.des = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />");
   },
   methods: {
     /**
@@ -6385,11 +6317,7 @@ __webpack_require__.r(__webpack_exports__);
      * @return string nombre de categoría
      */
     nombreCategoria: function nombreCategoria(idcategoria) {
-      /*console.log(this.video.categorias);
-      console.log(this.categorias);
-      console.log(idcategoria);*/
       for (var i = 0; i < this.categorias.length; i++) {
-        //console.log(i);
         if (this.categorias[i].id == idcategoria) return this.categorias[i].nombre;
       }
 
@@ -6400,7 +6328,6 @@ __webpack_require__.r(__webpack_exports__);
      * enviar a componente padre un mensaje de abrir ventana para selección de categorías de video
      */
     selCategorias: function selCategorias() {
-      //console.log("pulsar cat");
       this.$emit('selCategorias', this.video.id, this.video.categorias);
     },
 
@@ -6408,8 +6335,7 @@ __webpack_require__.r(__webpack_exports__);
      * enviar a componente padre un mensaje de abrir ventana para previsualizar video
      */
     preVideo: function preVideo() {
-      console.log("pulsar prev");
-      this.$emit('preVideo', this.video.videoid);
+      this.$emit('preVideo', this.video);
     }
   }
 });
@@ -37775,10 +37701,8 @@ var render = function() {
       }),
       _vm._v(" "),
       _c("dialogo-previsualizar-video-componente", {
-        attrs: {
-          identificador: "dialogoPrevisualizar",
-          idvideo: _vm.videoidPrev
-        }
+        ref: "prevideo",
+        attrs: { identificador: "dialogoPrevisualizar" }
       }),
       _vm._v(" "),
       _c("div", { staticClass: "container-fluid" }, [
