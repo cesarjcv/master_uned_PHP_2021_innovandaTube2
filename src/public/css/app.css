@@ -16348,6 +16348,21 @@ div.innovanda_contenido {
   padding-top: 10px;
 }
 
+img.logo {
+  height: 70px;
+  width: 380px;
+}
+
+@media (max-width: 770px) {
+  img.logo {
+    height: 70px;
+    width: 80px;
+    -o-object-fit: cover;
+       object-fit: cover;
+    -o-object-position: left;
+       object-position: left;
+  }
+}
 /**
 * Listados de página principal
 */
@@ -16430,8 +16445,15 @@ span.flecha {
 div.info_estadistica {
   float: right;
   margin-right: 15px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
 }
 
+/*div.info_estadistica div.votos{
+    margin-right: 90px;
+}*/
 div.info_estadistica i {
   font-size: 1.5rem;
   vertical-align: middle;
@@ -16446,21 +16468,93 @@ div.ver_mas {
   cursor: pointer;
   background-color: white;
   padding: 2px 8px;
+  border: 1px solid #bbbbbb;
+  border-radius: 2px;
+  text-align: center;
 }
 
 div.ver_video_texto_inf {
-  height: 46px;
+  height: 60px;
   overflow: clip;
-  text-overflow: ellipsis;
-  margin-right: 30px;
+  /*text-overflow:ellipsis; */
+  margin-right: 0;
   position: relative;
   width: 100%;
+  width: calc(100% - 75px);
 }
 
 div.ver_video_texto_inf h5, div.ver_video_texto_inf .h5 {
   margin-bottom: 5px;
+  margin-right: 90px;
+  height: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+#toastPlacement {
+  z-index: 200;
+}
+
+#nota {
+  width: 480px;
+}
+
+#nota .col {
+  text-align: center;
+}
+
+#nota .enlace {
+  border: 1px solid #aaaaaa;
+  border-radius: 3px;
+  background-color: #f9f9f9;
+  margin-top: 15px;
+  padding: 8px 12px;
+}
+
+#nota img {
+  cursor: pointer;
+}
+
+@media (max-width: 450px), (max-height: 400px) {
+  #nota img {
+    width: 45px;
+    height: 45px;
+  }
+}
+.compartir {
+  display: inline-block;
+  cursor: pointer;
+  margin-right: 80px;
+}
+
+.copiar {
+  float: right;
+  color: blue;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@media (max-width: 375px), (max-height: 370px) {
+  .copiar {
+    display: none;
+  }
+}
+@media (max-width: 790px), (max-height: 630px) {
+  .nreproducciones {
+    display: none;
+  }
+}
+@media (max-width: 570px), (max-height: 490px) {
+  .votos {
+    display: none;
+  }
+}
+@media (max-width: 535px), (max-height: 470px) {
+  .textosiconoscompartir {
+    display: none;
+  }
+}
 /**
     administración
 */

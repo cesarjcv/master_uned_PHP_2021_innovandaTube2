@@ -1,7 +1,7 @@
 <template>
     <form class="d-flex" action=''>
         
-        <input class="form-control form-control-sm me-2" type="search" placeholder="Buscar" aria-label="Buscar" v-show='visible'>
+        <input class="form-control form-control-sm me-2" type="search" placeholder="Buscar" aria-label="Buscar">
         <button class="btn " @click.prevent="pulsar()"><img src='img/lupa.png' alt='buscar'/></button>
     </form>
 </template>
@@ -11,7 +11,7 @@
     export default {
         data(){
             return {
-                visible:false,
+                //visible:false,
             }
         },
         mounted() {
@@ -21,7 +21,7 @@
             pulsar(){
                 //this.current_page = current;
                 //this.getData();
-                this.visible = ! this.visible;
+                //this.visible = ! this.visible;
             },
             /*getData(){
                 axios.get('api/list?page=' + this.current_page)

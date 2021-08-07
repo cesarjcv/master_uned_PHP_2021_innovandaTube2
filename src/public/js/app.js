@@ -6613,6 +6613,7 @@ __webpack_require__.r(__webpack_exports__);
 
       var d = document.getElementById('ventanaVideo');
       this.$refs.videorep.ocultarInfo();
+      this.$refs.videorep.ocultarCompartir();
       var x = new bootstrap.Modal(d, {
         backdrop: 'static'
       });
@@ -6645,18 +6646,16 @@ __webpack_require__.r(__webpack_exports__);
 //btn-outline-success
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
-    return {
-      visible: false
+    return {//visible:false,
     };
   },
   mounted: function mounted() {
     console.log('buscar mounted.');
   },
   methods: {
-    pulsar: function pulsar() {
-      //this.current_page = current;
+    pulsar: function pulsar() {//this.current_page = current;
       //this.getData();
-      this.visible = !this.visible;
+      //this.visible = ! this.visible;
     }
     /*getData(){
         axios.get('api/list?page=' + this.current_page)
@@ -6730,6 +6729,72 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * - Identificador para la ventana modal
@@ -6743,7 +6808,7 @@ __webpack_require__.r(__webpack_exports__);
         margenVertical: 28,
         margenVideo: 16,
         margenBotones: 12,
-        altoBotones: 46,
+        altoBotones: 60,
         margenInferior: 10,
         margenLateral: 20
       },
@@ -6758,7 +6823,9 @@ __webpack_require__.r(__webpack_exports__);
       descripcion: "",
       reproducciones: 0,
       megusta: 0,
-      nomegusta: 0
+      nomegusta: 0,
+      fechapub: "",
+      videoid: ""
     };
   },
   created: function created() {
@@ -6772,6 +6839,12 @@ __webpack_require__.r(__webpack_exports__);
     this.mHorizontal = 2 * this.dim.margenLateral + 2 * this.dim.margenVideo;
     this.mVertical = 2 * this.dim.margenVertical + 2 * this.dim.margenVideo + 2 * this.dim.margenBotones + this.dim.altoBotones + this.dim.margenInferior;
     this.cambioTamano();
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+    var toastList = toastElList.map(function (toastEl) {
+      return new bootstrap.Toast(toastEl, {
+        autohide: false
+      });
+    });
   },
   methods: {
     /**
@@ -6779,6 +6852,7 @@ __webpack_require__.r(__webpack_exports__);
      */
     setVideo: function setVideo(videoact) {
       this.video = videoact;
+      this.videoid = this.video.videoid;
       this.url = "https://www.youtube.com/embed/" + this.video.videoid; // url de youtube
 
       this.titulo = this.video.titulo;
@@ -6786,7 +6860,12 @@ __webpack_require__.r(__webpack_exports__);
       this.reproducciones = this.video.estrep;
       this.megusta = this.video.estgusta;
       this.nomegusta = this.video.estnogusta;
+      this.fechapub = this.formatoFecha(this.video.fecha);
       this.cambioTamano();
+    },
+    formatoFecha: function formatoFecha(f) {
+      var meses = ["", "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+      return parseInt(f.substring(8, 10)) + " " + meses[parseInt(f.substring(5, 7))] + " " + parseInt(f.substring(0, 4));
     },
 
     /**
@@ -6795,7 +6874,7 @@ __webpack_require__.r(__webpack_exports__);
     cambioTamano: function cambioTamano() {
       if (this.video != null) {
         // calcular dimensiones del frame de vídeo
-        if (document.documentElement.clientWidth / document.documentElement.clientHeight > parseFloat(this.video.proporcion)) {
+        if ((document.documentElement.clientWidth - this.mHorizontal) / (document.documentElement.clientHeight - this.mVertical) > parseFloat(this.video.proporcion)) {
           this.dimVideo.alto = document.documentElement.clientHeight - this.mVertical;
           this.dimVideo.ancho = parseInt(this.dimVideo.alto * parseFloat(this.video.proporcion));
         } else {
@@ -6809,6 +6888,9 @@ __webpack_require__.r(__webpack_exports__);
         var c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
         c.style.width = this.dimVideo.ancho + "px";
         c.style.height = this.dimVideo.alto + "px";
+        console.log(document.documentElement.clientWidth + " - " + document.documentElement.clientHeight + " " + document.documentElement.clientWidth / document.documentElement.clientHeight);
+        console.log(this.video.proporcion + ": " + this.dimVideo.ancho + "x" + this.dimVideo.alto);
+        console.log(this.mHorizontal + "&" + this.mVertical);
       }
     },
 
@@ -6830,7 +6912,15 @@ __webpack_require__.r(__webpack_exports__);
      */
     mostrarInfo: function mostrarInfo() {
       var c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
-      if (c.style.display == "block") c.style.display = "none";else c.style.display = "block";
+      var vm = document.getElementById(this.identificador).querySelector(".ver_mas > .bi");
+
+      if (c.style.display == "block") {
+        c.style.display = "none";
+        vm.className = "bi bi-chevron-double-up";
+      } else {
+        c.style.display = "block";
+        vm.className = "bi bi-chevron-double-down";
+      }
     },
 
     /**
@@ -6838,6 +6928,45 @@ __webpack_require__.r(__webpack_exports__);
      */
     ocultarInfo: function ocultarInfo() {
       document.getElementById(this.identificador).querySelector(".cuadroInfo").style.display = "none";
+      document.getElementById(this.identificador).querySelector(".ver_mas > .bi").className = "bi bi-chevron-double-up";
+    },
+    mostrarCompartir: function mostrarCompartir() {
+      var myToastEl = document.getElementById('nota');
+      var myToast = bootstrap.Toast.getInstance(myToastEl); // Returns a Bootstrap toast instance
+
+      myToast.show();
+    },
+    ocultarCompartir: function ocultarCompartir() {
+      var myToastEl = document.getElementById('nota');
+      var myToast = bootstrap.Toast.getInstance(myToastEl); // Returns a Bootstrap toast instance
+
+      myToast.hide();
+    },
+    abrirEnlace: function abrirEnlace(sel) {
+      switch (sel) {
+        case 'correo':
+          window.open("mailto:?subject=Vídeo: " + escape(this.titulo) + "&body=" + escape("https://youtu.be/" + this.videoid));
+          break;
+
+        case 'whatsapp':
+          window.open("whatsapp://send?text=" + escape(this.titulo + " https://youtu.be/" + this.videoid));
+          break;
+
+        case 'telegram':
+          window.open("tg://msg_url?text=" + encodeURIComponent(this.titulo) + "&url=https%3A%2F%2Fyoutu.be%2F" + this.videoid);
+          break;
+
+        case 'facebook':
+          window.open("https://www.facebook.com/dialog/share?app_id=87741124305&href=https%3A%2F%2Fyoutube.com%2Fwatch%3Fv%3D" + this.videoid + "%26feature%3Dshare&display=popup");
+          break;
+
+        case 'twitter':
+          window.open("https://twitter.com/intent/tweet?url=https%3A//youtu.be/" + this.videoid + "&text=" + escape(this.titulo) + "&via=YouTube&related=YouTube,YouTubeTrends,YTCreators");
+          break;
+      }
+    },
+    copiarPortapapeles: function copiarPortapapeles() {
+      navigator.clipboard.writeText("https://youtu.be/" + this.videoid);
     }
   }
 });
@@ -39478,14 +39607,6 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("form", { staticClass: "d-flex", attrs: { action: "" } }, [
     _c("input", {
-      directives: [
-        {
-          name: "show",
-          rawName: "v-show",
-          value: _vm.visible,
-          expression: "visible"
-        }
-      ],
       staticClass: "form-control form-control-sm me-2",
       attrs: { type: "search", placeholder: "Buscar", "aria-label": "Buscar" }
     }),
@@ -39583,7 +39704,157 @@ var render = function() {
                       }
                     }),
                     _vm._v(" "),
-                    _c("div", { staticClass: "info_estadistica" }, [
+                    _c("h2", [_vm._v(_vm._s(_vm.titulo))]),
+                    _vm._v(" "),
+                    _c("p", {
+                      domProps: { innerHTML: _vm._s(_vm.descripcion) }
+                    })
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "toast-container position-absolute p-3 top-50 start-50 translate-middle",
+                    attrs: { id: "toastPlacement" }
+                  },
+                  [
+                    _c("div", { staticClass: "toast", attrs: { id: "nota" } }, [
+                      _vm._m(0),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "toast-body",
+                          staticStyle: {
+                            opacity: "1",
+                            "background-color": "#fff"
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "container" }, [
+                            _c("div", { staticClass: "row row-cols-5" }, [
+                              _c("div", { staticClass: "col" }, [
+                                _c("img", {
+                                  attrs: { src: "img/correo.png" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.abrirEnlace("correo")
+                                    }
+                                  }
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "col" }, [
+                                _c("img", {
+                                  attrs: { src: "img/whatsapp.png" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.abrirEnlace("whatsapp")
+                                    }
+                                  }
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "col" }, [
+                                _c("img", {
+                                  attrs: { src: "img/telegram.png" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.abrirEnlace("telegram")
+                                    }
+                                  }
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "col" }, [
+                                _c("img", {
+                                  attrs: { src: "img/facebook.png" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.abrirEnlace("facebook")
+                                    }
+                                  }
+                                })
+                              ]),
+                              _vm._v(" "),
+                              _c("div", { staticClass: "col" }, [
+                                _c("img", {
+                                  attrs: { src: "img/twitter.png" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.abrirEnlace("twitter")
+                                    }
+                                  }
+                                })
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _vm._m(1),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "row row-cols-5" }, [
+                              _c("div", { staticClass: "col-12 enlace" }, [
+                                _vm._v(
+                                  "\n                                            https://youtu.be/" +
+                                    _vm._s(_vm.videoid) +
+                                    "\n                                            "
+                                ),
+                                _c(
+                                  "div",
+                                  {
+                                    staticClass: "copiar",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.copiarPortapapeles()
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("COPIAR")]
+                                )
+                              ])
+                            ])
+                          ])
+                        ]
+                      )
+                    ])
+                  ]
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "modal-footer",
+                staticStyle: {
+                  "flex-wrap": "nowrap",
+                  "justify-content": "flex-start"
+                }
+              },
+              [
+                _c("div", { staticClass: "ver_video_texto_inf" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass: "ver_mas",
+                      on: {
+                        click: function($event) {
+                          return _vm.mostrarInfo()
+                        }
+                      }
+                    },
+                    [
+                      _c("i", { staticClass: "bi bi-chevron-double-up" }),
+                      _c("br"),
+                      _vm._v("Ver más...")
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("h5", [_vm._v(_vm._s(_vm.titulo))]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "info_estadistica" }, [
+                    _c("div", { staticClass: "nreproducciones" }, [
                       _c("i", {
                         staticClass: "bi bi-play-btn",
                         attrs: {
@@ -39594,8 +39865,13 @@ var render = function() {
                       }),
                       _vm._v(
                         _vm._s(_vm.reproducciones) +
-                          "\n                            "
-                      ),
+                          "\n                            - " +
+                          _vm._s(_vm.fechapub) +
+                          "\n                        "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "votos" }, [
                       _c("i", {
                         staticClass: "bi bi-hand-thumbs-up",
                         attrs: {
@@ -39616,46 +39892,27 @@ var render = function() {
                         }
                       }),
                       _vm._v(
-                        _vm._s(_vm.nomegusta) + "\n                        "
+                        _vm._s(_vm.nomegusta) +
+                          "\n                            \n                        "
                       )
                     ]),
                     _vm._v(" "),
-                    _c("h2", [_vm._v(_vm._s(_vm.titulo))]),
-                    _vm._v(" "),
-                    _c("p", {
-                      domProps: { innerHTML: _vm._s(_vm.descripcion) }
-                    })
-                  ]
-                )
-              ])
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass: "modal-footer",
-                staticStyle: { "flex-wrap": "nowrap" }
-              },
-              [
-                _c("div", { staticClass: "ver_video_texto_inf" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "ver_mas",
-                      on: {
-                        click: function($event) {
-                          return _vm.mostrarInfo()
+                    _c(
+                      "div",
+                      {
+                        staticClass: "compartir",
+                        on: {
+                          click: function($event) {
+                            return _vm.mostrarCompartir()
+                          }
                         }
-                      }
-                    },
-                    [_vm._v("Ver más...")]
-                  ),
-                  _vm._v(" "),
-                  _c("h5", [_vm._v(_vm._s(_vm.titulo))]),
-                  _vm._v(" "),
-                  _c("span", {
-                    domProps: { innerHTML: _vm._s(_vm.descripcion) }
-                  })
+                      },
+                      [
+                        _c("i", { staticClass: "bi bi-reply" }),
+                        _vm._v("COMPARTIR")
+                      ]
+                    )
+                  ])
                 ]),
                 _vm._v(" "),
                 _c(
@@ -39679,7 +39936,61 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "toast-header" }, [
+      _c("strong", { staticClass: "me-auto" }, [_vm._v("Compartir")]),
+      _vm._v(" "),
+      _c("button", {
+        staticClass: "btn-close",
+        attrs: {
+          type: "button",
+          "data-bs-dismiss": "toast",
+          "aria-label": "Close"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row row-cols-5 textosiconoscompartir" }, [
+      _c("div", { staticClass: "col" }, [
+        _vm._v(
+          "\n                                            Correo\n                                        "
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col" }, [
+        _vm._v(
+          "\n                                            WhatsApp\n                                        "
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col" }, [
+        _vm._v(
+          "\n                                            Telegram\n                                        "
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col" }, [
+        _vm._v(
+          "\n                                            Facebook\n                                        "
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col" }, [
+        _vm._v(
+          "\n                                            Twitter\n                                        "
+        )
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 
