@@ -32,7 +32,8 @@
                     </button>-->
 
                     <!-- búsqueda -->
-                    <principal-buscar-componente></principal-buscar-componente>
+                    <principal-buscar-componente vbus="ventanabuscar"></principal-buscar-componente><!--  -->
+                    <!--  ref="ventanabuscar" -->
                 </div>
             </nav>
             <!-- contenido -->

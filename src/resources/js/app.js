@@ -11,6 +11,7 @@ Vue.component('carrusel-componente', require('./componentesVue/principal/Carruse
 Vue.component('video-carrusel-componente', require('./componentesVue/principal/VideoCarruselComponente.vue').default);
 Vue.component('flecha-componente', require('./componentesVue/principal/FlechaComponente.vue').default);
 Vue.component('ver-video-componente', require('./componentesVue/principal/VerVideoComponente.vue').default);
+Vue.component('dialogo-buscar-componente', require('./componentesVue/principal/DialogoBuscarComponente.vue').default);
 
 // Administración
 /* canales */

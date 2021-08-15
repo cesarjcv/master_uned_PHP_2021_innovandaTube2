@@ -9,19 +9,26 @@
 <script>
 //btn-outline-success
     export default {
+        /**
+         * - Identificador para la ventana de búsqueda
+         */
+        props:['vbus'],
         data(){
             return {
                 //visible:false,
             }
         },
         mounted() {
-            console.log('buscar mounted.')
+            //console.log('buscar mounted.')
         },
         methods: {
-            pulsar(){
-                //this.current_page = current;
-                //this.getData();
-                //this.visible = ! this.visible;
+            pulsar()
+            {
+                //console.log(this.vbus)
+                // abrir ventana de búsqueda
+                let d = document.getElementById(this.vbus);
+                let x = new bootstrap.Modal(d, {backdrop: 'static'});
+                x.show();
             },
             /*getData(){
                 axios.get('api/list?page=' + this.current_page)
