@@ -1,7 +1,7 @@
 <template>
     <form class="d-flex" action=''>
         
-        <input class="form-control form-control-sm me-2" type="search" placeholder="Buscar" aria-label="Buscar">
+        <input class="form-control form-control-sm me-2" type="search" placeholder="Buscar" aria-label="Buscar" @keydown.enter.prevent="entradaTexto" v-model="texto">
         <button class="btn " @click.prevent="pulsar()"><img src='img/lupa.png' alt='buscar'/></button>
     </form>
 </template>
@@ -16,6 +16,7 @@
         data(){
             return {
                 //visible:false,
+                texto : ""
             }
         },
         mounted() {
@@ -30,6 +31,16 @@
                 let x = new bootstrap.Modal(d, {backdrop: 'static'});
                 x.show();
             },
+            entradaTexto(event)
+            {
+                if (this.texto.trim().length > 0)
+                {
+                    let argumentos = {texto: this.texto.trim(), titulo: true, des: true, fini: "", ffin: ""};
+                    this.$root.$emit('busqueda', argumentos);
+                }
+                //console.log(event.key);
+                //event.target.value += event.key;
+            }
             /*getData(){
                 axios.get('api/list?page=' + this.current_page)
                     .then((response) => {

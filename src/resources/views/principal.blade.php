@@ -23,7 +23,7 @@
             <!-- cabecera -->        
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm innovanda_cabecera">
                 <div class="container">
-                     <img src="{{ asset('img/LogoAdminFlix.png') }}" class='logo'/>
+                     <img src="{{ asset('img/LogoAdminFlix.png') }}" class='logo' onclick="window.location.reload()"/>
                     <!--<a class="navbar-brand" href="{{ url('/') }}">
                         {{ config('app.name', 'Laravel') }}
                     </a>
@@ -32,8 +32,7 @@
                     </button>-->
 
                     <!-- búsqueda -->
-                    <principal-buscar-componente vbus="ventanabuscar"></principal-buscar-componente><!--  -->
-                    <!--  ref="ventanabuscar" -->
+                    <principal-buscar-componente vbus="ventanabuscar"></principal-buscar-componente>
                 </div>
             </nav>
             <!-- contenido -->

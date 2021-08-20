@@ -21,6 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('/categoria/{idcategoria}/videos', 'CategoriaController@videosPorCategoria');
 Route::put('/categoria/porid', 'CategoriaController@categoriasPorID');
 Route::put('/categoria/convideo', 'CategoriaController@categoriasConVideo');
+Route::put('/video/buscar', 'VideoController@buscar');
 
 /*Route::middleware(['ldapauth'])->group(function () 
 {*/

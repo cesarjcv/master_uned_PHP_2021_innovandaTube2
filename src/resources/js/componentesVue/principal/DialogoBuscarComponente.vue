@@ -12,7 +12,7 @@
                             <input type="text" class="form-control" placeholder="Término a buscar" aria-label="Término a buscar" id="textobus" v-model="textobuscar">
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" style="margin: 20px 0;">
                         <div class="col-6">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="btit" v-model="titulo">
@@ -41,9 +41,9 @@
                         </div>
                     </div>
                 </div>    
-                <div class="modal-footer" style="flex-wrap:nowrap; justify-content: flex-start;">
-                    <button type="button" class="btn btn-primary">Buscar</button>
-                    <button type="button" class="btn btn-secondary">Cerrar</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @click="busqueda()">Buscar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
         /**
          * - Identificador para la ventana modal
          */
-        props:['identificador'],
+        props:['identificador', 'referenciabus'],
         data(){
             return {
                 textobuscar: "",
@@ -66,161 +66,34 @@
                 ffinal: "",
             }
         },
-        /*created() {
-            window.addEventListener("resize", this.cambioTamano); // evento de cambio tamaño de página
-        },
-        destroyed() {
-            window.removeEventListener("resize", this.cambioTamano);
-        },*/
-        mounted()
-        {
-            // cálculo de tamaños de elementos de ventana que restan zona de reproducción
-            /*this.mHorizontal = 2 * this.dim.margenLateral + 2 * this.dim.margenVideo;
-            this.mVertical = 2 * this.dim.margenVertical + 2 * this.dim.margenVideo + 2 * this.dim.margenBotones + this.dim.altoBotones + this.dim.margenInferior;
-
-            this.cambioTamano();
-
-            var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-            var toastList = toastElList.map(function (toastEl) {
-                return new bootstrap.Toast(toastEl,{autohide: false});
-            });*/
-
-        },
-
         methods:{
             /**
-             * Establecer el vídeo a reproducir
+             * 
              */
-            /*setVideo(videoact)
+            busqueda()
             {
-                this.video = videoact;
-                this.videoid = this.video.videoid;
-                this.url = "https://www.youtube.com/embed/" + this.video.videoid; // url de youtube
-                this.titulo = this.video.titulo;
-                this.descripcion = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />");
-                this.reproducciones = this.video.estrep;
-                this.megusta = this.video.estgusta;
-                this.nomegusta = this.video.estnogusta;
-                this.fechapub = this.formatoFecha(this.video.fecha);
-                this.cambioTamano();
-
-            },*/
-            /*formatoFecha(f)
-            {
-                let meses = ["", "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-                return parseInt(f.substring(8, 10)) + " " + meses[parseInt(f.substring(5, 7))] + " " + parseInt(f.substring(0, 4));
-            },*/
-            /**
-             * Calcular las dimensiones de los elementos de la ventana de reproducción según el tamaño de la zona vislble del navegador
-             */
-            /*cambioTamano()
-            {
-                if (this.video != null)
+                //console.log(this.textobuscar);
+                // comprobar valores de campos
+                if (this.textobuscar.trim().length == 0)
                 {
-                    // calcular dimensiones del frame de vídeo
-                    if ((document.documentElement.clientWidth - this.mHorizontal)/(document.documentElement.clientHeight - this.mVertical)
-                        > parseFloat(this.video.proporcion))
-                    {
-                        this.dimVideo.alto = document.documentElement.clientHeight - this.mVertical;
-                        this.dimVideo.ancho = parseInt(this.dimVideo.alto * parseFloat(this.video.proporcion));
-                    }
-                    else
-                    {
-                        this.dimVideo.ancho = document.documentElement.clientWidth - this.mHorizontal;
-                        this.dimVideo.alto = parseInt(this.dimVideo.ancho / parseFloat(this.video.proporcion));
-                    }
-                    // ancho ventana flotante
-                    this.ancho = "max-width:" +  (this.dimVideo.ancho + 2 * this.dim.margenLateral) + "px";
-
-                    // cuadro de información
-                    let c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
-                    c.style.width = this.dimVideo.ancho + "px";
-                    c.style.height = this.dimVideo.alto + "px";
-
-                    console.log(document.documentElement.clientWidth + " - " + document.documentElement.clientHeight + " " + 
-                    document.documentElement.clientWidth/document.documentElement.clientHeight);
-                    console.log(this.video.proporcion + ": " + this.dimVideo.ancho + "x" + this.dimVideo.alto);
-                    console.log(this.mHorizontal + "&" + this.mVertical);
+                    alert("Debe especificar un texto de búsqueda.");
+                    return;
                 }
-            },
-            /**
-             * cerrar la ventana
-             * @return void
-             */
-            /*cerrarVentana()
-            {
-                // eliminar url de iframe, para que deje de reproducirse el vídeo
-                this.url = "";
-                // cerrar ventana de reproducción
+                if (!this.titulo && !this.descripcion)
+                {
+                    alert("Debe especificar al menos uno de los campos de búsqueda, \"Título\" o \"Descripción\".");
+                    return;
+                }
+                //vm.$refs.carruseles.buscar(this.textobuscar, this.titulo, this.descripcion, this.finicial, this.ffinal);
+                let argumentos = {texto: this.textobuscar.trim(), titulo: this.titulo, des: this.descripcion, fini: this.finicial, ffin: this.ffinal};
+                this.$root.$emit('busqueda', argumentos); //like this
+                
+                // cerrar ventana 
                 let d = document.getElementById(this.identificador);
                 let m = bootstrap.Modal.getInstance(d);    
                 m.hide();
-            },
-            /**
-             * Alternar entre mostrar/ocultar capa de información de vídeo
-             */
-            /*mostrarInfo()
-            {
-                let c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
-                let vm = document.getElementById(this.identificador).querySelector(".ver_mas > .bi");
-                if (c.style.display == "block")
-                {
-                    c.style.display = "none";
-                    vm.className = "bi bi-chevron-double-up";
-                } 
-                else
-                {
-                    c.style.display = "block";
-                    vm.className = "bi bi-chevron-double-down";
-                } 
 
-                
             },
-            /**
-             * Ocultar capa que muestra información de vídeo
-             */
-            /*ocultarInfo()
-            {
-                document.getElementById(this.identificador).querySelector(".cuadroInfo").style.display = "none";
-                document.getElementById(this.identificador).querySelector(".ver_mas > .bi").className = "bi bi-chevron-double-up";
-            },
-            mostrarCompartir()
-            {
-                var myToastEl = document.getElementById('nota');
-                var myToast = bootstrap.Toast.getInstance(myToastEl) // Returns a Bootstrap toast instance
-                myToast.show();
-            },
-            ocultarCompartir()
-            {
-                var myToastEl = document.getElementById('nota');
-                var myToast = bootstrap.Toast.getInstance(myToastEl) // Returns a Bootstrap toast instance
-                myToast.hide();
-            },
-            abrirEnlace(sel)
-            {
-                switch (sel) 
-                {
-                    case 'correo':
-                        window.open("mailto:?subject=Vídeo: " + escape(this.titulo) + "&body=" + escape("https://youtu.be/" + this.videoid));
-                        break;
-                    case 'whatsapp':
-                        window.open("whatsapp://send?text=" + escape(this.titulo + " https://youtu.be/" + this.videoid));
-                        break;
-                    case 'telegram':
-                        window.open("tg://msg_url?text=" + encodeURIComponent(this.titulo) + "&url=https%3A%2F%2Fyoutu.be%2F" + this.videoid);
-                        break;
-                    case 'facebook':
-                        window.open("https://www.facebook.com/dialog/share?app_id=87741124305&href=https%3A%2F%2Fyoutube.com%2Fwatch%3Fv%3D" + this.videoid + "%26feature%3Dshare&display=popup");
-                        break;
-                    case 'twitter':
-                        window.open("https://twitter.com/intent/tweet?url=https%3A//youtu.be/" + this.videoid + "&text=" + escape(this.titulo) + "&via=YouTube&related=YouTube,YouTubeTrends,YTCreators");
-                        break;
-                 }
-             },
-             copiarPortapapeles()
-             {
-                navigator.clipboard.writeText("https://youtu.be/" + this.videoid);
-             }*/
 
         },
     };

@@ -6415,15 +6415,32 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     //console.log('carrusel mounted.');
-    axios.get('api/categoria/' + this.categoria.id + '/videos/').then(function (respuesta) {
-      _this.videos = respuesta.data; //console.log(this.videos);
+    if (this.categoria.id <= 0) {
+      //console.log(this.categoria.parametros);
+      axios.put('api/video/buscar', this.categoria.parametros).then(function (respuesta) {
+        //this.listados = respuesta.data;
+        //console.log(this.listados);
+        //console.log(respuesta.data);
+        _this.videos = respuesta.data;
 
-      _this.calculoValores(); // calcular dimensiones
+        _this.calculoValores(); // calcular dimensiones
 
 
-      _this.vistaFlechas(); // visibilidad flechas
+        _this.vistaFlechas(); // visibilidad flechas
 
-    }); // activar viñetas de ayuda para botones del título
+      });
+    } else {
+      axios.get('api/categoria/' + this.categoria.id + '/videos/').then(function (respuesta) {
+        _this.videos = respuesta.data; //console.log(this.videos);
+
+        _this.calculoValores(); // calcular dimensiones
+
+
+        _this.vistaFlechas(); // visibilidad flechas
+
+      });
+    } // activar viñetas de ayuda para botones del título
+
 
     var tooltipTriggerList = [].slice.call(this.$refs.titulo.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -6484,7 +6501,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     verVideo: function verVideo(video) {
-      console.log("carrusel");
+      //console.log("carrusel");
       this.$emit('verVideo', video); // enviar a componente padre datos de video a reproducir
     },
 
@@ -6559,168 +6576,76 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * - Identificador para la ventana modal
    */
-  props: ['identificador'],
+  props: ['identificador', 'referenciabus'],
   data: function data() {
-    return {};
-  },
-
-  /*created() {
-      window.addEventListener("resize", this.cambioTamano); // evento de cambio tamaño de página
-  },
-  destroyed() {
-      window.removeEventListener("resize", this.cambioTamano);
-  },*/
-  mounted: function mounted() {// cálculo de tamaños de elementos de ventana que restan zona de reproducción
-
-    /*this.mHorizontal = 2 * this.dim.margenLateral + 2 * this.dim.margenVideo;
-    this.mVertical = 2 * this.dim.margenVertical + 2 * this.dim.margenVideo + 2 * this.dim.margenBotones + this.dim.altoBotones + this.dim.margenInferior;
-     this.cambioTamano();
-     var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-    var toastList = toastElList.map(function (toastEl) {
-        return new bootstrap.Toast(toastEl,{autohide: false});
-    });*/
+    return {
+      textobuscar: "",
+      titulo: true,
+      descripcion: true,
+      finicial: "",
+      ffinal: ""
+    };
   },
   methods: {
     /**
-     * Establecer el vídeo a reproducir
+     * 
      */
+    busqueda: function busqueda() {
+      //console.log(this.textobuscar);
+      // comprobar valores de campos
+      if (this.textobuscar.trim().length == 0) {
+        alert("Debe especificar un texto de búsqueda.");
+        return;
+      }
 
-    /*setVideo(videoact)
-    {
-        this.video = videoact;
-        this.videoid = this.video.videoid;
-        this.url = "https://www.youtube.com/embed/" + this.video.videoid; // url de youtube
-        this.titulo = this.video.titulo;
-        this.descripcion = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />");
-        this.reproducciones = this.video.estrep;
-        this.megusta = this.video.estgusta;
-        this.nomegusta = this.video.estnogusta;
-        this.fechapub = this.formatoFecha(this.video.fecha);
-        this.cambioTamano();
-     },*/
+      if (!this.titulo && !this.descripcion) {
+        alert("Debe especificar al menos uno de los campos de búsqueda, \"Título\" o \"Descripción\".");
+        return;
+      } //vm.$refs.carruseles.buscar(this.textobuscar, this.titulo, this.descripcion, this.finicial, this.ffinal);
 
-    /*formatoFecha(f)
-    {
-        let meses = ["", "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-        return parseInt(f.substring(8, 10)) + " " + meses[parseInt(f.substring(5, 7))] + " " + parseInt(f.substring(0, 4));
-    },*/
 
-    /**
-     * Calcular las dimensiones de los elementos de la ventana de reproducción según el tamaño de la zona vislble del navegador
-     */
+      var argumentos = {
+        texto: this.textobuscar.trim(),
+        titulo: this.titulo,
+        des: this.descripcion,
+        fini: this.finicial,
+        ffin: this.ffinal
+      };
+      this.$root.$emit('busqueda', argumentos); //like this
+      // cerrar ventana 
 
-    /*cambioTamano()
-    {
-        if (this.video != null)
-        {
-            // calcular dimensiones del frame de vídeo
-            if ((document.documentElement.clientWidth - this.mHorizontal)/(document.documentElement.clientHeight - this.mVertical)
-                > parseFloat(this.video.proporcion))
-            {
-                this.dimVideo.alto = document.documentElement.clientHeight - this.mVertical;
-                this.dimVideo.ancho = parseInt(this.dimVideo.alto * parseFloat(this.video.proporcion));
-            }
-            else
-            {
-                this.dimVideo.ancho = document.documentElement.clientWidth - this.mHorizontal;
-                this.dimVideo.alto = parseInt(this.dimVideo.ancho / parseFloat(this.video.proporcion));
-            }
-            // ancho ventana flotante
-            this.ancho = "max-width:" +  (this.dimVideo.ancho + 2 * this.dim.margenLateral) + "px";
-             // cuadro de información
-            let c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
-            c.style.width = this.dimVideo.ancho + "px";
-            c.style.height = this.dimVideo.alto + "px";
-             console.log(document.documentElement.clientWidth + " - " + document.documentElement.clientHeight + " " + 
-            document.documentElement.clientWidth/document.documentElement.clientHeight);
-            console.log(this.video.proporcion + ": " + this.dimVideo.ancho + "x" + this.dimVideo.alto);
-            console.log(this.mHorizontal + "&" + this.mVertical);
-        }
-    },
-    /**
-     * cerrar la ventana
-     * @return void
-     */
-
-    /*cerrarVentana()
-    {
-        // eliminar url de iframe, para que deje de reproducirse el vídeo
-        this.url = "";
-        // cerrar ventana de reproducción
-        let d = document.getElementById(this.identificador);
-        let m = bootstrap.Modal.getInstance(d);    
-        m.hide();
-    },
-    /**
-     * Alternar entre mostrar/ocultar capa de información de vídeo
-     */
-
-    /*mostrarInfo()
-    {
-        let c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
-        let vm = document.getElementById(this.identificador).querySelector(".ver_mas > .bi");
-        if (c.style.display == "block")
-        {
-            c.style.display = "none";
-            vm.className = "bi bi-chevron-double-up";
-        } 
-        else
-        {
-            c.style.display = "block";
-            vm.className = "bi bi-chevron-double-down";
-        } 
-         
-    },
-    /**
-     * Ocultar capa que muestra información de vídeo
-     */
-
-    /*ocultarInfo()
-    {
-        document.getElementById(this.identificador).querySelector(".cuadroInfo").style.display = "none";
-        document.getElementById(this.identificador).querySelector(".ver_mas > .bi").className = "bi bi-chevron-double-up";
-    },
-    mostrarCompartir()
-    {
-        var myToastEl = document.getElementById('nota');
-        var myToast = bootstrap.Toast.getInstance(myToastEl) // Returns a Bootstrap toast instance
-        myToast.show();
-    },
-    ocultarCompartir()
-    {
-        var myToastEl = document.getElementById('nota');
-        var myToast = bootstrap.Toast.getInstance(myToastEl) // Returns a Bootstrap toast instance
-        myToast.hide();
-    },
-    abrirEnlace(sel)
-    {
-        switch (sel) 
-        {
-            case 'correo':
-                window.open("mailto:?subject=Vídeo: " + escape(this.titulo) + "&body=" + escape("https://youtu.be/" + this.videoid));
-                break;
-            case 'whatsapp':
-                window.open("whatsapp://send?text=" + escape(this.titulo + " https://youtu.be/" + this.videoid));
-                break;
-            case 'telegram':
-                window.open("tg://msg_url?text=" + encodeURIComponent(this.titulo) + "&url=https%3A%2F%2Fyoutu.be%2F" + this.videoid);
-                break;
-            case 'facebook':
-                window.open("https://www.facebook.com/dialog/share?app_id=87741124305&href=https%3A%2F%2Fyoutube.com%2Fwatch%3Fv%3D" + this.videoid + "%26feature%3Dshare&display=popup");
-                break;
-            case 'twitter':
-                window.open("https://twitter.com/intent/tweet?url=https%3A//youtu.be/" + this.videoid + "&text=" + escape(this.titulo) + "&via=YouTube&related=YouTube,YouTubeTrends,YTCreators");
-                break;
-         }
-     },
-     copiarPortapapeles()
-     {
-        navigator.clipboard.writeText("https://youtu.be/" + this.videoid);
-     }*/
+      var d = document.getElementById(this.identificador);
+      var m = bootstrap.Modal.getInstance(d);
+      m.hide();
+    }
   }
 });
 
@@ -6796,7 +6721,8 @@ __webpack_require__.r(__webpack_exports__);
       //listas: [1, 2],
       listados: [],
       identificadorVentana: "ventanaVideo",
-      videorep: null
+      videorep: null,
+      numerobus: 0
     };
   },
   mounted: function mounted() {
@@ -6811,10 +6737,11 @@ __webpack_require__.r(__webpack_exports__);
 
       /*console.log(respuesta.data);*/
     });
+    this.$root.$on('busqueda', this.buscar);
   },
   methods: {
     verVideo: function verVideo(video) {
-      console.log("lista");
+      //console.log("lista");
       this.$refs.videorep.setVideo(video); // abrir ventana de reproducción de video
 
       var d = document.getElementById('ventanaVideo');
@@ -6824,6 +6751,23 @@ __webpack_require__.r(__webpack_exports__);
         backdrop: 'static'
       });
       x.show();
+    },
+    buscar: function buscar(valores) {
+      //alert("hola");
+      //console.log(valores);
+      this.listados.splice(0);
+      var listabus = {};
+      listabus.id = this.numerobus--;
+      listabus.nombre = "Búsqueda: \"" + valores.texto + "\"";
+      listabus.parametros = valores;
+      this.listados.push(listabus); //console.log(this.listados);
+
+      /*axios.put('api/video/buscar', valores).then((respuesta) => 
+      {
+          //this.listados = respuesta.data;
+          //console.log(this.listados);
+          console.log(respuesta.data);
+      });*/
     }
   }
 });
@@ -6856,7 +6800,9 @@ __webpack_require__.r(__webpack_exports__);
    */
   props: ['vbus'],
   data: function data() {
-    return {//visible:false,
+    return {
+      //visible:false,
+      texto: ""
     };
   },
   mounted: function mounted() {//console.log('buscar mounted.')
@@ -6870,6 +6816,20 @@ __webpack_require__.r(__webpack_exports__);
         backdrop: 'static'
       });
       x.show();
+    },
+    entradaTexto: function entradaTexto(event) {
+      if (this.texto.trim().length > 0) {
+        var argumentos = {
+          texto: this.texto.trim(),
+          titulo: true,
+          des: true,
+          fini: "",
+          ffin: ""
+        };
+        this.$root.$emit('busqueda', argumentos);
+      } //console.log(event.key);
+      //event.target.value += event.key;
+
     }
     /*getData(){
         axios.get('api/list?page=' + this.current_page)
@@ -39814,7 +39774,243 @@ var render = function() {
         "aria-hidden": "true"
       }
     },
-    [_vm._m(0)]
+    [
+      _c("div", { staticClass: "modal-dialog" }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-body" }, [
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.textobuscar,
+                      expression: "textobuscar"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    placeholder: "Término a buscar",
+                    "aria-label": "Término a buscar",
+                    id: "textobus"
+                  },
+                  domProps: { value: _vm.textobuscar },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.textobuscar = $event.target.value
+                    }
+                  }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "row", staticStyle: { margin: "20px 0" } },
+              [
+                _c("div", { staticClass: "col-6" }, [
+                  _c("div", { staticClass: "form-check form-check-inline" }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.titulo,
+                          expression: "titulo"
+                        }
+                      ],
+                      staticClass: "form-check-input",
+                      attrs: { type: "checkbox", id: "btit" },
+                      domProps: {
+                        checked: Array.isArray(_vm.titulo)
+                          ? _vm._i(_vm.titulo, null) > -1
+                          : _vm.titulo
+                      },
+                      on: {
+                        change: function($event) {
+                          var $$a = _vm.titulo,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = null,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 && (_vm.titulo = $$a.concat([$$v]))
+                            } else {
+                              $$i > -1 &&
+                                (_vm.titulo = $$a
+                                  .slice(0, $$i)
+                                  .concat($$a.slice($$i + 1)))
+                            }
+                          } else {
+                            _vm.titulo = $$c
+                          }
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "label",
+                      {
+                        staticClass: "form-check-label",
+                        attrs: { for: "btit" }
+                      },
+                      [_vm._v("Título")]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "col-6" }, [
+                  _c("div", { staticClass: "form-check form-check-inline" }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.descripcion,
+                          expression: "descripcion"
+                        }
+                      ],
+                      staticClass: "form-check-input",
+                      attrs: { type: "checkbox", id: "bdes" },
+                      domProps: {
+                        checked: Array.isArray(_vm.descripcion)
+                          ? _vm._i(_vm.descripcion, null) > -1
+                          : _vm.descripcion
+                      },
+                      on: {
+                        change: function($event) {
+                          var $$a = _vm.descripcion,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = null,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 && (_vm.descripcion = $$a.concat([$$v]))
+                            } else {
+                              $$i > -1 &&
+                                (_vm.descripcion = $$a
+                                  .slice(0, $$i)
+                                  .concat($$a.slice($$i + 1)))
+                            }
+                          } else {
+                            _vm.descripcion = $$c
+                          }
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "label",
+                      {
+                        staticClass: "form-check-label",
+                        attrs: { for: "bdes" }
+                      },
+                      [_vm._v("Descripción")]
+                    )
+                  ])
+                ])
+              ]
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col-6" }, [
+                _c(
+                  "label",
+                  { staticClass: "form-label", attrs: { for: "bfi" } },
+                  [_vm._v("Desde")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.finicial,
+                      expression: "finicial"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "date", id: "bfi" },
+                  domProps: { value: _vm.finicial },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.finicial = $event.target.value
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-6" }, [
+                _c(
+                  "label",
+                  { staticClass: "form-label", attrs: { for: "bff" } },
+                  [_vm._v("Hasta")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.ffinal,
+                      expression: "ffinal"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "date", id: "bff" },
+                  domProps: { value: _vm.ffinal },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.ffinal = $event.target.value
+                    }
+                  }
+                })
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.busqueda()
+                  }
+                }
+              },
+              [_vm._v("Buscar")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: { type: "button", "data-bs-dismiss": "modal" }
+              },
+              [_vm._v("Cerrar")]
+            )
+          ])
+        ])
+      ])
+    ]
   )
 }
 var staticRenderFns = [
@@ -39822,68 +40018,17 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-dialog" }, [
-      _c("div", { staticClass: "modal-content" }, [
-        _c("div", { staticClass: "modal-header" }, [
-          _c("h5", { staticClass: "modal-title" }, [_vm._v("Búsqueda")]),
-          _vm._v(" "),
-          _c("button", {
-            staticClass: "btn-close",
-            attrs: {
-              type: "button",
-              "data-bs-dismiss": "modal",
-              "aria-label": "Close"
-            }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "modal-body" }, [
-          _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "col" }, [
-              _c("input", {
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  placeholder: "Término a buscar",
-                  "aria-label": "Término a buscar",
-                  id: "textobus"
-                }
-              })
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "col" }, [
-              _c("input", {
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  placeholder: "Last name",
-                  "aria-label": "Last name"
-                }
-              })
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "modal-footer",
-            staticStyle: {
-              "flex-wrap": "nowrap",
-              "justify-content": "flex-start"
-            }
-          },
-          [
-            _c(
-              "button",
-              { staticClass: "btn btn-secondary", attrs: { type: "button" } },
-              [_vm._v("Cerrar")]
-            )
-          ]
-        )
-      ])
+    return _c("div", { staticClass: "modal-header" }, [
+      _c("h5", { staticClass: "modal-title" }, [_vm._v("Búsqueda")]),
+      _vm._v(" "),
+      _c("button", {
+        staticClass: "btn-close",
+        attrs: {
+          type: "button",
+          "data-bs-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      })
     ])
   }
 ]
@@ -40001,8 +40146,35 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("form", { staticClass: "d-flex", attrs: { action: "" } }, [
     _c("input", {
+      directives: [
+        {
+          name: "model",
+          rawName: "v-model",
+          value: _vm.texto,
+          expression: "texto"
+        }
+      ],
       staticClass: "form-control form-control-sm me-2",
-      attrs: { type: "search", placeholder: "Buscar", "aria-label": "Buscar" }
+      attrs: { type: "search", placeholder: "Buscar", "aria-label": "Buscar" },
+      domProps: { value: _vm.texto },
+      on: {
+        keydown: function($event) {
+          if (
+            !$event.type.indexOf("key") &&
+            _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+          ) {
+            return null
+          }
+          $event.preventDefault()
+          return _vm.entradaTexto($event)
+        },
+        input: function($event) {
+          if ($event.target.composing) {
+            return
+          }
+          _vm.texto = $event.target.value
+        }
+      }
     }),
     _vm._v(" "),
     _c(

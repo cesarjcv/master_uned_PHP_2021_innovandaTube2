@@ -60,14 +60,31 @@ export default {
     },
     mounted() {
         //console.log('carrusel mounted.');
+        if (this.categoria.id <= 0)
+        {
+            //console.log(this.categoria.parametros);
+            axios.put('api/video/buscar', this.categoria.parametros).then((respuesta) => 
+            {
+                //this.listados = respuesta.data;
+                //console.log(this.listados);
+                //console.log(respuesta.data);
+                this.videos = respuesta.data;
 
-        axios.get('api/categoria/' + this.categoria.id + '/videos/').then((respuesta) => {
+                this.calculoValores(); // calcular dimensiones
+                this.vistaFlechas(); // visibilidad flechas
+            });
+        }
+        else
+        {
+            axios.get('api/categoria/' + this.categoria.id + '/videos/').then((respuesta) => {
                 this.videos = respuesta.data;
                 //console.log(this.videos);
 
                 this.calculoValores(); // calcular dimensiones
                 this.vistaFlechas(); // visibilidad flechas
             });
+        }
+        
 
         // activar viñetas de ayuda para botones del título
         var tooltipTriggerList = [].slice.call(this.$refs.titulo.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -134,7 +151,7 @@ export default {
         },
         verVideo(video)
         {
-            console.log("carrusel");
+            //console.log("carrusel");
             this.$emit('verVideo', video); // enviar a componente padre datos de video a reproducir
         },
         /**

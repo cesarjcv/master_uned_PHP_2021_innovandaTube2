@@ -20,6 +20,7 @@ export default {
             listados: [],
             identificadorVentana: "ventanaVideo",
             videorep: null,
+            numerobus: 0,
         }
     },
     mounted() {
@@ -32,11 +33,12 @@ export default {
                 //console.log(this.listados);
                 /*console.log(respuesta.data);*/
             });
+        this.$root.$on('busqueda', this.buscar);
     },
     methods: {
         verVideo(video)
         {
-            console.log("lista");
+            //console.log("lista");
             this.$refs.videorep.setVideo(video);
             // abrir ventana de reproducción de video
             let d = document.getElementById('ventanaVideo');
@@ -44,6 +46,24 @@ export default {
             this.$refs.videorep.ocultarCompartir();
             let x = new bootstrap.Modal(d, {backdrop: 'static'});
             x.show();
+        },
+        buscar(valores)
+        {
+            //alert("hola");
+            //console.log(valores);
+            this.listados.splice(0);
+            let listabus = {};
+            listabus.id = this.numerobus--;
+            listabus.nombre = "Búsqueda: \"" + valores.texto + "\"";
+            listabus.parametros = valores;
+            this.listados.push(listabus);
+            //console.log(this.listados);
+            /*axios.put('api/video/buscar', valores).then((respuesta) => 
+            {
+                //this.listados = respuesta.data;
+                //console.log(this.listados);
+                console.log(respuesta.data);
+            });*/
         }
     }
 }
