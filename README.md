@@ -24,6 +24,11 @@ Creación de tablas en base datos:
 ~~~
 docker-compose run --rm artisan migrate
 ~~~
+
+Compilación javascript y css:
+~~~
+docker-compose run --rm npm run prod
+~~~
 ## Acceso ##
 
 ### Administración ###
