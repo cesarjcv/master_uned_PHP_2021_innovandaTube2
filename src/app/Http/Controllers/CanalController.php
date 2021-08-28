@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Canal;
 use App\Models\ListaReproduccion;
+use App\Models\Video;
 use App\Innovanda\DatosYoutube;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
@@ -118,6 +119,8 @@ class CanalController extends Controller
         {
             // comporbar si el canal fue eliminado anteriormente
             $auxCanal = Canal::onlyTrashed()->where('channelid', $canal->channelid)->first();
+            //Log::channel('single')->info($canal->channelid);
+            //Log::channel('single')->info($auxCanal);
             if ($auxCanal)
             {
                 //Log::channel('single')->info("Restaurar");
@@ -131,8 +134,23 @@ class CanalController extends Controller
                 $tiempoReferencia->sub(new \DateInterval("PT" . Config::get('youtube.youtube_tiempo_actualizar_canal') . "H"));
                 $auxCanal->actualizado = $tiempoReferencia->format('Y-m-d H:i:s');
                 // eliminar el valor etagListas para obligar a leer de nuevo las listas de reproducción del canal
-                $auxCanal->etagListas = "";
+                //$auxCanal->etagListas = "";
                 $auxCanal->restore();
+
+                // recuperar listas de reproducción
+                $auxListas = ListaReproduccion::onlyTrashed()->where('idcanal', $auxCanal->id)->get();
+                //Log::channel('single')->info($auxCanal->id);
+                //Log::channel('single')->info($auxListas);
+                foreach($auxListas as $lista)
+                {
+                    $lista->restore();
+                    // recuperar videos de lista
+                    $auxVideos = Video::onlyTrashed()->where('idlistarep', $lista->id)->get();
+                    foreach($auxVideos as $video)
+                    {
+                        $video->restore();
+                    }
+                }
                 return $auxCanal;
             }
             else
@@ -161,24 +179,28 @@ class CanalController extends Controller
      * Eliminar canal y videos asociados en base de datos
      * DELETE 	/api/canal/{idcanal}      destroy
      * @param int $id   id de canal en base de datos
-     * @return string
+     * @return void
      */
     public function destroy(int $id) 	
     {
+        // datos de canal
         $canal = Canal::find($id);
-        // eliminar listas de reproducción asociadas al canal
+        // listas de reproducción asociadas al canal
         $listas = ListaReproduccion::where('idcanal', $id)->get();
-        //Log::channel('single')->info($id);
-        //Log::channel('single')->info($listas);
+
         foreach ($listas as $lista)
         {
-            //Log::channel('single')->info($lista.id);
+            // obtener videos de la lista
+            $videos = Video::where('idlistarep', $lista->id)->get();
+            // eliminar videos de lista
+            foreach($videos as $video)
+            {
+                $video->delete();
+            }
+            // eliminar lista
             $lista->delete();
         }
         // eliminar canal
         $canal->delete();
-        /////////////
-        //////////BORRAR LOS VIDEOS ASOCIADOS
-        ///////////////
     }
 }
