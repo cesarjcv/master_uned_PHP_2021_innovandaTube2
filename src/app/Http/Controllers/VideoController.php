@@ -28,6 +28,8 @@ class VideoController extends Controller
     /**
      * Bísqueda en listado de todos los vídeos en orden inverso de insercción en base de datos
      * POST      /api/video/buscar
+     * @param Request $request datos de consulta
+     * @return Video[]
      */
     public function buscar(Request $request)
     {
@@ -36,66 +38,49 @@ class VideoController extends Controller
         $queryaux = null;
         $query = null;
         
+        // crear vector con las palabras de búsqeuda
         $palabras = explode(" ", $request->texto);
-        /*if ($request->titulo)
+ 
+        // crear consulta SQL
+        if ($request->titulo) // hay que buscar en título
         {
-            foreach($palabras as $pal) $aux[] = "titulo LIKE '%" . $pal . "%'";
+            $queryaux = Video::where('titulo', 'LIKE', '%' . $palabras[0] . '%');
+            for ($i=1; $i < count($palabras); $i++)
+            {
+                 $queryaux->where('titulo', 'LIKE', '%' . $palabras[$i]. '%');
+            }
+            // comporbar limitaciones de fecha
+            if (strlen($request->fini) > 0 ) $queryaux->whereDate('fecha', '>=', $request->fini);
+            if (strlen($request->ffin) > 0 ) $queryaux->whereDate('fecha', '<=', $request->ffin);
         }
-        if ($request->des)
+        if ($request->des) // hay que buscar en descripción
         {
-            foreach($palabras as $pal) $aux[] = "descripcion LIKE '%" . $pal . "%'";
-        }*/
-        //$query = Video::where(function($query) {
-            if ($request->titulo)
+            $query = Video::where('descripcion', 'LIKE', '%' . $palabras[0]. '%');
+            for ($i=1; $i < count($palabras); $i++)
             {
-                $queryaux = Video::where('titulo', 'LIKE', '%' . $palabras[0] . '%');
-                for ($i=1; $i < count($palabras); $i++)
-                {
-                    $queryaux->where('titulo', 'LIKE', '%' . $palabras[$i]. '%');
-                }
-                if (strlen($request->fini) > 0 ) $queryaux->whereDate('fecha', '>=', $request->fini);
-                if (strlen($request->ffin) > 0 ) $queryaux->whereDate('fecha', '<=', $request->ffin);
-                /*if ($request->des)
-                {
-                    foreach($palabras as $pal) $query->orWhere('descripcion', 'LIKE', '%' . $pal. '%');
-                }*/
+                 $query->where('descripcion', 'LIKE', '%' . $palabras[$i]. '%');
             }
-            if ($request->des)
+            // comporbar limitaciones de fecha
+            if (strlen($request->fini) > 0 ) $query->whereDate('fecha', '>=', $request->fini);
+            if (strlen($request->ffin) > 0 ) $query->whereDate('fecha', '<=', $request->ffin);
+            // se une subconsulta de título, si existe
+            if ($queryaux)
             {
-                $query = Video::where('descripcion', 'LIKE', '%' . $palabras[0]. '%');
-                for ($i=1; $i < count($palabras); $i++)
-                {
-                    $query->where('descripcion', 'LIKE', '%' . $palabras[$i]. '%');
-                }
-                if (strlen($request->fini) > 0 ) $query->whereDate('fecha', '>=', $request->fini);
-                if (strlen($request->ffin) > 0 ) $query->whereDate('fecha', '<=', $request->ffin);
-                if ($queryaux)
-                {
-                    $query->union($queryaux);
-                }
+                $query->union($queryaux);
             }
+        }
         if (!$query) $query = $queryaux;
 
-        //});
-        //Log::channel('single')->info($request->fini);
-        //if (strlen($request->fini) > 0 ) $query->whereDate('fecha', '>=', $request->fini);// $condiciones = " and   '" .  ."'";
-        //if (strlen($request->ffin) > 0 ) $query->whereDate('fecha', '<=', $request->ffin);//$condiciones = " and fecha <= '" . $request->ffin ."'";
-
         $videos = $query->orderBy('fecha', 'desc')->limit(100)->get();
-        /*foreach ($videos as $video)
-        {
-            $video->categorias = DB::table('videocategorias')->select('idcategoria')->where('idvideo', $video->id)->get();
-        }*/
+
         return $videos;
     }
 
     /**
-     * Listado de categorias de un video
+     * Asignar categorías a un vídeo
+     * @param Request $request datos de consulta
+     * @param int $id identificador de vídeo
      */
-    /*public function listaCategorias(Request $request, $id)
-    {
-        return DB::table('videocategorias')->select('idcategoria')->where('idvideo', $id)->get();
-    }*/
     public function establecerCategorias(Request $request, $id)
     {
         // eliminar lista de categorías actuales

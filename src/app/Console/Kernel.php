@@ -27,15 +27,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
         // ejecutar cada 5 minutos la descarga de datos de Youtube
-        $schedule->job(new DescargaDatosYoutube())->/*everyFiveMinutes*/everyMinute()->withoutOverlapping();
-
-        /*$schedule->call(function () {
-            Log::channel('single')->error('UnoUno');
-        });*/
-
-        //DescargaDatosYoutube::dispatch();
+        $schedule->job(new DescargaDatosYoutube())->everyFiveMinutes()->withoutOverlapping();
     }
 
     /**

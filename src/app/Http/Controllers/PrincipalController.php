@@ -24,30 +24,8 @@ class PrincipalController extends Controller
      */
     public function inicio()
     {
-        //DatosYoutube::getDatosVideoPorId('SKrrIdSvnQI');
-        
         return view('principalinicio');
     }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return Renderable
-     */
-    /*public function videos()
-    {
-        return view('videos');
-    }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return Renderable
-     */
-    /*public function category()
-    {
-        return view('category');
-    }*/
 
 }
 ?>

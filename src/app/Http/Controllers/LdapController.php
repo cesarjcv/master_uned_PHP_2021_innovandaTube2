@@ -43,28 +43,21 @@ class LdapController extends Controller
      */
     public function autentificar(Request $request)
     {
-        //dd(validator());
+        // objeto de validación de usuario
         $validated = $request->validate([
             'usuario' => 'required',
             'password' => 'required',
         ]);
         $datos = $request->only('usuario', 'password');
-        /*$request->session()->flash('usuario', $datos['usuario']);   
-        dd($request->session());*/
-        
 
-        //dd($datos);
-        //dd(Auth::guard('admin'));
+        // comprobar usuario y contraseña
         if (Auth::guard('admin')->attempt($datos)) 
         {
-            //dd('auten');
-            //dd(Auth::guard('admin')->user());
-            $request->session()->regenerate();
-            //dd($request->session());
-            return redirect()->intended('/admin');
+            $request->session()->regenerate(); // actualizar sesión
+            return redirect()->intended('/admin'); // ir a página principal de administración
         }
-        //dd('no auten');
         
+        // devolver resultado
         return back()->withErrors([
             'errorcred' => 'El usuario o la contraseña no es correcta.',
         ])->withInput([
