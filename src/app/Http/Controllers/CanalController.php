@@ -8,7 +8,6 @@ use App\Models\Canal;
 use App\Models\ListaReproduccion;
 use App\Models\Video;
 use App\Innovanda\DatosYoutube;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
 
@@ -23,7 +22,7 @@ class CanalController extends Controller
     }
 
     /**
-     * Listado de todos los canales eno rden inverso de insercción en base de datos
+     * Listado de todos los canales en orden inverso de insercción en base de datos
      * GET      /api/canal    canal.index
      */
     public function index()
@@ -119,11 +118,8 @@ class CanalController extends Controller
         {
             // comporbar si el canal fue eliminado anteriormente
             $auxCanal = Canal::onlyTrashed()->where('channelid', $canal->channelid)->first();
-            //Log::channel('single')->info($canal->channelid);
-            //Log::channel('single')->info($auxCanal);
-            if ($auxCanal)
+            if ($auxCanal) // el canla está en la base de datos en estado "eliminado"
             {
-                //Log::channel('single')->info("Restaurar");
                 // restaurar canal con nuevos datos
                 $auxCanal->nombre = $canal->nombre;
                 $auxCanal->descripcion = $canal->descripcion;
@@ -133,14 +129,10 @@ class CanalController extends Controller
                 $tiempoReferencia = new \DateTime();
                 $tiempoReferencia->sub(new \DateInterval("PT" . Config::get('youtube.youtube_tiempo_actualizar_canal') . "H"));
                 $auxCanal->actualizado = $tiempoReferencia->format('Y-m-d H:i:s');
-                // eliminar el valor etagListas para obligar a leer de nuevo las listas de reproducción del canal
-                //$auxCanal->etagListas = "";
                 $auxCanal->restore();
 
                 // recuperar listas de reproducción
                 $auxListas = ListaReproduccion::onlyTrashed()->where('idcanal', $auxCanal->id)->get();
-                //Log::channel('single')->info($auxCanal->id);
-                //Log::channel('single')->info($auxListas);
                 foreach($auxListas as $lista)
                 {
                     $lista->restore();
@@ -156,12 +148,10 @@ class CanalController extends Controller
             else
             {
                 $canal->save(); // guardar nuevo canal en base de datos
-                //Log::channel('single')->info("Restaurar");
             }
         }
         catch (QueryException $e) 
         {
-            //Log::channel('single')->info("Código: " . $e->getCode());
             if ($e->getCode() == 23000)
             {
                 return response()->json(['error' => 'Canal ya existe.']);
