@@ -288,13 +288,17 @@ class DatosYoutube
                                 $vactual->imagen = $item->snippet->thumbnails->medium->url;
                                 $t = new \DateInterval($item->contentDetails->duration);
                                 $vactual->duracion = $t->s + ($t->i * 60) + ($t->h * 3600) + ($t->d * 86400);
-                                $vactual->proporcion = floatval($item->player->embedWidth) / floatval($item->player->embedHeight);
+                                if (isset($item->player->embedWidth) && isset($item->player->embedHeight))
+                                {
+                                    $vactual->proporcion = floatval($item->player->embedWidth) / floatval($item->player->embedHeight);
+                                }
+                                
                                 // estadísticas
-                                $vactual->estrep = (isset($item->statistics->viewCount) ? $item->statistics->viewCount : 0) ; // Cantidad de veces que se ha reproducido el vídeo.
+                                $vactual->estrep = (isset($item->statistics->viewCount) ? $item->statistics->viewCount : 0); // Cantidad de veces que se ha reproducido el vídeo.
                                 $vactual->estgusta = (isset($item->statistics->likeCount) ? $item->statistics->likeCount : 0); // Número de usuarios que indicaron que les gustó el video, dándole una calificación positiva.
                                 $vactual->estnogusta = (isset($item->statistics->dislikeCount) ? $item->statistics->dislikeCount : 0); // Número de usuarios que indicaron que no les gustó el video, dándole una calificación negativa.
                                 $vactual->estfav = (isset($item->statistics->favoriteCount) ? $item->statistics->favoriteCount : 0); // Número de usuarios que actualmente tienen marcado el video como video favorito.
-                                $vactual->estcom = (isset($item->statistics->commentCount) ? $item->statistics->commentCount : 0) ; // Número de comentarios del video.
+                                $vactual->estcom = (isset($item->statistics->commentCount) ? $item->statistics->commentCount : 0); // Número de comentarios del video.
 
                                 $vactual->actualizado = date('Y-m-d H:i:s');
                                 $vactual->etagDatos = $item->etag;
