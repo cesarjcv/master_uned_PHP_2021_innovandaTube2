@@ -294,7 +294,7 @@ class DatosYoutube
                                 $vactual->estgusta = $item->statistics->likeCount; // Número de usuarios que indicaron que les gustó el video, dándole una calificación positiva.
                                 $vactual->estnogusta = $item->statistics->dislikeCount; // Número de usuarios que indicaron que no les gustó el video, dándole una calificación negativa.
                                 $vactual->estfav = $item->statistics->favoriteCount; // Número de usuarios que actualmente tienen marcado el video como video favorito.
-                                $vactual->estcom = $item->statistics->commentCount; // Número de comentarios del video.
+                                $vactual->estcom = (isset($item->statistics->commentCount) ? $item->statistics->commentCount : 0) ; // Número de comentarios del video.
 
                                 $vactual->actualizado = date('Y-m-d H:i:s');
                                 $vactual->etagDatos = $item->etag;
