@@ -17,6 +17,7 @@ class CreateCategoriasTable extends Migration
             $table->id();
             $table->string('nombre', 100)->unique();
             $table->string('descripcion', 250)->nullable();
+            $table->string('url', 100)->nullable();
             $table->boolean('visible');
             $table->timestamps();
         });

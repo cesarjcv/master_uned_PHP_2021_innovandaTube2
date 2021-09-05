@@ -10,9 +10,11 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                <label for="datocanal">Nombre de categor&iacute;a</label>
+                <label for="datocat">Nombre de categor&iacute;a</label>
                 <input type="text" class="form-control" id="datocat" name="datocat" placeholder="Nombre" value="" v-model="nombre" v-bind:disabled="trabajando" maxlength="100">
-                <label for="datocanal" style='margin-top:15px'>Descripci&oacute;n</label>
+                <label for="urlcat" style='margin-top:15px'>URL</label>
+                <input type="text" class="form-control" id="urlcat" name="urlcat" placeholder="URL" value="" v-model="url" v-bind:disabled="trabajando" maxlength="100">
+                <label for="destcat" style='margin-top:15px'>Descripci&oacute;n</label>
                 <textarea class="form-control" id="descat" name="descat" value="" v-model="descrip" v-bind:disabled="trabajando" maxlength="250">
                 </textarea>
                 </div>
@@ -51,6 +53,7 @@
             return {
                 nombre: "", // texto del cuadro del formulario
                 descrip: "", // texto de la descripción
+                url: "", // url de categoría
                 avisoVisible: false, // ¿se ve aviso de error?
                 textoAviso: "", // texto para aviso de error
                 trabajando: false, // Esperando respuesta del servidor en una operación
@@ -76,7 +79,7 @@
             nuevaCategoria() 
             {
                 // parámetros a enviar
-                const parametros = {nombre: this.nombre, des: this.descrip};
+                const parametros = {nombre: this.nombre, des: this.descrip, url: this.url};
 
                 // mostrar interfaz en modo "ocupado"
                 this.trabajando = true;
@@ -97,6 +100,7 @@
                         const categoria = respuesta.data;
                         this.nombre = "";
                         this.descrip = "";
+                        this.url = "";
                         this.$emit('nuevaCat', categoria); // enviar a componente padre datos de nueva categoría
                     }
                     // recuperar interfaz normal
@@ -112,6 +116,7 @@
             {
                 this.nombre = "";
                 this.descrip = "";
+                this.url = "";
                 this.avisoVisible = false;
             }
         },

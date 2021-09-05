@@ -18,7 +18,6 @@ class LdapAuth
     public function handle(Request $request, Closure $next)
     {
         // comprobar si hay sesión de usuario administrador
-        //dd(Auth::guard('admin'));
         if (Auth::guard('admin')->user() === null) 
         {
             // redirigir a página de entrada de credenciales

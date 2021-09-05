@@ -30,10 +30,20 @@ class CategoriaController extends Controller
      */
     public function store(Request $request) 	
     {
+        // comprobar campos
+        if (strlen(trim($request->nombre)) == 0)
+        {
+            return response()->json(['error' => 'El campo nombre no puede tener un valor vacío.']);
+        }
+        if (!preg_match("/^(http(s)?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,10}(\/[-a-zA-Z0-9()@:%_\+.~#?&=]*)*)?$/i", $request->url))
+        {
+            return response()->json(['error' => 'El formato del camppo URL no es correcto.']);
+        }
         // Crear objeto Categoría con los datos recibidos
         $categoria = new Categoria();
         $categoria->nombre = $request->nombre;
         $categoria->descripcion = $request->des;
+        $categoria->url = $request->url;
         $categoria->visible = true;
 
         try
@@ -44,7 +54,7 @@ class CategoriaController extends Controller
         {
             if ($e->getCode() == 23000) // restricción de unicidad de nombre
             {
-                return response()->json(['error' => 'Ya existe una categoría con es nombre.']);
+                return response()->json(['error' => 'Ya existe una categoría con ese nombre.']);
             }
             else
             {
@@ -93,6 +103,16 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // comprobar campos
+        if (strlen(trim($request->nombre)) == 0)
+        {
+            return response()->json(['error' => 'El campo nombre no puede tener un valor vacío.']);
+        }
+        if (!preg_match("/^(http(s)?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,10}(\/[-a-zA-Z0-9()@:%_\+.~#?&=]*)*)?$/i", $request->url))
+        {
+            return response()->json(['error' => 'El formato del camppo URL no es correcto.']);
+        }
+
         // cargar datos de categoría
         $categoria = Categoria::find($id);
         if ($categoria == null) return response()->json(['error' => 'Ya no existe la categoría.']);
@@ -100,6 +120,7 @@ class CategoriaController extends Controller
         // asignar nuevos valores
         $categoria->nombre = $request->nombre;
         $categoria->descripcion = $request->des;
+        $categoria->url = $request->url;
 
         try
         {

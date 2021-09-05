@@ -3,6 +3,7 @@
         <div class="card" style="width: 18rem;">
             <div class="card-body overflow-auto" style='height:170px'>
                 <h5 class="card-title">{{ categoria.nombre }}</h5>
+                <p class="url">{{ categoria.url }}</p>
                 <p class="card-text" v-html="this.des"></p>
             </div>
             <div class="card-footer">
