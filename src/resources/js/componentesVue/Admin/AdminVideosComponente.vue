@@ -8,7 +8,7 @@
         <dialogo-previsualizar-video-componente identificador="dialogoPrevisualizar" ref="prevideo">
         </dialogo-previsualizar-video-componente>
 
-        <div class="container-fluid">
+        <div class="container-fluid" name="inicio">
             <div class="row row-cols-auto">
                 <entrada-video-componente v-for="video in videos" :key="video.id" :video="video" :categorias="categorias" 
                     v-on:selCategorias="seleccionCategorias"  v-on:preVideo="preVideo">
@@ -18,11 +18,33 @@
 
         <nav aria-label="paginas">
         <ul class="pagination justify-content-center">
-            <template v-for="numeroPagina in ultimaPagina" >
-            <li class="page-item" :class="{active: paginaActual === numeroPagina}" :key="numeroPagina" >
-                <a href="#" class="page-link" @click="establecerPagina(numeroPagina)" >{{ numeroPagina }}</a>
+            <li class="page-item" v-bind:class="{ disabled: paginaActual == 1 }">
+                <a href="#" class="page-link" @click="establecerPagina(1)">
+                    <i  class="bi bi-chevron-bar-left"></i>
+                </a>
             </li>
-            </template>
+            <li class="page-item" v-bind:class="{ disabled: paginaActual == 1 }">
+                <a href="#" class="page-link" @click="establecerPagina(paginaActual - 1)">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            <li style="padding: 5px 12px;">Página 
+                <select @change="cambiarPagina">
+                    <option v-for="numeroPagina in ultimaPagina" :key="numeroPagina" :value="numeroPagina" :selected="numeroPagina == paginaActual ? 'selected' : null">
+                        {{ numeroPagina }}
+                    </option>
+                </select>
+            </li>
+            <li class="page-item" v-bind:class="{ disabled: paginaActual == ultimaPagina}">
+                <a href="#" class="page-link" @click="establecerPagina(paginaActual + 1)">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            <li class="page-item" v-bind:class="{ disabled: paginaActual == ultimaPagina}">
+                <a href="#" class="page-link" @click="establecerPagina(ultimaPagina)">
+                    <i class="bi bi-chevron-bar-right"></i>
+                </a>
+            </li>
         </ul>
         </nav>
     </div>
@@ -41,7 +63,6 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
                 ultimaPagina: 0,
                 categorias: [], // listado de categorias
                 catVideoid: 0, // id de video a cambiar categorías
-                //catCategorias: [], // categorías actuales de video a modificar categorías
                 selCatTrabajando: false, // se están guardnado las categorías seleccionadas en el servidor
                 videoidPrev: "",
             }
@@ -51,23 +72,31 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
             axios.get('/api/categoria').then((response) => 
             {
                 this.categorias = response.data;
-                //console.log(response);
-                //console.log(this.categorias);
             });
             
-            //console.log('Montado AdminCanales.')
+            //cargar vídeos de la página actual
             this.datosVideosPagina();
-
-            
-            
         },
         methods: {
             /**
             * cambiar página actual
+            * @param pagina número de página nueva
             */
             establecerPagina(pagina){
                 this.paginaActual = pagina;
+                //cargar vídeos de la nueva página actual
                 this.datosVideosPagina();
+
+                //desplazar hasta el inicio de la página
+                window.scrollTo(0, 0);
+            },
+            /**
+             * Respuesta al evento de cmabio de página en selector
+             * @param evento datos del evento
+             */
+            cambiarPagina(evento){
+                // cambiar página actual
+                this.establecerPagina(evento.target.value);
             },
             /**
              * Leer datos de videos de la página actual
@@ -77,8 +106,10 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
                 // obtener listado de canales (paginado)
                 axios.get('/api/video?page=' + this.paginaActual).then((response) => 
                 {
+                        // datos recabados de la página actual
                         this.videos = response.data.data;
 
+                        // datos de paginación
                         this.paginaActual = response.data.current_page;
                         this.ultimaPagina = response.data.last_page;
                 });
@@ -118,32 +149,9 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
                         let d = document.getElementById('dialogoVideoCategorias');
                         let m = bootstrap.Modal.getInstance(d);    
                         m.hide();
-                        /*const categoriaR = respuesta.data;
-                        //buscar la posición en el vector de la categoria modificada
-                        for(var i=0; i < this.categorias.length; i++)
-                        {
-                            if (this.categorias[i].id == categoriaR.id)
-                            {
-                                this.categorias.splice(i, 1, categoriaR); // sustituir por nuevos valores
-                                break;
-                            } 
-                        }*/
                     }
                     this.selCatTrabajando = false;
                 });
-                /*if (Array.isArray(listaid))
-                {
-                    canal.forEach(element => {
-                        this.canales.unshift(element);
-                    });
-                }
-                else this.canales.unshift(canal);
-
-                // cerrar ventana modal de añadir canal
-                let d = document.getElementById('dialogoNuevo');
-                let m = bootstrap.Modal.getInstance(d);    
-                m.hide();*/
-                //console.log(listaid);
             },
             /**
              * Se recibe de componente hijo orden de abrir ventana para selección de categorías.
@@ -151,12 +159,10 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
              * @param int[] categorias lista de categorías del vídeo
              */
             seleccionCategorias(idVideo, categorias) {
-                //this.$refs.dialogoCat.limpiarSeleccion(); // limpiar las selecciones anteriores
                 this.catVideoid = idVideo; // estbalecer el identificador del video a tratar
-                //this.catCategorias = categorias.slice(0); // lista de categorías actuales del video
-                //console.log(this.catVideoid);
-                //console.log(this.catCategorias);
-                this.$refs.dialogoCat.marcarSelActual(categorias);
+
+                this.$refs.dialogoCat.marcarSelActual(categorias); // marcar en ventana de diálogo las categorías del vídeo actual
+
                 // abrir ventana de selección de categorías
                 let d = document.getElementById('dialogoVideoCategorias');
                 let x = new bootstrap.Modal(d, {backdrop: 'static'});
@@ -167,8 +173,10 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
              * @param string video datos del video
              */
             preVideo(video) {
+                // establecer video a reproducir
                 this.$refs.prevideo.setVideo(video);
 
+                // abrir ventana
                 let d = document.getElementById('dialogoPrevisualizar');
                 let x = new bootstrap.Modal(d, {backdrop: 'static'});
                 x.show();

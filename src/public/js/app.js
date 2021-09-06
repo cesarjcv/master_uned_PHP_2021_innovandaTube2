@@ -5300,6 +5300,28 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -5316,7 +5338,6 @@ __webpack_require__.r(__webpack_exports__);
       // listado de categorias
       catVideoid: 0,
       // id de video a cambiar categorías
-      //catCategorias: [], // categorías actuales de video a modificar categorías
       selCatTrabajando: false,
       // se están guardnado las categorías seleccionadas en el servidor
       videoidPrev: ""
@@ -5327,19 +5348,31 @@ __webpack_require__.r(__webpack_exports__);
 
     // cargar listado de categorías
     axios.get('/api/categoria').then(function (response) {
-      _this.categorias = response.data; //console.log(response);
-      //console.log(this.categorias);
-    }); //console.log('Montado AdminCanales.')
+      _this.categorias = response.data;
+    }); //cargar vídeos de la página actual
 
     this.datosVideosPagina();
   },
   methods: {
     /**
     * cambiar página actual
+    * @param pagina número de página nueva
     */
     establecerPagina: function establecerPagina(pagina) {
-      this.paginaActual = pagina;
-      this.datosVideosPagina();
+      this.paginaActual = pagina; //cargar vídeos de la nueva página actual
+
+      this.datosVideosPagina(); //desplazar hasta el inicio de la página
+
+      window.scrollTo(0, 0);
+    },
+
+    /**
+     * Respuesta al evento de cmabio de página en selector
+     * @param evento datos del evento
+     */
+    cambiarPagina: function cambiarPagina(evento) {
+      // cambiar página actual
+      this.establecerPagina(evento.target.value);
     },
 
     /**
@@ -5350,7 +5383,9 @@ __webpack_require__.r(__webpack_exports__);
 
       // obtener listado de canales (paginado)
       axios.get('/api/video?page=' + this.paginaActual).then(function (response) {
-        _this2.videos = response.data.data;
+        // datos recabados de la página actual
+        _this2.videos = response.data.data; // datos de paginación
+
         _this2.paginaActual = response.data.current_page;
         _this2.ultimaPagina = response.data.last_page;
       });
@@ -5394,32 +5429,10 @@ __webpack_require__.r(__webpack_exports__);
           var d = document.getElementById('dialogoVideoCategorias');
           var m = bootstrap.Modal.getInstance(d);
           m.hide();
-          /*const categoriaR = respuesta.data;
-          //buscar la posición en el vector de la categoria modificada
-          for(var i=0; i < this.categorias.length; i++)
-          {
-              if (this.categorias[i].id == categoriaR.id)
-              {
-                  this.categorias.splice(i, 1, categoriaR); // sustituir por nuevos valores
-                  break;
-              } 
-          }*/
         }
 
         _this3.selCatTrabajando = false;
       });
-      /*if (Array.isArray(listaid))
-      {
-          canal.forEach(element => {
-              this.canales.unshift(element);
-          });
-      }
-      else this.canales.unshift(canal);
-       // cerrar ventana modal de añadir canal
-      let d = document.getElementById('dialogoNuevo');
-      let m = bootstrap.Modal.getInstance(d);    
-      m.hide();*/
-      //console.log(listaid);
     },
 
     /**
@@ -5428,13 +5441,10 @@ __webpack_require__.r(__webpack_exports__);
      * @param int[] categorias lista de categorías del vídeo
      */
     seleccionCategorias: function seleccionCategorias(idVideo, categorias) {
-      //this.$refs.dialogoCat.limpiarSeleccion(); // limpiar las selecciones anteriores
       this.catVideoid = idVideo; // estbalecer el identificador del video a tratar
-      //this.catCategorias = categorias.slice(0); // lista de categorías actuales del video
-      //console.log(this.catVideoid);
-      //console.log(this.catCategorias);
 
-      this.$refs.dialogoCat.marcarSelActual(categorias); // abrir ventana de selección de categorías
+      this.$refs.dialogoCat.marcarSelActual(categorias); // marcar en ventana de diálogo las categorías del vídeo actual
+      // abrir ventana de selección de categorías
 
       var d = document.getElementById('dialogoVideoCategorias');
       var x = new bootstrap.Modal(d, {
@@ -5448,7 +5458,9 @@ __webpack_require__.r(__webpack_exports__);
      * @param string video datos del video
      */
     preVideo: function preVideo(video) {
-      this.$refs.prevideo.setVideo(video);
+      // establecer video a reproducir
+      this.$refs.prevideo.setVideo(video); // abrir ventana
+
       var d = document.getElementById('dialogoPrevisualizar');
       var x = new bootstrap.Modal(d, {
         backdrop: 'static'
@@ -38095,7 +38107,7 @@ var render = function() {
         attrs: { identificador: "dialogoPrevisualizar" }
       }),
       _vm._v(" "),
-      _c("div", { staticClass: "container-fluid" }, [
+      _c("div", { staticClass: "container-fluid", attrs: { name: "inicio" } }, [
         _c(
           "div",
           { staticClass: "row row-cols-auto" },
@@ -38114,40 +38126,128 @@ var render = function() {
       ]),
       _vm._v(" "),
       _c("nav", { attrs: { "aria-label": "paginas" } }, [
-        _c(
-          "ul",
-          { staticClass: "pagination justify-content-center" },
-          [
-            _vm._l(_vm.ultimaPagina, function(numeroPagina) {
-              return [
-                _c(
-                  "li",
+        _c("ul", { staticClass: "pagination justify-content-center" }, [
+          _c(
+            "li",
+            {
+              staticClass: "page-item",
+              class: { disabled: _vm.paginaActual == 1 }
+            },
+            [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.establecerPagina(1)
+                    }
+                  }
+                },
+                [_c("i", { staticClass: "bi bi-chevron-bar-left" })]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "li",
+            {
+              staticClass: "page-item",
+              class: { disabled: _vm.paginaActual == 1 }
+            },
+            [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.establecerPagina(_vm.paginaActual - 1)
+                    }
+                  }
+                },
+                [_c("i", { staticClass: "bi bi-chevron-left" })]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c("li", { staticStyle: { padding: "5px 12px" } }, [
+            _vm._v("Página \n            "),
+            _c(
+              "select",
+              { on: { change: _vm.cambiarPagina } },
+              _vm._l(_vm.ultimaPagina, function(numeroPagina) {
+                return _c(
+                  "option",
                   {
                     key: numeroPagina,
-                    staticClass: "page-item",
-                    class: { active: _vm.paginaActual === numeroPagina }
+                    domProps: {
+                      value: numeroPagina,
+                      selected:
+                        numeroPagina == _vm.paginaActual ? "selected" : null
+                    }
                   },
                   [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "page-link",
-                        attrs: { href: "#" },
-                        on: {
-                          click: function($event) {
-                            return _vm.establecerPagina(numeroPagina)
-                          }
-                        }
-                      },
-                      [_vm._v(_vm._s(numeroPagina))]
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(numeroPagina) +
+                        "\n                "
                     )
                   ]
                 )
-              ]
-            })
-          ],
-          2
-        )
+              }),
+              0
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "li",
+            {
+              staticClass: "page-item",
+              class: { disabled: _vm.paginaActual == _vm.ultimaPagina }
+            },
+            [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.establecerPagina(_vm.paginaActual + 1)
+                    }
+                  }
+                },
+                [_c("i", { staticClass: "bi bi-chevron-right" })]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "li",
+            {
+              staticClass: "page-item",
+              class: { disabled: _vm.paginaActual == _vm.ultimaPagina }
+            },
+            [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.establecerPagina(_vm.ultimaPagina)
+                    }
+                  }
+                },
+                [_c("i", { staticClass: "bi bi-chevron-bar-right" })]
+              )
+            ]
+          )
+        ])
       ])
     ],
     1
