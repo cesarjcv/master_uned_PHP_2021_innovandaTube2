@@ -10,6 +10,9 @@ use App\Models\Video;
 use App\Innovanda\DatosYoutube;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Log;
 
 class CanalController extends Controller
 {
@@ -27,7 +30,12 @@ class CanalController extends Controller
      */
     public function index()
     {
-        return Canal::orderBy('created_at', 'desc')->get();
+        $canales = Canal::orderBy('created_at', 'desc')->get();
+        foreach ($canales as $canal)
+        {
+            $canal->categorias = DB::table('canalcategorias')->select('idcategoria')->where('idcanal', $canal->id)->get();
+        }
+        return $canales;
     }
     
     /**
@@ -192,5 +200,33 @@ class CanalController extends Controller
         }
         // eliminar canal
         $canal->delete();
+    }
+
+    /**
+     * Asignar categoría a un canal
+     * @param Request $request datos de consulta
+     * @param int $id identificador de canal
+     */
+    public function establecerCategoria(Request $request, $id)
+    {
+        // eliminar lista de categorías actuales
+        //DB::table('canalcategorias')->where('idvideo', $id)->delete();
+
+        // insertar nueva lista de categorías
+        //foreach ($request->cat as $idcat)
+        {
+            DB::table('canalcategorias')->insert(['idcanal' => $id, 'idcategoria' => $request->cat]);
+        }
+    }
+
+    /**
+     * Quitar categoría a un canal
+     * @param Request $request datos de consulta
+     * @param int $id identificador de canal
+     */
+    public function quitarCategoria(Request $request, $id)
+    {
+        Log::channel('single')->info($id . " - " . $request->cat );
+        DB::table('canalcategorias')->where('idcanal', $id)->where('idcategoria', $request->cat)->delete();
     }
 }

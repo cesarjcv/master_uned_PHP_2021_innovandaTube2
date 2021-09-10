@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Video;
+use App\Models\ListaReproduccion;
 
 use Illuminate\Support\Facades\Log;
 
@@ -21,6 +22,12 @@ class VideoController extends Controller
         foreach ($videos as $video)
         {
             $video->categorias = DB::table('videocategorias')->select('idcategoria')->where('idvideo', $video->id)->get();
+
+            $sql1 = Video::select('idlistarep')->where('id', $video->id)->get();
+            //Log::channel('single')->info($sql1);
+            $sql2 = ListaReproduccion::select('idcanal')->whereIn('id', $sql1)->get();
+            //Log::channel('single')->info($sql2);
+            $video->canalcategorias = DB::table('canalcategorias')->select('idcategoria')->whereIn('idcanal', $sql2)->get();
         }
         return $videos;
     }

@@ -29,6 +29,8 @@ Route::put('/video/buscar', 'VideoController@buscar');
     Route::put('/categoria/cambiovisibilidad/{idcategoria}', 'CategoriaController@cambiarVisible');
     Route::apiResource('/categoria', 'CategoriaController');
     Route::apiResource('/video', 'VideoController');
-    Route::put('/video/categorias/{idvideo}', 'VideoController@establecerCategorias');    
+    Route::put('/video/categorias/{idvideo}', 'VideoController@establecerCategorias');
+    Route::put('/canal/categorias/{idcanal}', 'CanalController@establecerCategoria');
+    Route::delete('/canal/categorias/{idcanal}', 'CanalController@quitarCategoria');
 /*});*/
 

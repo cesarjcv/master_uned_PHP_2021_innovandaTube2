@@ -18,6 +18,7 @@ Vue.component('dialogo-buscar-componente', require('./componentesVue/principal/D
 Vue.component('admin-canales-componente', require('./componentesVue/Admin/AdminCanalesComponente.vue').default);
 Vue.component('dialogo-nuevo-canal-componente', require('./componentesVue/Admin/DialogoNuevoCanalComponente.vue').default);
 Vue.component('entrada-canal-componente', require('./componentesVue/Admin/EntradaCanalComponente.vue').default);
+Vue.component('dialogo-canal-categorias-componente', require('./componentesVue/Admin/DialogoCanalCategoriasComponente.vue').default);
 /* categorías */
 Vue.component('admin-categorias-componente', require('./componentesVue/Admin/AdminCategoriasComponente.vue').default);
 Vue.component('dialogo-nueva-categoria-componente', require('./componentesVue/Admin/DialogoNuevaCategoriaComponente.vue').default);

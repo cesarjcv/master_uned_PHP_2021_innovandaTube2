@@ -4971,6 +4971,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -4981,7 +4989,13 @@ __webpack_require__.r(__webpack_exports__);
       canales: [],
       // listado de canales
       //nuevovisible:false,
-      canalEliminar: null // id de canal a eliminar
+      canalEliminar: null,
+      // id de canal a eliminar
+      catCanalid: 0,
+      // id de canal a cambiar categorías
+      categorias: [],
+      // listado de categorias
+      selCatTrabajando: false // se están guardnado las categorías seleccionadas en el servidor
 
     };
   },
@@ -4992,6 +5006,10 @@ __webpack_require__.r(__webpack_exports__);
     // obtener listado de canales
     axios.get('/api/canal').then(function (response) {
       _this.canales = response.data;
+    }); // cargar listado de categorías
+
+    axios.get('/api/categoria').then(function (response) {
+      _this.categorias = response.data;
     });
   },
   methods: {
@@ -5064,6 +5082,65 @@ __webpack_require__.r(__webpack_exports__);
             _this3.canales.splice(i, 1);
           });
         }
+    },
+
+    /**
+     * Se recibe de componente hijo orden de abrir ventana para selección de categorías.
+     * @param int idVideo identificadro en base de datos del canal
+     * @param int[] categorias lista de categorías del canal
+     */
+    seleccionCategoria: function seleccionCategoria(idCanal
+    /*, categorias*/
+    ) {
+      this.catCanalid = idCanal; // estbalecer el identificador del video a tratar
+      //this.$refs.dialogoCat.marcarSelActual(categorias); // marcar en ventana de diálogo las categorías del vídeo actual
+      // abrir ventana de selección de categorías
+
+      var d = document.getElementById('dialogoCanalCategorias');
+      var x = new bootstrap.Modal(d, {
+        backdrop: 'static'
+      });
+      x.show();
+    },
+
+    /**
+     * Actualizar en base de datos e interfaz las nueva selección de categorías para el vídeo
+     */
+    categoriaSeleccionada: function categoriaSeleccionada(catid) {
+      var _this4 = this;
+
+      var parametros = {
+        cat: catid
+      };
+      this.selCatTrabajando = true; //console.log(catid);
+      // llamada a API de aplicación para asignar categoría
+
+      axios.put('/api/canal/categorias/' + this.catCanalid, parametros).then(function (respuesta) {
+        if (respuesta.data.error) // error en operación
+          {
+            alert(respuesta.data.error);
+          } else {
+          // buscar entrada de video y modificar su listado de categorías
+          for (var i = 0; i < _this4.canales.length; i++) {
+            if (_this4.canales[i].id == _this4.catCanalid) {
+              _this4.canales[i].categorias.push({
+                idcategoria: catid
+              }); // añadir nueva categoría
+              //console.log(this.canales[i].categorias);
+
+
+              break;
+            }
+          } // cerrar ventana modal
+
+
+          var d = document.getElementById('dialogoCanalCategorias');
+          var m = bootstrap.Modal.getInstance(d);
+          m.hide();
+        }
+
+        _this4.selCatTrabajando = false;
+      });
     }
   }
 });
@@ -5467,6 +5544,116 @@ __webpack_require__.r(__webpack_exports__);
       });
       x.show();
     }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  /**
+   * - Identificador para la ventana modal
+   * - Listado de todas las categorías
+   * - valor lógico que indica que se está esperando repuesta del servidor
+   */
+  props: ['identificador', 'categorias', 'trabajando'],
+  methods: {
+    /**
+     * Categoría seleccionada
+     * Enviar a componente padre categoría seleccionada
+     * @param idCat identificador en base de datos de categoría
+     */
+    categoriaSel: function categoriaSel(idCat) {
+      //console.log(idCat);
+      this.$emit('seleccionCat', idCat);
+    }
+    /**
+     * Enviar a componente padre listado de categorías seleccionadas para el vídeo
+     */
+
+    /*guardarCategoriasSel()
+    {
+        // buscar los elementos marcados
+        let lista = document.getElementById(this.identificador).querySelectorAll(".form-check-input:checked");
+         let salida = new Array(); // lista de id de categorías
+        for (let i=0; i < lista.length; i++)
+        {
+            salida.push(lista[i].dataset.idcat); // añadir a vector de salida
+        }
+        this.$emit('seleccionCat', salida); // enviar a componente padre datos de categorías seleccionadas
+    },*/
+
+    /**
+     * desmarca todas las casillas de selección
+     */
+
+    /*limpiarSeleccion()
+    {
+        // buscar todas las entradas señaladas
+        let lista = document.getElementById(this.identificador).querySelectorAll(".form-check-input:checked");
+        for (let i=0; i < lista.length; i++)
+        {
+            lista[i].checked = false; // desmarcar entrada
+        }
+    },*/
+
+    /**
+     * Marcar las categorías del video actual
+     */
+
+    /*marcarSelActual(cat)
+    {
+        let lista = document.getElementById(this.identificador).querySelectorAll("input.form-check-input"); // lista elementos HTMl de categorías
+        // crear vector con id de categorías actuales
+        let catNum = Array();
+        cat.forEach(elemento => catNum.push(parseInt(elemento.idcategoria)));
+         for (let i=0; i < lista.length; i++)
+        {
+            if (catNum.indexOf(parseInt(lista[i].dataset.idcat)) == -1) lista[i].checked = false; // desmarcar entrada
+            else lista[i].checked = true; // desmarcar entrada
+        }
+    }*/
+
   }
 });
 
@@ -6130,11 +6317,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * Datos del canal a mostrar
    */
-  props: ['canal'],
+  props: ['canal', 'categorias'],
   data: function data() {
     return {
       des: "" // descripción con ajuste de salots de línea
@@ -6168,6 +6364,83 @@ __webpack_require__.r(__webpack_exports__);
      */
     irEnlace: function irEnlace(id) {
       window.open("https://www.youtube.com/channel/" + id, "_blank");
+    },
+
+    /**
+     * Abrir ventana para seleccionar categoría a ñadir al canal
+     * enviar mensaje a componente padre
+     */
+    ventanaCategoria: function ventanaCategoria() {
+      this.$emit('selCategoria', this.canal.id
+      /*, this.video.categorias*/
+      );
+    },
+
+    /**
+     * Eliminar la categoría para el canal
+     * @param idcat identificador de categoría
+     */
+    eliminarCategoria: function eliminarCategoria(idcat) {
+      var _this = this;
+
+      var parametros = {
+        data: {
+          cat: idcat
+        }
+      }; //this.selCatTrabajando = true;
+      //console.log(idcat);
+      // llamada a API de aplicación para asignar categoría
+
+      axios["delete"]('/api/canal/categorias/' + this.canal.id, parametros).then(function (respuesta) {
+        if (respuesta.data.error) // error en operación
+          {
+            alert(respuesta.data.error);
+          } else {
+          // crear lista de objetos categorías
+
+          /*let lCat = new Array();
+          for (let i=0; i < listaid.length; i++)
+          {
+              lCat.push(new Object({idcategoria: listaid[i]}));
+          }*/
+          // buscar entrada de video y modificar su listado de categorías
+
+          /*for(let i=0; i < this.canales.length; i++)
+          {
+              if (this.canales[i].id == this.catCanalid)
+              {
+                  this.canales[i].categorias.push({idcategoria: catid}); // añadir nueva categoría
+                  console.log(this.canales[i].categorias);
+                  break;
+              } 
+          }*/
+          // eliminar del listado
+          //console.log(this.canal.categorias.indexOf(idcat));
+          // buscar elemento en listado
+          var i;
+
+          for (i = 0; i < _this.canal.categorias.length; i++) {
+            if (_this.canal.categorias[i].idcategoria == idcat) break;
+          } // aliminar de listado
+
+
+          _this.canal.categorias.splice(i, 1);
+        } //this.selCatTrabajando = false;
+
+      });
+    },
+
+    /**
+     * Nombre de categoiría por ID
+     * @param int idcategoria identificador de categoría
+     * @return string nombre de categoría
+     */
+    nombreCategoria: function nombreCategoria(idcategoria) {
+      for (var i = 0; i < this.categorias.length; i++) {
+        if (this.categorias[i].id == idcategoria) return this.categorias[i].nombre;
+      }
+
+      return null;
     }
   }
 });
@@ -6277,6 +6550,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7265,6 +7543,7 @@ vue__WEBPACK_IMPORTED_MODULE_0__.default.component('dialogo-buscar-componente', 
 vue__WEBPACK_IMPORTED_MODULE_0__.default.component('admin-canales-componente', __webpack_require__(/*! ./componentesVue/Admin/AdminCanalesComponente.vue */ "./resources/js/componentesVue/Admin/AdminCanalesComponente.vue").default);
 vue__WEBPACK_IMPORTED_MODULE_0__.default.component('dialogo-nuevo-canal-componente', __webpack_require__(/*! ./componentesVue/Admin/DialogoNuevoCanalComponente.vue */ "./resources/js/componentesVue/Admin/DialogoNuevoCanalComponente.vue").default);
 vue__WEBPACK_IMPORTED_MODULE_0__.default.component('entrada-canal-componente', __webpack_require__(/*! ./componentesVue/Admin/EntradaCanalComponente.vue */ "./resources/js/componentesVue/Admin/EntradaCanalComponente.vue").default);
+vue__WEBPACK_IMPORTED_MODULE_0__.default.component('dialogo-canal-categorias-componente', __webpack_require__(/*! ./componentesVue/Admin/DialogoCanalCategoriasComponente.vue */ "./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue").default);
 /* categorías */
 
 vue__WEBPACK_IMPORTED_MODULE_0__.default.component('admin-categorias-componente', __webpack_require__(/*! ./componentesVue/Admin/AdminCategoriasComponente.vue */ "./resources/js/componentesVue/Admin/AdminCategoriasComponente.vue").default);
@@ -36666,6 +36945,45 @@ component.options.__file = "resources/js/componentesVue/Admin/AdminVideosCompone
 
 /***/ }),
 
+/***/ "./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue":
+/*!********************************************************************************!*\
+  !*** ./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _DialogoCanalCategoriasComponente_vue_vue_type_template_id_60dfb7e2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DialogoCanalCategoriasComponente.vue?vue&type=template&id=60dfb7e2& */ "./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=template&id=60dfb7e2&");
+/* harmony import */ var _DialogoCanalCategoriasComponente_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DialogoCanalCategoriasComponente.vue?vue&type=script&lang=js& */ "./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
+  _DialogoCanalCategoriasComponente_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _DialogoCanalCategoriasComponente_vue_vue_type_template_id_60dfb7e2___WEBPACK_IMPORTED_MODULE_0__.render,
+  _DialogoCanalCategoriasComponente_vue_vue_type_template_id_60dfb7e2___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/componentesVue/Admin/DialogoConfirmacionComponente.vue":
 /*!*****************************************************************************!*\
   !*** ./resources/js/componentesVue/Admin/DialogoConfirmacionComponente.vue ***!
@@ -37338,6 +37656,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************************!*\
+  !*** ./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DialogoCanalCategoriasComponente_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./DialogoCanalCategoriasComponente.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DialogoCanalCategoriasComponente_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
 /***/ "./resources/js/componentesVue/Admin/DialogoConfirmacionComponente.vue?vue&type=script&lang=js&":
 /*!******************************************************************************************************!*\
   !*** ./resources/js/componentesVue/Admin/DialogoConfirmacionComponente.vue?vue&type=script&lang=js& ***!
@@ -37645,6 +37979,23 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=template&id=60dfb7e2&":
+/*!***************************************************************************************************************!*\
+  !*** ./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=template&id=60dfb7e2& ***!
+  \***************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DialogoCanalCategoriasComponente_vue_vue_type_template_id_60dfb7e2___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DialogoCanalCategoriasComponente_vue_vue_type_template_id_60dfb7e2___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DialogoCanalCategoriasComponente_vue_vue_type_template_id_60dfb7e2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./DialogoCanalCategoriasComponente.vue?vue&type=template&id=60dfb7e2& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=template&id=60dfb7e2&");
+
+
+/***/ }),
+
 /***/ "./resources/js/componentesVue/Admin/DialogoConfirmacionComponente.vue?vue&type=template&id=6f70851f&":
 /*!************************************************************************************************************!*\
   !*** ./resources/js/componentesVue/Admin/DialogoConfirmacionComponente.vue?vue&type=template&id=6f70851f& ***!
@@ -37936,6 +38287,17 @@ var render = function() {
   return _c(
     "div",
     [
+      _c("dialogo-canal-categorias-componente", {
+        ref: "dialogoCat",
+        attrs: {
+          identificador: "dialogoCanalCategorias",
+          canalid: _vm.catCanalid,
+          categorias: _vm.categorias,
+          trabajando: _vm.selCatTrabajando
+        },
+        on: { seleccionCat: _vm.categoriaSeleccionada }
+      }),
+      _vm._v(" "),
       _c("div", { staticClass: "anadir" }, [
         _c(
           "button",
@@ -37973,8 +38335,11 @@ var render = function() {
           _vm._l(_vm.canales, function(canal) {
             return _c("entrada-canal-componente", {
               key: canal.id,
-              attrs: { canal: canal },
-              on: { eliminar: _vm.eliminar }
+              attrs: { canal: canal, categorias: _vm.categorias },
+              on: {
+                eliminar: _vm.eliminar,
+                selCategoria: _vm.seleccionCategoria
+              }
             })
           }),
           1
@@ -38254,6 +38619,114 @@ var render = function() {
   )
 }
 var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=template&id=60dfb7e2&":
+/*!******************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/componentesVue/Admin/DialogoCanalCategoriasComponente.vue?vue&type=template&id=60dfb7e2& ***!
+  \******************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal fade",
+      attrs: {
+        id: _vm.identificador,
+        tabindex: "-1",
+        role: "dialog",
+        "aria-labelledby": "CanalCategorias",
+        "aria-hidden": "true"
+      }
+    },
+    [
+      _c("div", { staticClass: "modal-dialog", attrs: { role: "document" } }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-body selCat" }, [
+            _c("table", { staticClass: "table table-hover" }, [
+              _c(
+                "tbody",
+                _vm._l(_vm.categorias, function(cat) {
+                  return _c("tr", { key: cat.id }, [
+                    _c(
+                      "td",
+                      {
+                        staticStyle: { cursor: "pointer" },
+                        on: {
+                          click: function($event) {
+                            return _vm.categoriaSel(cat.id)
+                          }
+                        }
+                      },
+                      [_vm._v(_vm._s(cat.nombre))]
+                    )
+                  ])
+                }),
+                0
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: {
+                  type: "button",
+                  "data-bs-dismiss": "modal",
+                  disabled: _vm.trabajando
+                }
+              },
+              [_vm._v("Cerrar")]
+            )
+          ])
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c("h5", { staticClass: "modal-title" }, [
+        _vm._v("Seleccionar categoría para Canal")
+      ]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-bs-dismiss": "modal",
+            "aria-label": "Cerrar"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -39372,98 +39845,146 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _c("div", { staticClass: "card-footer" }, [
-        _c("small", { staticClass: "text-muted" }, [
-          _vm._v("Creado: " + _vm._s(_vm.preFecha(_vm.canal.fecha)))
-        ]),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-outline-danger float-end ms-2",
-            attrs: { type: "button" },
-            on: {
-              click: function($event) {
-                return _vm.eliminar()
-              }
-            }
-          },
-          [
-            _c(
-              "svg",
-              {
-                staticClass: "bi bi-trash",
-                attrs: {
-                  xmlns: "http://www.w3.org/2000/svg",
-                  width: "16",
-                  height: "16",
-                  fill: "currentColor",
-                  viewBox: "0 0 16 16"
+      _c(
+        "div",
+        { staticClass: "card-footer" },
+        [
+          _c(
+            "small",
+            {
+              staticClass: "text-muted",
+              staticStyle: { "padding-bottom": "15px", display: "inline-block" }
+            },
+            [_vm._v(_vm._s(_vm.preFecha(_vm.canal.fecha)))]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-outline-danger float-end ms-2",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.eliminar()
                 }
-              },
+              }
+            },
+            [
+              _c(
+                "svg",
+                {
+                  staticClass: "bi bi-trash",
+                  attrs: {
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: "16",
+                    height: "16",
+                    fill: "currentColor",
+                    viewBox: "0 0 16 16"
+                  }
+                },
+                [
+                  _c("path", {
+                    attrs: {
+                      d:
+                        "M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("path", {
+                    attrs: {
+                      "fill-rule": "evenodd",
+                      d:
+                        "M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                    }
+                  })
+                ]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-outline-primary float-end ms-2",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.irEnlace(_vm.canal.channelid)
+                }
+              }
+            },
+            [
+              _c(
+                "svg",
+                {
+                  staticClass: "bi bi-link",
+                  attrs: {
+                    xmlns: "http://www.w3.org/2000/svg",
+                    width: "16",
+                    height: "16",
+                    fill: "currentColor",
+                    viewBox: "0 0 16 16"
+                  }
+                },
+                [
+                  _c("path", {
+                    attrs: {
+                      d:
+                        "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("path", {
+                    attrs: {
+                      d:
+                        "M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z"
+                    }
+                  })
+                ]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-outline-success float-end",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.ventanaCategoria()
+                }
+              }
+            },
+            [_c("i", { staticClass: "bi bi-bookmark-plus" })]
+          ),
+          _vm._v(" "),
+          _vm._l(_vm.canal.categorias, function(cat) {
+            return _c(
+              "div",
+              { key: cat.idcategoria, staticStyle: { "margin-top": "10px" } },
               [
-                _c("path", {
-                  attrs: {
-                    d:
-                      "M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
-                  }
-                }),
-                _vm._v(" "),
-                _c("path", {
-                  attrs: {
-                    "fill-rule": "evenodd",
-                    d:
-                      "M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
-                  }
-                })
+                _c("button", { staticClass: "categoriaCanal" }, [
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(_vm.nombreCategoria(cat.idcategoria)) +
+                      "\n                    "
+                  ),
+                  _c("img", {
+                    attrs: { src: "/img/eliminar.png" },
+                    on: {
+                      click: function($event) {
+                        return _vm.eliminarCategoria(cat.idcategoria)
+                      }
+                    }
+                  })
+                ])
               ]
             )
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-outline-primary float-end",
-            attrs: { type: "button" },
-            on: {
-              click: function($event) {
-                return _vm.irEnlace(_vm.canal.channelid)
-              }
-            }
-          },
-          [
-            _c(
-              "svg",
-              {
-                staticClass: "bi bi-link",
-                attrs: {
-                  xmlns: "http://www.w3.org/2000/svg",
-                  width: "16",
-                  height: "16",
-                  fill: "currentColor",
-                  viewBox: "0 0 16 16"
-                }
-              },
-              [
-                _c("path", {
-                  attrs: {
-                    d:
-                      "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"
-                  }
-                }),
-                _vm._v(" "),
-                _c("path", {
-                  attrs: {
-                    d:
-                      "M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z"
-                  }
-                })
-              ]
-            )
-          ]
-        )
-      ])
+          })
+        ],
+        2
+      )
     ])
   ])
 }
@@ -39709,9 +40230,14 @@ var render = function() {
         "div",
         { staticClass: "card-footer" },
         [
-          _c("small", { staticClass: "text-muted" }, [
-            _vm._v("Creado: " + _vm._s(_vm.preFecha(_vm.video.fecha)))
-          ]),
+          _c(
+            "small",
+            {
+              staticClass: "text-muted",
+              staticStyle: { "padding-bottom": "15px", display: "inline-block" }
+            },
+            [_vm._v("Creado: " + _vm._s(_vm.preFecha(_vm.video.fecha)))]
+          ),
           _vm._v(" "),
           _c(
             "button",
@@ -39805,6 +40331,22 @@ var render = function() {
               { key: cat.idcategoria, staticStyle: { "margin-top": "10px" } },
               [
                 _c("button", { staticClass: "categoriaVideo" }, [
+                  _vm._v(
+                    "\n                " +
+                      _vm._s(_vm.nombreCategoria(cat.idcategoria)) +
+                      "\n                "
+                  )
+                ])
+              ]
+            )
+          }),
+          _vm._v(" "),
+          _vm._l(_vm.video.canalcategorias, function(cat) {
+            return _c(
+              "div",
+              { key: cat.idcategoria, staticStyle: { "margin-top": "10px" } },
+              [
+                _c("button", { staticClass: "categoriaCanal" }, [
                   _vm._v(
                     "\n                " +
                       _vm._s(_vm.nombreCategoria(cat.idcategoria)) +
