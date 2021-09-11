@@ -99,4 +99,23 @@ class VideoController extends Controller
             DB::table('videocategorias')->insert(['idvideo' => $id, 'idcategoria' => $idcat]);
         }
     }
+
+    /**
+     * Cambiar visibilidad a un vídeo
+     * @param Request $request datos de consulta
+     * @param int $id identificador de vídeo
+     */
+    public function cambiarVisibilidad(Request $request)
+    {
+        Video::where('id', $request->idvideo)->update(['visible' => $request->visible]);
+        //Log::channel('single')->info($request->idvideo. " - " . $request->visible );
+        /*$video = Video::find($request->idvideo);
+        $video->visible = $request->visible;
+        $video->save();*/
+        // insertar nueva lista de categorías
+        /*foreach ($request->cat as $idcat)
+        {
+            DB::table('videocategorias')->insert(['idvideo' => $id, 'idcategoria' => $idcat]);
+        }*/
+    }
 }

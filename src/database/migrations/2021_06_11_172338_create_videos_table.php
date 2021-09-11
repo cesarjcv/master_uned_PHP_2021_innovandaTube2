@@ -31,6 +31,7 @@ class CreateVideosTable extends Migration
             $table->integer('estnogusta')->default(0);
             $table->integer('estfav')->default(0);
             $table->integer('estcom')->default(0);
+            $table->boolean('visible')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

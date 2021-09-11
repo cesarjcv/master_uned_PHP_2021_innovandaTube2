@@ -162,14 +162,14 @@ class CategoriaController extends Controller
      */
     public function videosPorCategoria(Request $request, $id)
     {
-        // videos con el id de categoría y con el campo deleted_at nulo (no eliminados)
+        // videos con el id de categoría y con el campo deleted_at nulo (no eliminados), y estado 'visible'
         /*return*/$vcat = DB::table('videocategorias')->select('videos.id as id', 'videoid', 'titulo', 'descripcion', 'imagen', 'proporcion', 'duracion', 'estrep', 'estgusta', 'estnogusta', 'fecha')
-        ->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('idcategoria', $id)->whereNull('videos.deleted_at'); 
+        ->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('idcategoria', $id)->whereNull('videos.deleted_at')->where('visible', true); 
 
         // vídeos con categoría de canal
         return DB::table('canalcategorias')->select('videos.id as id', 'videoid', 'titulo', 'videos.descripcion as descripcion', 'videos.imagen as imagen', 'proporcion', 'duracion', 'estrep', 'estgusta', 'estnogusta', 'videos.fecha as fecha')
         ->leftJoin('canals', 'canals.id', '=', 'canalcategorias.idcanal')->leftJoin('lista_reproduccions', 'canals.id', '=', 'lista_reproduccions.idcanal')
-        ->leftJoin('videos', 'lista_reproduccions.id', '=', 'videos.idlistarep')->where('idcategoria', $id)->whereNull('videos.deleted_at')->union($vcat)->get(); 
+        ->leftJoin('videos', 'lista_reproduccions.id', '=', 'videos.idlistarep')->where('idcategoria', $id)->whereNull('videos.deleted_at')->where('visible', true)->union($vcat)->get(); 
     }
 
     /**
@@ -192,7 +192,7 @@ class CategoriaController extends Controller
     public function categoriasConVideo()
     {
         /*return*/$vcat = Categoria::join('videocategorias', 'categorias.id', '=', 'videocategorias.idcategoria')
-        ->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('categorias.visible', true)->whereNull('videos.deleted_at')
+        ->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('categorias.visible', true)->whereNull('videos.deleted_at')->where('videos.visible', true)
         ->select('categorias.id', 'categorias.nombre', 'categorias.descripcion')->distinct()/*->get()*/;
 
         return Categoria::join('canalcategorias', 'categorias.id', '=', 'canalcategorias.idcategoria')

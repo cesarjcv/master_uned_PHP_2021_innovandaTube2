@@ -6587,6 +6587,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * Datos del vídeo a mostrar
@@ -6596,8 +6600,10 @@ __webpack_require__.r(__webpack_exports__);
     return {
       des: "",
       // descripción con ajuste de saltos de línea
-      catVideos: [] // categorías del video
-
+      catVideos: [],
+      // categorías del video
+      visibleClass: "bi-eye-slash-fill",
+      noVisibleClass: "bi-eye-fill"
     };
   },
   mounted: function mounted() {
@@ -6640,6 +6646,45 @@ __webpack_require__.r(__webpack_exports__);
      */
     preVideo: function preVideo() {
       this.$emit('preVideo', this.video);
+    },
+
+    /**
+     * Cambiar la visibilidad del vídeo
+     */
+    cambiarVisibilidad: function cambiarVisibilidad() {
+      var _this = this;
+
+      /*if (this.video.visible) console.log("cambiar a no");
+      else console.log("cambiar a si");*/
+      var parametros = {
+        idvideo: this.video.id,
+        visible: this.video.visible == 0 ? 1 : 0
+      }; // llamada a API de aplicación para cambiar visibilidad
+
+      axios.put('/api/video/visibilidad', parametros).then(function (respuesta) {
+        if (respuesta.data.error) // error en operación
+          {
+            alert(respuesta.data.error);
+          } else {
+          _this.video.visible = parametros.visible; // buscar entrada de video y modificar su listado de categorías
+
+          /*for(let i=0; i < this.canales.length; i++)
+          {
+              if (this.canales[i].id == this.catCanalid)
+              {
+                  this.canales[i].categorias.push({idcategoria: catid}); // añadir nueva categoría
+                  //console.log(this.canales[i].categorias);
+                  break;
+              } 
+          }*/
+          // cerrar ventana modal
+
+          /*let d = document.getElementById('dialogoCanalCategorias');
+          let m = bootstrap.Modal.getInstance(d);    
+          m.hide();*/
+        } //this.selCatTrabajando = false;
+
+      });
     }
   }
 });
@@ -40202,164 +40247,196 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "col", staticStyle: { margin: "15px 0" } }, [
-    _c("div", { staticClass: "card", staticStyle: { width: "18rem" } }, [
-      _c("img", {
-        staticClass: "card-img-top",
-        attrs: { src: _vm.video.imagen, alt: _vm.video.titulo }
-      }),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "card-body overflow-auto",
-          staticStyle: { height: "150px" }
-        },
-        [
-          _c("h6", { staticClass: "card-title" }, [
-            _c("strong", [_vm._v(_vm._s(_vm.video.titulo))])
-          ]),
-          _vm._v(" "),
-          _c("p", {
-            staticClass: "card-text",
-            domProps: { innerHTML: _vm._s(this.des) }
-          })
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "card-footer" },
-        [
-          _c(
-            "small",
-            {
-              staticClass: "text-muted",
-              staticStyle: { "padding-bottom": "15px", display: "inline-block" }
-            },
-            [_vm._v("Creado: " + _vm._s(_vm.preFecha(_vm.video.fecha)))]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-outline-primary float-end ms-2",
-              attrs: { type: "button" },
-              on: {
-                click: function($event) {
-                  return _vm.selCategorias()
+    _c(
+      "div",
+      {
+        staticClass: "card",
+        class: [_vm.video.visible ? "" : "novisible"],
+        staticStyle: { width: "18rem" }
+      },
+      [
+        _c("img", {
+          staticClass: "card-img-top",
+          attrs: { src: _vm.video.imagen, alt: _vm.video.titulo }
+        }),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "card-body overflow-auto",
+            staticStyle: { height: "150px" }
+          },
+          [
+            _c("h6", { staticClass: "card-title" }, [
+              _c("strong", [_vm._v(_vm._s(_vm.video.titulo))])
+            ]),
+            _vm._v(" "),
+            _c("p", {
+              staticClass: "card-text",
+              domProps: { innerHTML: _vm._s(this.des) }
+            })
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "card-footer" },
+          [
+            _c(
+              "small",
+              {
+                staticClass: "text-muted",
+                staticStyle: {
+                  "padding-bottom": "15px",
+                  display: "inline-block"
                 }
-              }
-            },
-            [
-              _c(
-                "svg",
-                {
-                  staticClass: "bi bi-bookmarks",
-                  attrs: {
-                    xmlns: "http://www.w3.org/2000/svg",
-                    width: "16",
-                    height: "16",
-                    fill: "currentColor",
-                    viewBox: "0 0 16 16"
+              },
+              [_vm._v(_vm._s(_vm.preFecha(_vm.video.fecha)))]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-primary float-end ms-2",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.selCategorias()
                   }
-                },
+                }
+              },
+              [
+                _c(
+                  "svg",
+                  {
+                    staticClass: "bi bi-bookmarks",
+                    attrs: {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: "16",
+                      height: "16",
+                      fill: "currentColor",
+                      viewBox: "0 0 16 16"
+                    }
+                  },
+                  [
+                    _c("path", {
+                      attrs: {
+                        d:
+                          "M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5V4zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1H4z"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("path", {
+                      attrs: {
+                        d:
+                          "M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1z"
+                      }
+                    })
+                  ]
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-primary float-end ms-2",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.preVideo()
+                  }
+                }
+              },
+              [
+                _c(
+                  "svg",
+                  {
+                    staticClass: "bi bi-play-circle",
+                    attrs: {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      width: "16",
+                      height: "16",
+                      fill: "currentColor",
+                      viewBox: "0 0 16 16"
+                    }
+                  },
+                  [
+                    _c("path", {
+                      attrs: {
+                        d:
+                          "M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("path", {
+                      attrs: {
+                        d:
+                          "M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"
+                      }
+                    })
+                  ]
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-primary float-end",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.cambiarVisibilidad()
+                  }
+                }
+              },
+              [
+                _c("i", {
+                  staticClass: "bi",
+                  class: [
+                    _vm.video.visible ? _vm.visibleClass : _vm.noVisibleClass
+                  ]
+                })
+              ]
+            ),
+            _vm._v(" "),
+            _vm._l(_vm.video.categorias, function(cat) {
+              return _c(
+                "div",
+                { key: cat.idcategoria, staticStyle: { "margin-top": "10px" } },
                 [
-                  _c("path", {
-                    attrs: {
-                      d:
-                        "M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5V4zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1H4z"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("path", {
-                    attrs: {
-                      d:
-                        "M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1z"
-                    }
-                  })
+                  _c("button", { staticClass: "categoriaVideo" }, [
+                    _vm._v(
+                      "\n                " +
+                        _vm._s(_vm.nombreCategoria(cat.idcategoria)) +
+                        "\n                "
+                    )
+                  ])
                 ]
               )
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-outline-primary float-end",
-              attrs: { type: "button" },
-              on: {
-                click: function($event) {
-                  return _vm.preVideo()
-                }
-              }
-            },
-            [
-              _c(
-                "svg",
-                {
-                  staticClass: "bi bi-play-circle",
-                  attrs: {
-                    xmlns: "http://www.w3.org/2000/svg",
-                    width: "16",
-                    height: "16",
-                    fill: "currentColor",
-                    viewBox: "0 0 16 16"
-                  }
-                },
+            }),
+            _vm._v(" "),
+            _vm._l(_vm.video.canalcategorias, function(cat) {
+              return _c(
+                "div",
+                { key: cat.idcategoria, staticStyle: { "margin-top": "10px" } },
                 [
-                  _c("path", {
-                    attrs: {
-                      d:
-                        "M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("path", {
-                    attrs: {
-                      d:
-                        "M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"
-                    }
-                  })
+                  _c("button", { staticClass: "categoriaCanal" }, [
+                    _vm._v(
+                      "\n                " +
+                        _vm._s(_vm.nombreCategoria(cat.idcategoria)) +
+                        "\n                "
+                    )
+                  ])
                 ]
               )
-            ]
-          ),
-          _vm._v(" "),
-          _vm._l(_vm.video.categorias, function(cat) {
-            return _c(
-              "div",
-              { key: cat.idcategoria, staticStyle: { "margin-top": "10px" } },
-              [
-                _c("button", { staticClass: "categoriaVideo" }, [
-                  _vm._v(
-                    "\n                " +
-                      _vm._s(_vm.nombreCategoria(cat.idcategoria)) +
-                      "\n                "
-                  )
-                ])
-              ]
-            )
-          }),
-          _vm._v(" "),
-          _vm._l(_vm.video.canalcategorias, function(cat) {
-            return _c(
-              "div",
-              { key: cat.idcategoria, staticStyle: { "margin-top": "10px" } },
-              [
-                _c("button", { staticClass: "categoriaCanal" }, [
-                  _vm._v(
-                    "\n                " +
-                      _vm._s(_vm.nombreCategoria(cat.idcategoria)) +
-                      "\n                "
-                  )
-                ])
-              ]
-            )
-          })
-        ],
-        2
-      )
-    ])
+            })
+          ],
+          2
+        )
+      ]
+    )
   ])
 }
 var staticRenderFns = []
