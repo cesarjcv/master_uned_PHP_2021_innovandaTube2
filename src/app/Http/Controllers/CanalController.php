@@ -30,7 +30,8 @@ class CanalController extends Controller
      */
     public function index()
     {
-        $canales = Canal::orderBy('created_at', 'desc')->get();
+        //$canales = Canal::orderBy('created_at', 'desc')->get();
+        $canales = Canal::orderBy('nombre', 'asc')->get();
         foreach ($canales as $canal)
         {
             $canal->categorias = DB::table('canalcategorias')->select('idcategoria')->where('idcanal', $canal->id)->get();

@@ -8,6 +8,31 @@
         <dialogo-previsualizar-video-componente identificador="dialogoPrevisualizar" ref="prevideo">
         </dialogo-previsualizar-video-componente>
 
+        <div class="mb-3 row">
+            <label for="fcanal" class="col-sm-1 col-form-label tituloFiltro">Canal</label>
+            <div class="col-sm-3">
+                <select class="form-select" aria-label="canal" id="fcanal" @change="cambioFiltro" v-model="filtroCanal">
+                    <option value="0" selected>Todos</option>
+                    <option v-for="canal in canales" :key="canal.id" :value="canal.id">
+                        {{ canal.nombre }}
+                    </option>
+                </select>
+            </div>
+            <label for="fcat" class="col-sm-1 col-form-label tituloFiltro">Categoría</label>
+            <div class="col-sm-3">
+                <select class="form-select" aria-label="categoría" id="fcat" @change="cambioFiltro" v-model="filtroCategoria">
+                    <option value="0" selected>Todas</option>
+                    <option value="-1">Sin categoría</option>
+                    <option v-for="cat in categorias" :key="cat.id" :value="cat.id">
+                        {{ cat.nombre }}
+                    </option>
+                </select>
+            </div>
+            <label for="ftexto" class="col-sm-1 col-form-label tituloFiltro">Texto filtro</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="ftexto" value="" @keyup.enter="cambioFiltro" v-model="filtroTexto">
+            </div>
+        </div>
         <div class="container-fluid" name="inicio">
             <div class="row row-cols-auto">
                 <entrada-video-componente v-for="video in videos" :key="video.id" :video="video" :categorias="categorias" 
@@ -62,9 +87,13 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
                 paginaActual: 1, // número de página actual
                 ultimaPagina: 0,
                 categorias: [], // listado de categorias
+                canales: [], // listado de canales
                 catVideoid: 0, // id de video a cambiar categorías
                 selCatTrabajando: false, // se están guardnado las categorías seleccionadas en el servidor
                 videoidPrev: "",
+                filtroCategoria: 0,
+                filtroCanal: 0,
+                filtroTexto: "",
             }
         },
         mounted() {
@@ -72,6 +101,12 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
             axios.get('/api/categoria').then((response) => 
             {
                 this.categorias = response.data;
+            });
+
+            // cargar listado de canales
+            axios.get('/api/canal').then((response) => 
+            {
+                this.canales = response.data;
             });
             
             //cargar vídeos de la página actual
@@ -104,7 +139,10 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
             datosVideosPagina()
             {
                 // obtener listado de canales (paginado)
-                axios.get('/api/video?page=' + this.paginaActual).then((response) => 
+                //const parametros = {fcanal: this.filtroCanal};
+                //axios.get('/api/video', parametros).then((response) =>
+                axios.get('/api/video?page=' + this.paginaActual + '&fcanal=' + this.filtroCanal + '&fcat=' + this.filtroCategoria + '&ftexto=' + 
+                escape(this.filtroTexto)).then((response) => 
                 {
                         // datos recabados de la página actual
                         this.videos = response.data.data;
@@ -181,6 +219,21 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
                 let x = new bootstrap.Modal(d, {backdrop: 'static'});
                 x.show();
             },
+            /**
+             * Cambio en uno de los select de filtro, canal o categoría
+             * actualizar listado de vídeo con nuevos valores
+             */
+            cambioFiltro()
+            {
+                // la página actual se cambia a la primera
+                this.paginaActual = 1;
+                
+                /*console.log("canal: " + this.filtroCanal);
+                console.log("cat: " + this.filtroCategoria);
+                console.log("texto: " + this.filtroTexto);*/
+                
+                this.datosVideosPagina();
+            }
         }
     }
 </script>

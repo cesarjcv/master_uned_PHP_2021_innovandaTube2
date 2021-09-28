@@ -5399,6 +5399,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -5413,11 +5438,16 @@ __webpack_require__.r(__webpack_exports__);
       ultimaPagina: 0,
       categorias: [],
       // listado de categorias
+      canales: [],
+      // listado de canales
       catVideoid: 0,
       // id de video a cambiar categorías
       selCatTrabajando: false,
       // se están guardnado las categorías seleccionadas en el servidor
-      videoidPrev: ""
+      videoidPrev: "",
+      filtroCategoria: 0,
+      filtroCanal: 0,
+      filtroTexto: ""
     };
   },
   mounted: function mounted() {
@@ -5426,6 +5456,10 @@ __webpack_require__.r(__webpack_exports__);
     // cargar listado de categorías
     axios.get('/api/categoria').then(function (response) {
       _this.categorias = response.data;
+    }); // cargar listado de canales
+
+    axios.get('/api/canal').then(function (response) {
+      _this.canales = response.data;
     }); //cargar vídeos de la página actual
 
     this.datosVideosPagina();
@@ -5459,7 +5493,9 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       // obtener listado de canales (paginado)
-      axios.get('/api/video?page=' + this.paginaActual).then(function (response) {
+      //const parametros = {fcanal: this.filtroCanal};
+      //axios.get('/api/video', parametros).then((response) =>
+      axios.get('/api/video?page=' + this.paginaActual + '&fcanal=' + this.filtroCanal + '&fcat=' + this.filtroCategoria + '&ftexto=' + escape(this.filtroTexto)).then(function (response) {
         // datos recabados de la página actual
         _this2.videos = response.data.data; // datos de paginación
 
@@ -5543,6 +5579,20 @@ __webpack_require__.r(__webpack_exports__);
         backdrop: 'static'
       });
       x.show();
+    },
+
+    /**
+     * Cambio en uno de los select de filtro, canal o categoría
+     * actualizar listado de vídeo con nuevos valores
+     */
+    cambioFiltro: function cambioFiltro() {
+      // la página actual se cambia a la primera
+      this.paginaActual = 1;
+      /*console.log("canal: " + this.filtroCanal);
+      console.log("cat: " + this.filtroCategoria);
+      console.log("texto: " + this.filtroTexto);*/
+
+      this.datosVideosPagina();
     }
   }
 });
@@ -38517,6 +38567,184 @@ var render = function() {
         attrs: { identificador: "dialogoPrevisualizar" }
       }),
       _vm._v(" "),
+      _c("div", { staticClass: "mb-3 row" }, [
+        _c(
+          "label",
+          {
+            staticClass: "col-sm-1 col-form-label tituloFiltro",
+            attrs: { for: "fcanal" }
+          },
+          [_vm._v("Canal")]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-sm-3" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.filtroCanal,
+                  expression: "filtroCanal"
+                }
+              ],
+              staticClass: "form-select",
+              attrs: { "aria-label": "canal", id: "fcanal" },
+              on: {
+                change: [
+                  function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.filtroCanal = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  },
+                  _vm.cambioFiltro
+                ]
+              }
+            },
+            [
+              _c("option", { attrs: { value: "0", selected: "" } }, [
+                _vm._v("Todos")
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.canales, function(canal) {
+                return _c(
+                  "option",
+                  { key: canal.id, domProps: { value: canal.id } },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(canal.nombre) +
+                        "\n                "
+                    )
+                  ]
+                )
+              })
+            ],
+            2
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "label",
+          {
+            staticClass: "col-sm-1 col-form-label tituloFiltro",
+            attrs: { for: "fcat" }
+          },
+          [_vm._v("Categoría")]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-sm-3" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.filtroCategoria,
+                  expression: "filtroCategoria"
+                }
+              ],
+              staticClass: "form-select",
+              attrs: { "aria-label": "categoría", id: "fcat" },
+              on: {
+                change: [
+                  function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.filtroCategoria = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  },
+                  _vm.cambioFiltro
+                ]
+              }
+            },
+            [
+              _c("option", { attrs: { value: "0", selected: "" } }, [
+                _vm._v("Todas")
+              ]),
+              _vm._v(" "),
+              _c("option", { attrs: { value: "-1" } }, [
+                _vm._v("Sin categoría")
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.categorias, function(cat) {
+                return _c(
+                  "option",
+                  { key: cat.id, domProps: { value: cat.id } },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(cat.nombre) +
+                        "\n                "
+                    )
+                  ]
+                )
+              })
+            ],
+            2
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "label",
+          {
+            staticClass: "col-sm-1 col-form-label tituloFiltro",
+            attrs: { for: "ftexto" }
+          },
+          [_vm._v("Texto filtro")]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-sm-3" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.filtroTexto,
+                expression: "filtroTexto"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text", id: "ftexto", value: "" },
+            domProps: { value: _vm.filtroTexto },
+            on: {
+              keyup: function($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.cambioFiltro($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.filtroTexto = $event.target.value
+              }
+            }
+          })
+        ])
+      ]),
+      _vm._v(" "),
       _c("div", { staticClass: "container-fluid", attrs: { name: "inicio" } }, [
         _c(
           "div",
@@ -40417,15 +40645,18 @@ var render = function() {
               )
             }),
             _vm._v(" "),
-            _vm._l(_vm.video.canalcategorias, function(cat) {
+            _vm._l(_vm.video.canalcategorias, function(catcan) {
               return _c(
                 "div",
-                { key: cat.idcategoria, staticStyle: { "margin-top": "10px" } },
+                {
+                  key: catcan.idcategoria + "c",
+                  staticStyle: { "margin-top": "10px" }
+                },
                 [
                   _c("button", { staticClass: "categoriaCanal" }, [
                     _vm._v(
                       "\n                " +
-                        _vm._s(_vm.nombreCategoria(cat.idcategoria)) +
+                        _vm._s(_vm.nombreCategoria(catcan.idcategoria)) +
                         "\n                "
                     )
                   ])

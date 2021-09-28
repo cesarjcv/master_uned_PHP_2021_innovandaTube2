@@ -29,9 +29,9 @@
                     {{ nombreCategoria(cat.idcategoria) }}
                     </button>
                 </div>
-                <div v-for="cat in video.canalcategorias" :key="cat.idcategoria" style='margin-top:10px'>
+                <div v-for="catcan in video.canalcategorias" :key="catcan.idcategoria + 'c'" style='margin-top:10px'>
                     <button class="categoriaCanal">
-                    {{ nombreCategoria(cat.idcategoria) }}
+                    {{ nombreCategoria(catcan.idcategoria) }}
                     </button>
                 </div>  
             </div>

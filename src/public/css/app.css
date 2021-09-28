@@ -16666,6 +16666,10 @@ div.novisible {
   opacity: 0.5;
 }
 
+label.tituloFiltro {
+  text-align: right;
+}
+
 button.categoriaCanal {
   border-radius: 0.25rem;
   font-size: 1rem;

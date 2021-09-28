@@ -19,7 +19,8 @@ class CategoriaController extends Controller
      */
     public function index()
     {
-        return Categoria::orderBy('created_at', 'desc')->get();
+        //return Categoria::orderBy('created_at', 'desc')->get();
+        return Categoria::orderBy('nombre', 'asc')->get();
     }
 
     /**
