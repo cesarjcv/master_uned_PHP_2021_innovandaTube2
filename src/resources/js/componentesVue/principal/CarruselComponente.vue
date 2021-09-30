@@ -1,7 +1,7 @@
 <template>
     <div >
          <div class="text-light tituloCategoria m-0 p-2 pl-5 " ref="titulo">
-            {{categoria.nombre}} : {{videos.length}} vídeos
+            {{categoria.nombre}} : {{totalvideos}} vídeos
             <i class="bi bi-calendar3" data-bs-toggle="tooltip" data-bs-placement="top" title="Ordenar por fecha de publicación" @click="ordenFecha()"></i>
             <i class="bi bi-hand-thumbs-up" data-bs-toggle="tooltip" data-bs-placement="top" title="Ordenar por mayor número de votos positivos" @click="ordenVotos()"></i>
             <i class="bi bi-eye" data-bs-toggle="tooltip" data-bs-placement="top" title="Ordenar por número de reproducciones" @click="ordenRepro()"></i>
@@ -12,7 +12,7 @@
 
         <div class="barravideos overflow-hidden">
             <ul class="w-100 d-flex" v-bind:style="{ transform: 'translate3d('+ posicion.x + 'px, 0px, 0px)' }">
-                <video-carrusel-componente v-for="video in videos" :key="video.id" :video="video" @verVideo="verVideo">
+                <video-carrusel-componente v-for="video in videosmostrados" :key="video.id" :video="video" @verVideo="verVideo">
                 </video-carrusel-componente>
             </ul>
         </div>
@@ -33,6 +33,10 @@ export default {
                 x: 0, page: 0
             },
             videos: [],
+            videosmostrados: [],
+            posactual: 0, // posición actual del cursor de carrusel
+            posmax: 0, // posición máxima alcanzada por cursor
+            totalvideos: 0, // número total de vídeos
             flechas: [
                 { // izquierda
                     id: "izq",
@@ -59,39 +63,49 @@ export default {
         window.removeEventListener("resize", this.calculoValores);
     },
     mounted() {
-        //console.log('carrusel mounted.');
         if (this.categoria.id <= 0)
         {
             //console.log(this.categoria.parametros);
             axios.put('api/video/buscar', this.categoria.parametros).then((respuesta) => 
             {
-                //this.listados = respuesta.data;
-                //console.log(this.listados);
-                //console.log(respuesta.data);
                 this.videos = respuesta.data;
+                this.totalvideos = this.videos.length;
 
                 this.calculoValores(); // calcular dimensiones
                 this.vistaFlechas(); // visibilidad flechas
+
+                // calcular los primeros vídeos a listar
+                this.cargaPrimeros();
             });
         }
         else
         {
             axios.get('api/categoria/' + this.categoria.id + '/videos/').then((respuesta) => {
                 this.videos = respuesta.data;
-                //console.log(this.videos);
+                this.totalvideos = this.videos.length;
 
                 this.calculoValores(); // calcular dimensiones
                 this.vistaFlechas(); // visibilidad flechas
+
+                // calcular los primeros vídeos a listar
+                this.cargaPrimeros();
             });
         }
-        
 
         // activar viñetas de ayuda para botones del título
         var tooltipTriggerList = [].slice.call(this.$refs.titulo.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {return new bootstrap.Tooltip(tooltipTriggerEl)});
-        //console.log(tooltipList);
     },
     methods: {
+        /**
+         * Calcula y muestra los primeros vídeos que hay que mostar
+         */
+        cargaPrimeros()
+        {
+            let aux = this.videos.splice(0, 2 * this.nv); // capcidad de visualización por dos
+            this.videosmostrados = this.videosmostrados.concat(aux); // pasar el primer grupo a visulaizar
+            this.posactual=1; this.posmax = 1; // iniciar contadores de posición
+        },
         /**
          * Calculo de valores dimensionales de la pantalla
          */
@@ -100,7 +114,6 @@ export default {
             this.nv = Math.floor((document.documentElement.clientWidth - 40)/this.anchoVideo);
             // cálcular el límite de desplazamiento según número de videos
             this.limite = -(this.anchoVideo * (this.videos.length - this.nv));
-            //console.log(this.nv + " " + this.limite);
         },
         /**
          * avanzar hacia la izquierda en el carrusel de vídeos
@@ -109,7 +122,12 @@ export default {
         {
             // calcular nueva posición
             this.posicion.x += this.nv * this.anchoVideo;
-            if (this.posicion.x > 0) this.posicion.x = 0; //comporbar si se supera el límite
+            this.posactual--;
+            if (this.posicion.x > 0) //comporbar si se supera el límite
+            {
+                this.posicion.x = 0; 
+                this.posactual = 1;
+            } 
  
             this.vistaFlechas();
         },
@@ -120,6 +138,14 @@ export default {
         {
             // calcular nueva posición
             this.posicion.x -= this.nv * this.anchoVideo;
+            this.posactual++;
+            if (this.posactual > this.posmax)
+            {
+                this.posmax = this.posactual;
+                // traspasar otro grupo de vídeos a mostrar
+                let aux = this.videos.splice(0, this.nv);
+                this.videosmostrados = this.videosmostrados.concat(aux);
+            }
             if (this.posicion.x <  this.limite) this.posicion.x = this.limite; //comporbar si se supera el límite
 
             this.vistaFlechas();
@@ -151,7 +177,6 @@ export default {
         },
         verVideo(video)
         {
-            //console.log("carrusel");
             this.$emit('verVideo', video); // enviar a componente padre datos de video a reproducir
         },
         /**
@@ -159,38 +184,69 @@ export default {
          */
         ordenFecha()
         {
-            //console.log(this.videos);
+            // recuperar vídeos mostrados para listado
+            this.videos = this.videosmostrados.splice(0).concat(this.videos);
+
+            // ordenar por fecha de publicación
             this.videos.sort(function comparar(elemento1, elemento2)
             {  
                 if (elemento1.fecha > elemento2.fecha) return -1;
                 else if (elemento1.fecha < elemento2.fecha) return 1;
                 else return 0;
             });
-            //console.log(this.videos);
+
+            // desplazar hasta el inicio
+            this.posicion.x = 0;
+            // modificar visibilidad de fechas
+            this.vistaFlechas();
+            // mostrar primeros vídeos del listado
+            this.cargaPrimeros();
         },
         /**
          * Ordena los vídeos por mayor número de votos positivos
          */
         ordenVotos()
         {
+            // recuperar vídeos mostrados para listado
+            this.videos = this.videosmostrados.splice(0).concat(this.videos);
+
+            // ordenas por votos positivos
             this.videos.sort(function comparar(elemento1, elemento2)
             {  
                 if (elemento1.estgusta > elemento2.estgusta) return -1;
                 else if (elemento1.estgusta < elemento2.estgusta) return 1;
                 else return 0;
             });
+
+            // desplazar hasta el inicio
+            this.posicion.x = 0;
+            // modificar visibilidad de fechas
+            this.vistaFlechas();
+            // mostrar primeros vídeos del listado
+            this.cargaPrimeros();
         },
         /**
          * Ordena los vídeo por número de reproducciones, primero el más reproducido
          */
         ordenRepro()
         {
+            // recuperar vídeos mostrados para listado
+            this.videos = this.videosmostrados.splice(0).concat(this.videos);
+
+            // ordenar por número de reproducciones
             this.videos.sort(function comparar(elemento1, elemento2)
             {  
                 if (elemento1.estrep > elemento2.estrep) return -1;
                 else if (elemento1.estrep < elemento2.estrep) return 1;
                 else return 0;
             });
+
+            // desplazar hasta el inicio
+            this.posicion.x = 0;
+            // modificar visibilidad de fechas
+            this.vistaFlechas();
+            // mostrar primeros vídeos del listado
+            this.cargaPrimeros();
         }
     }
 }

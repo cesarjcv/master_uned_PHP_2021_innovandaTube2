@@ -6783,6 +6783,13 @@ __webpack_require__.r(__webpack_exports__);
         page: 0
       },
       videos: [],
+      videosmostrados: [],
+      posactual: 0,
+      // posición actual del cursor de carrusel
+      posmax: 0,
+      // posición máxima alcanzada por cursor
+      totalvideos: 0,
+      // número total de vídeos
       flechas: [{
         // izquierda
         id: "izq",
@@ -6813,30 +6820,34 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    //console.log('carrusel mounted.');
     if (this.categoria.id <= 0) {
       //console.log(this.categoria.parametros);
       axios.put('api/video/buscar', this.categoria.parametros).then(function (respuesta) {
-        //this.listados = respuesta.data;
-        //console.log(this.listados);
-        //console.log(respuesta.data);
         _this.videos = respuesta.data;
+        _this.totalvideos = _this.videos.length;
 
         _this.calculoValores(); // calcular dimensiones
 
 
         _this.vistaFlechas(); // visibilidad flechas
+        // calcular los primeros vídeos a listar
 
+
+        _this.cargaPrimeros();
       });
     } else {
       axios.get('api/categoria/' + this.categoria.id + '/videos/').then(function (respuesta) {
-        _this.videos = respuesta.data; //console.log(this.videos);
+        _this.videos = respuesta.data;
+        _this.totalvideos = _this.videos.length;
 
         _this.calculoValores(); // calcular dimensiones
 
 
         _this.vistaFlechas(); // visibilidad flechas
+        // calcular los primeros vídeos a listar
 
+
+        _this.cargaPrimeros();
       });
     } // activar viñetas de ayuda para botones del título
 
@@ -6844,9 +6855,21 @@ __webpack_require__.r(__webpack_exports__);
     var tooltipTriggerList = [].slice.call(this.$refs.titulo.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl);
-    }); //console.log(tooltipList);
+    });
   },
   methods: {
+    /**
+     * Calcula y muestra los primeros vídeos que hay que mostar
+     */
+    cargaPrimeros: function cargaPrimeros() {
+      var aux = this.videos.splice(0, 2 * this.nv); // capcidad de visualización por dos
+
+      this.videosmostrados = this.videosmostrados.concat(aux); // pasar el primer grupo a visulaizar
+
+      this.posactual = 1;
+      this.posmax = 1; // iniciar contadores de posición
+    },
+
     /**
      * Calculo de valores dimensionales de la pantalla
      */
@@ -6854,7 +6877,7 @@ __webpack_require__.r(__webpack_exports__);
       // calcular número de videos que caben a lo ancho
       this.nv = Math.floor((document.documentElement.clientWidth - 40) / this.anchoVideo); // cálcular el límite de desplazamiento según número de videos
 
-      this.limite = -(this.anchoVideo * (this.videos.length - this.nv)); //console.log(this.nv + " " + this.limite);
+      this.limite = -(this.anchoVideo * (this.videos.length - this.nv));
     },
 
     /**
@@ -6863,7 +6886,13 @@ __webpack_require__.r(__webpack_exports__);
     atras: function atras() {
       // calcular nueva posición
       this.posicion.x += this.nv * this.anchoVideo;
-      if (this.posicion.x > 0) this.posicion.x = 0; //comporbar si se supera el límite
+      this.posactual--;
+
+      if (this.posicion.x > 0) //comporbar si se supera el límite
+        {
+          this.posicion.x = 0;
+          this.posactual = 1;
+        }
 
       this.vistaFlechas();
     },
@@ -6874,6 +6903,15 @@ __webpack_require__.r(__webpack_exports__);
     adelante: function adelante() {
       // calcular nueva posición
       this.posicion.x -= this.nv * this.anchoVideo;
+      this.posactual++;
+
+      if (this.posactual > this.posmax) {
+        this.posmax = this.posactual; // traspasar otro grupo de vídeos a mostrar
+
+        var aux = this.videos.splice(0, this.nv);
+        this.videosmostrados = this.videosmostrados.concat(aux);
+      }
+
       if (this.posicion.x < this.limite) this.posicion.x = this.limite; //comporbar si se supera el límite
 
       this.vistaFlechas();
@@ -6900,7 +6938,6 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     verVideo: function verVideo(video) {
-      //console.log("carrusel");
       this.$emit('verVideo', video); // enviar a componente padre datos de video a reproducir
     },
 
@@ -6908,28 +6945,54 @@ __webpack_require__.r(__webpack_exports__);
      * Ordena por fecha de publicación los vídeos, primero los más recientes
      */
     ordenFecha: function ordenFecha() {
-      //console.log(this.videos);
+      // recuperar vídeos mostrados para listado
+      this.videos = this.videosmostrados.splice(0).concat(this.videos); // ordenar por fecha de publicación
+
       this.videos.sort(function comparar(elemento1, elemento2) {
         if (elemento1.fecha > elemento2.fecha) return -1;else if (elemento1.fecha < elemento2.fecha) return 1;else return 0;
-      }); //console.log(this.videos);
+      }); // desplazar hasta el inicio
+
+      this.posicion.x = 0; // modificar visibilidad de fechas
+
+      this.vistaFlechas(); // mostrar primeros vídeos del listado
+
+      this.cargaPrimeros();
     },
 
     /**
      * Ordena los vídeos por mayor número de votos positivos
      */
     ordenVotos: function ordenVotos() {
+      // recuperar vídeos mostrados para listado
+      this.videos = this.videosmostrados.splice(0).concat(this.videos); // ordenas por votos positivos
+
       this.videos.sort(function comparar(elemento1, elemento2) {
         if (elemento1.estgusta > elemento2.estgusta) return -1;else if (elemento1.estgusta < elemento2.estgusta) return 1;else return 0;
-      });
+      }); // desplazar hasta el inicio
+
+      this.posicion.x = 0; // modificar visibilidad de fechas
+
+      this.vistaFlechas(); // mostrar primeros vídeos del listado
+
+      this.cargaPrimeros();
     },
 
     /**
      * Ordena los vídeo por número de reproducciones, primero el más reproducido
      */
     ordenRepro: function ordenRepro() {
+      // recuperar vídeos mostrados para listado
+      this.videos = this.videosmostrados.splice(0).concat(this.videos); // ordenar por número de reproducciones
+
       this.videos.sort(function comparar(elemento1, elemento2) {
         if (elemento1.estrep > elemento2.estrep) return -1;else if (elemento1.estrep < elemento2.estrep) return 1;else return 0;
-      });
+      }); // desplazar hasta el inicio
+
+      this.posicion.x = 0; // modificar visibilidad de fechas
+
+      this.vistaFlechas(); // mostrar primeros vídeos del listado
+
+      this.cargaPrimeros();
     }
   }
 });
@@ -40707,7 +40770,7 @@ var render = function() {
             "\n        " +
               _vm._s(_vm.categoria.nombre) +
               " : " +
-              _vm._s(_vm.videos.length) +
+              _vm._s(_vm.totalvideos) +
               " vídeos\n        "
           ),
           _c("i", {
@@ -40771,7 +40834,7 @@ var render = function() {
               transform: "translate3d(" + _vm.posicion.x + "px, 0px, 0px)"
             }
           },
-          _vm._l(_vm.videos, function(video) {
+          _vm._l(_vm.videosmostrados, function(video) {
             return _c("video-carrusel-componente", {
               key: video.id,
               attrs: { video: video },
