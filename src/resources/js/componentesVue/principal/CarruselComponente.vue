@@ -102,7 +102,7 @@ export default {
          */
         cargaPrimeros()
         {
-            let aux = this.videos.splice(0, 2 * this.nv); // capcidad de visualización por dos
+            let aux = this.videos.splice(0, 14); // carga de 14 vídeos incialmente
             this.videosmostrados = this.videosmostrados.concat(aux); // pasar el primer grupo a visulaizar
             this.posactual=1; this.posmax = 1; // iniciar contadores de posición
         },

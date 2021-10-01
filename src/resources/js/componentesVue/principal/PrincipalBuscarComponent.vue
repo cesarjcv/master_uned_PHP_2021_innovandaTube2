@@ -7,7 +7,6 @@
 </template>
 
 <script>
-//btn-outline-success
     export default {
         /**
          * - Identificador para la ventana de búsqueda
@@ -15,53 +14,34 @@
         props:['vbus'],
         data(){
             return {
-                //visible:false,
                 texto : ""
             }
         },
         mounted() {
-            //console.log('buscar mounted.')
         },
         methods: {
+            /**
+             * Se pulsa sobre el icono de la lupa.
+             * Se abre ventana para búsqueda avanzada.
+             */
             pulsar()
             {
-                //console.log(this.vbus)
                 // abrir ventana de búsqueda
                 let d = document.getElementById(this.vbus);
                 let x = new bootstrap.Modal(d, {backdrop: 'static'});
                 x.show();
             },
+            /**
+             * Evento de pulsación de tecla ENTER en el cuadro de búsqeuda
+             */
             entradaTexto(event)
             {
-                if (this.texto.trim().length > 0)
+                if (this.texto.trim().length > 0) // comprobar si hay texto en el cuadro
                 {
                     let argumentos = {texto: this.texto.trim(), titulo: true, des: true, fini: "", ffin: ""};
-                    this.$root.$emit('busqueda', argumentos);
+                    this.$root.$emit('busqueda', argumentos); // enviar a componente padre mensaje con datos de búsqeuda
                 }
-                //console.log(event.key);
-                //event.target.value += event.key;
             }
-            /*getData(){
-                axios.get('api/list?page=' + this.current_page)
-                    .then((response) => {
-                        this.videos = response.data.data;
-                        this.current_page = response.data.current_page;
-                        this.first_page_url = response.data.first_page_url;
-                        this.last_page = response.data.last_page;
-                        this.last_page_url = response.data.last_page_url;
-                        this.next_page_url = response.data.next_page_url;
-                        this.path = response.data.path;
-                        this.per_page = response.data.per_page;
-                        this.prev_page_url = response.data.prev_page_url;
-                        this.to = response.data.to;
-                        this.total = response.data.total;
-                    });
-            },
-            insertarVideo(video) {
-                //this.videos.push(video);
-                this.getData(); // recargar listado
-                this.nuevovisible = false; // cerrar ventana
-            }*/
         }
     }
 </script>

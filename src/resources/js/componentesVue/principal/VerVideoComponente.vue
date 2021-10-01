@@ -8,12 +8,6 @@
                         </iframe>
                         <div class="cuadroInfo" :width="dimVideo.ancho" :height="dimVideo.alto">
                             <button type="button" class="btn-close" aria-label="Close" @click="mostrarInfo()" style="margin-left:10px;"></button>
-                            <!--<div class="info_estadistica">
-                                <i class="bi bi-play-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Número de reproducciones"></i>{{reproducciones}}
-                                <i class="bi bi-hand-thumbs-up" data-bs-toggle="tooltip" data-bs-placement="top" title="Votos positivos"></i>{{megusta}}
-                                <i class="bi bi-hand-thumbs-down" data-bs-toggle="tooltip" data-bs-placement="top" title="Votos negativos"></i>{{nomegusta}}
-                            </div>-->
-                            
                             <h2>{{titulo}}</h2>
                             <p v-html="descripcion"></p>
                         </div>
@@ -77,7 +71,6 @@
                     <div class="ver_video_texto_inf">
                         <div class="ver_mas" @click="mostrarInfo()"><i class="bi bi-chevron-double-up"></i><br/>Ver más...</div>
                         <h5>{{titulo}}</h5>
-                        <!--<span v-html="descripcion"></span>-->
                         <div class="info_estadistica">
                             <div class="nreproducciones">
                                 <i class="bi bi-play-btn" data-bs-toggle="tooltip" data-bs-placement="top" title="Número de reproducciones"></i>{{reproducciones}}
@@ -107,9 +100,9 @@
         props:['identificador'],
         data(){
             return {
-                url: "", 
-                video: null,
-                dim: {
+                url: "",  // url de vídeo
+                video: null, // vídeo a reproducir
+                dim: { // dimensiones para reproducción
                     margenVertical: 28,
                     margenVideo: 16,
                     margenBotones: 12,
@@ -120,10 +113,11 @@
                 mVertical: 0,
                 mHorizontal: 0,
                 ancho: "max-width:500px",
-                dimVideo: {
+                dimVideo: { // dimensiones vídeo
                     ancho: 480,
                     alto: 360,
                 },
+                // datos del vídeo
                 titulo: "",
                 descripcion: "",
                 reproducciones: 0,
@@ -133,11 +127,13 @@
                 videoid: "",
             }
         },
+        // al crear componente
         created() {
             window.addEventListener("resize", this.cambioTamano); // evento de cambio tamaño de página
         },
+        // al eliminar componente
         destroyed() {
-            window.removeEventListener("resize", this.cambioTamano);
+            window.removeEventListener("resize", this.cambioTamano); // eliminar evento
         },
         mounted()
         {
@@ -145,8 +141,10 @@
             this.mHorizontal = 2 * this.dim.margenLateral + 2 * this.dim.margenVideo;
             this.mVertical = 2 * this.dim.margenVertical + 2 * this.dim.margenVideo + 2 * this.dim.margenBotones + this.dim.altoBotones + this.dim.margenInferior;
 
+            // cálculo de dimensiones para vídeo
             this.cambioTamano();
 
+            // configuración para notas emergentes
             var toastElList = [].slice.call(document.querySelectorAll('.toast'))
             var toastList = toastElList.map(function (toastEl) {
                 return new bootstrap.Toast(toastEl,{autohide: false});
@@ -172,6 +170,9 @@
                 this.cambioTamano();
 
             },
+            /**
+             * Cambiar el formato de fecha a mes con letras
+             */
             formatoFecha(f)
             {
                 let meses = ["", "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -203,11 +204,6 @@
                     let c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
                     c.style.width = this.dimVideo.ancho + "px";
                     c.style.height = this.dimVideo.alto + "px";
-
-                    console.log(document.documentElement.clientWidth + " - " + document.documentElement.clientHeight + " " + 
-                    document.documentElement.clientWidth/document.documentElement.clientHeight);
-                    console.log(this.video.proporcion + ": " + this.dimVideo.ancho + "x" + this.dimVideo.alto);
-                    console.log(this.mHorizontal + "&" + this.mVertical);
                 }
             },
             /**
@@ -251,18 +247,30 @@
                 document.getElementById(this.identificador).querySelector(".cuadroInfo").style.display = "none";
                 document.getElementById(this.identificador).querySelector(".ver_mas > .bi").className = "bi bi-chevron-double-up";
             },
+            /**
+             * mostrar el panel para compartir vídeo
+             */
             mostrarCompartir()
             {
                 var myToastEl = document.getElementById('nota');
-                var myToast = bootstrap.Toast.getInstance(myToastEl) // Returns a Bootstrap toast instance
+                var myToast = bootstrap.Toast.getInstance(myToastEl) // instancia de Bootstrap toast
                 myToast.show();
+                document.getElementById('toastPlacement').style.display = 'block';
             },
+            /**
+             * ocultar el panel de compartir
+             */
             ocultarCompartir()
             {
                 var myToastEl = document.getElementById('nota');
-                var myToast = bootstrap.Toast.getInstance(myToastEl) // Returns a Bootstrap toast instance
+                var myToast = bootstrap.Toast.getInstance(myToastEl) // instancia de Bootstrap toast
                 myToast.hide();
+                document.getElementById('toastPlacement').style.display = 'none';
             },
+            /**
+             * Abrir un enlace del panel de compartir
+             * Según la opción se utilizará el formato correspondiente
+             */
             abrirEnlace(sel)
             {
                 switch (sel) 
@@ -284,6 +292,9 @@
                         break;
                  }
              },
+             /**
+              * Copiar el contenido del enlace al portapapeles del sistema
+              */
              copiarPortapapeles()
              {
                 navigator.clipboard.writeText("https://youtu.be/" + this.videoid);

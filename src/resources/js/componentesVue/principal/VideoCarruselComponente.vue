@@ -21,7 +21,6 @@ export default {
         return {}
     },
     mounted() {
-        //console.log('Videos mounted.')
     },
     methods: {
         /**
@@ -29,31 +28,8 @@ export default {
          */
         verVideo()
         {
-            //console.log("videocarrusel");
             this.$emit('verVideo', this.video); // enviar a componente padre datos de video a reproducir
         }
-        /*getImgUrl(hash) {
-            return url_youtube + hash + '/mqdefault.jpg'
-        },
-        getTitle(video) {
-
-            if (video.data != null && video.data != "") {
-
-                let dataParse = JSON.parse(video.data);
-
-                return this.truncateTitulo(dataParse.items[0].snippet.title);
-
-            } else {
-                return 'No data';
-            }
-        },
-        truncateTitulo(str) {
-            if (str.length > 36) {
-                return str.substring(0, 29) + '...';
-            } else {
-                return str;
-            }
-        }*/
     }
 }
 </script>

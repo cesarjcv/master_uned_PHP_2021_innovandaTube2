@@ -59,34 +59,34 @@
         props:['identificador', 'referenciabus'],
         data(){
             return {
-                textobuscar: "",
-                titulo: true,
-                descripcion: true,
-                finicial: "",
-                ffinal: "",
+                textobuscar: "", // texto a buscar
+                titulo: true, // ¿buscar en título?
+                descripcion: true, // ¿Buscar en descripción?
+                finicial: "", // fecha inicial para búsqueda
+                ffinal: "", // fecha final para búsqueda
             }
         },
         methods:{
             /**
-             * 
+             * Realizar búsqueda de vídeos por los distintos campos
              */
             busqueda()
             {
-                //console.log(this.textobuscar);
                 // comprobar valores de campos
                 if (this.textobuscar.trim().length == 0)
                 {
                     alert("Debe especificar un texto de búsqueda.");
                     return;
                 }
+                // compoarbar que al menos una de las casillas está seleccionada
                 if (!this.titulo && !this.descripcion)
                 {
                     alert("Debe especificar al menos uno de los campos de búsqueda, \"Título\" o \"Descripción\".");
                     return;
                 }
-                //vm.$refs.carruseles.buscar(this.textobuscar, this.titulo, this.descripcion, this.finicial, this.ffinal);
+
                 let argumentos = {texto: this.textobuscar.trim(), titulo: this.titulo, des: this.descripcion, fini: this.finicial, ffin: this.ffinal};
-                this.$root.$emit('busqueda', argumentos); //like this
+                this.$root.$emit('busqueda', argumentos); // enviar mensaje a componente padre con los valores para la búsqueda
                 
                 // cerrar ventana 
                 let d = document.getElementById(this.identificador);

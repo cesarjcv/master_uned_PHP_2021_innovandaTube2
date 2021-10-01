@@ -6862,7 +6862,7 @@ __webpack_require__.r(__webpack_exports__);
      * Calcula y muestra los primeros vídeos que hay que mostar
      */
     cargaPrimeros: function cargaPrimeros() {
-      var aux = this.videos.splice(0, 2 * this.nv); // capcidad de visualización por dos
+      var aux = this.videos.splice(0, 14); // carga de 14 vídeos incialmente
 
       this.videosmostrados = this.videosmostrados.concat(aux); // pasar el primer grupo a visulaizar
 
@@ -7424,13 +7424,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * - Identificador para la ventana modal
@@ -7439,8 +7432,11 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       url: "",
+      // url de vídeo
       video: null,
+      // vídeo a reproducir
       dim: {
+        // dimensiones para reproducción
         margenVertical: 28,
         margenVideo: 16,
         margenBotones: 12,
@@ -7452,9 +7448,11 @@ __webpack_require__.r(__webpack_exports__);
       mHorizontal: 0,
       ancho: "max-width:500px",
       dimVideo: {
+        // dimensiones vídeo
         ancho: 480,
         alto: 360
       },
+      // datos del vídeo
       titulo: "",
       descripcion: "",
       reproducciones: 0,
@@ -7464,17 +7462,21 @@ __webpack_require__.r(__webpack_exports__);
       videoid: ""
     };
   },
+  // al crear componente
   created: function created() {
     window.addEventListener("resize", this.cambioTamano); // evento de cambio tamaño de página
   },
+  // al eliminar componente
   destroyed: function destroyed() {
-    window.removeEventListener("resize", this.cambioTamano);
+    window.removeEventListener("resize", this.cambioTamano); // eliminar evento
   },
   mounted: function mounted() {
     // cálculo de tamaños de elementos de ventana que restan zona de reproducción
     this.mHorizontal = 2 * this.dim.margenLateral + 2 * this.dim.margenVideo;
-    this.mVertical = 2 * this.dim.margenVertical + 2 * this.dim.margenVideo + 2 * this.dim.margenBotones + this.dim.altoBotones + this.dim.margenInferior;
-    this.cambioTamano();
+    this.mVertical = 2 * this.dim.margenVertical + 2 * this.dim.margenVideo + 2 * this.dim.margenBotones + this.dim.altoBotones + this.dim.margenInferior; // cálculo de dimensiones para vídeo
+
+    this.cambioTamano(); // configuración para notas emergentes
+
     var toastElList = [].slice.call(document.querySelectorAll('.toast'));
     var toastList = toastElList.map(function (toastEl) {
       return new bootstrap.Toast(toastEl, {
@@ -7499,6 +7501,10 @@ __webpack_require__.r(__webpack_exports__);
       this.fechapub = this.formatoFecha(this.video.fecha);
       this.cambioTamano();
     },
+
+    /**
+     * Cambiar el formato de fecha a mes con letras
+     */
     formatoFecha: function formatoFecha(f) {
       var meses = ["", "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
       return parseInt(f.substring(8, 10)) + " " + meses[parseInt(f.substring(5, 7))] + " " + parseInt(f.substring(0, 4));
@@ -7524,9 +7530,6 @@ __webpack_require__.r(__webpack_exports__);
         var c = document.getElementById(this.identificador).querySelector(".cuadroInfo");
         c.style.width = this.dimVideo.ancho + "px";
         c.style.height = this.dimVideo.alto + "px";
-        console.log(document.documentElement.clientWidth + " - " + document.documentElement.clientHeight + " " + document.documentElement.clientWidth / document.documentElement.clientHeight);
-        console.log(this.video.proporcion + ": " + this.dimVideo.ancho + "x" + this.dimVideo.alto);
-        console.log(this.mHorizontal + "&" + this.mVertical);
       }
     },
 
@@ -7566,18 +7569,33 @@ __webpack_require__.r(__webpack_exports__);
       document.getElementById(this.identificador).querySelector(".cuadroInfo").style.display = "none";
       document.getElementById(this.identificador).querySelector(".ver_mas > .bi").className = "bi bi-chevron-double-up";
     },
+
+    /**
+     * mostrar el panel para compartir vídeo
+     */
     mostrarCompartir: function mostrarCompartir() {
       var myToastEl = document.getElementById('nota');
-      var myToast = bootstrap.Toast.getInstance(myToastEl); // Returns a Bootstrap toast instance
+      var myToast = bootstrap.Toast.getInstance(myToastEl); // instancia de Bootstrap toast
 
       myToast.show();
+      document.getElementById('toastPlacement').style.display = 'block';
     },
+
+    /**
+     * ocultar el panel de compartir
+     */
     ocultarCompartir: function ocultarCompartir() {
       var myToastEl = document.getElementById('nota');
-      var myToast = bootstrap.Toast.getInstance(myToastEl); // Returns a Bootstrap toast instance
+      var myToast = bootstrap.Toast.getInstance(myToastEl); // instancia de Bootstrap toast
 
       myToast.hide();
+      document.getElementById('toastPlacement').style.display = 'none';
     },
+
+    /**
+     * Abrir un enlace del panel de compartir
+     * Según la opción se utilizará el formato correspondiente
+     */
     abrirEnlace: function abrirEnlace(sel) {
       switch (sel) {
         case 'correo':
@@ -7601,6 +7619,10 @@ __webpack_require__.r(__webpack_exports__);
           break;
       }
     },
+
+    /**
+     * Copiar el contenido del enlace al portapapeles del sistema
+     */
     copiarPortapapeles: function copiarPortapapeles() {
       navigator.clipboard.writeText("https://youtu.be/" + this.videoid);
     }
