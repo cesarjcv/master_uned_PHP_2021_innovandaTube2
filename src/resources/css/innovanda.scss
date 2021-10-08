@@ -319,6 +319,20 @@ div.novisible{
 label.tituloFiltro{
     text-align: right;
 }
+div.listaCat{
+    overflow: auto;
+    max-height: 28rem;
+}
+
+div.columnavideo{
+    margin:15px 0;
+    width: calc(36rem + 30px);
+    display: flex;
+}
+div.tarjetavideo{
+    width: 18rem;
+    display: inline-flex;
+}
 
 // canal
 button.categoriaCanal{

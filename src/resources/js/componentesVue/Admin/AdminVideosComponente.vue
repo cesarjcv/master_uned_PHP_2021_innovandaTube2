@@ -1,9 +1,9 @@
 <template>
     <div>
 
-        <dialogo-video-categorias-componente identificador="dialogoVideoCategorias" :categorias="categorias" ref="dialogoCat"
+        <!--<dialogo-video-categorias-componente identificador="dialogoVideoCategorias" :categorias="categorias" ref="dialogoCat"
             :videoid="catVideoid"  v-on:seleccionCat="categoriasSeleccionadas"  :trabajando="selCatTrabajando">
-        </dialogo-video-categorias-componente>
+        </dialogo-video-categorias-componente>-->
 
         <dialogo-previsualizar-video-componente identificador="dialogoPrevisualizar" ref="prevideo">
         </dialogo-previsualizar-video-componente>
@@ -36,8 +36,9 @@
         <div class="container-fluid" name="inicio">
             <div class="row row-cols-auto">
                 <entrada-video-componente v-for="video in videos" :key="video.id" :video="video" :categorias="categorias" 
-                    v-on:selCategorias="seleccionCategorias"  v-on:preVideo="preVideo">
+                      v-on:preVideo="preVideo">
                  </entrada-video-componente>
+                 <!-- v-on:selCategorias="seleccionCategorias" -->
             </div>
         </div>
 
@@ -139,8 +140,6 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
             datosVideosPagina()
             {
                 // obtener listado de canales (paginado)
-                //const parametros = {fcanal: this.filtroCanal};
-                //axios.get('/api/video', parametros).then((response) =>
                 axios.get('/api/video?page=' + this.paginaActual + '&fcanal=' + this.filtroCanal + '&fcat=' + this.filtroCategoria + '&ftexto=' + 
                 escape(this.filtroTexto)).then((response) => 
                 {
@@ -155,7 +154,7 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
              /**
              * Actualizar en base de datos e interfaz las nueva selección de categorías para el vídeo
              */
-            categoriasSeleccionadas(listaid) {
+            /*categoriasSeleccionadas(listaid) {
                 const parametros = {cat: listaid};
                 this.selCatTrabajando = true;
 
@@ -190,13 +189,13 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
                     }
                     this.selCatTrabajando = false;
                 });
-            },
+            },*/
             /**
              * Se recibe de componente hijo orden de abrir ventana para selección de categorías.
              * @param int idVideo identificadro en base de datos del video
              * @param int[] categorias lista de categorías del vídeo
              */
-            seleccionCategorias(idVideo, categorias) {
+            /*seleccionCategorias(idVideo, categorias) {
                 this.catVideoid = idVideo; // estbalecer el identificador del video a tratar
 
                 this.$refs.dialogoCat.marcarSelActual(categorias); // marcar en ventana de diálogo las categorías del vídeo actual
@@ -205,7 +204,7 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
                 let d = document.getElementById('dialogoVideoCategorias');
                 let x = new bootstrap.Modal(d, {backdrop: 'static'});
                 x.show();
-            },
+            },*/
             /**
              * Se recibe de componente hijo orden de abrir ventana para ver video.
              * @param string video datos del video
@@ -227,10 +226,6 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
             {
                 // la página actual se cambia a la primera
                 this.paginaActual = 1;
-                
-                /*console.log("canal: " + this.filtroCanal);
-                console.log("cat: " + this.filtroCategoria);
-                console.log("texto: " + this.filtroTexto);*/
                 
                 this.datosVideosPagina();
             }

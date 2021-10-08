@@ -165,4 +165,22 @@ class VideoController extends Controller
     {
         Video::where('id', $request->idvideo)->update(['visible' => $request->visible]);
     }
+
+    /**
+     * Eliminar una categoría para un vídeo
+     * @param Request $request datos de consulta
+     */
+    public function eliminarCategoria(Request $request)
+    {
+        DB::table('videocategorias')->where('idvideo', $request->idvideo)->where('idcategoria', $request->categoria)->delete();
+    }
+
+    /**
+     * Añadir una categoría para un vídeo
+     * @param Request $request datos de consulta
+     */
+    public function insertarCategoria(Request $request)
+    {
+        DB::table('videocategorias')->insert(['idvideo' => $request->idvideo, 'idcategoria' => $request->categoria]);
+    }
 }

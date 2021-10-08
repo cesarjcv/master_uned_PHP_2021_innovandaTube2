@@ -5424,6 +5424,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -5493,8 +5494,6 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       // obtener listado de canales (paginado)
-      //const parametros = {fcanal: this.filtroCanal};
-      //axios.get('/api/video', parametros).then((response) =>
       axios.get('/api/video?page=' + this.paginaActual + '&fcanal=' + this.filtroCanal + '&fcat=' + this.filtroCategoria + '&ftexto=' + escape(this.filtroTexto)).then(function (response) {
         // datos recabados de la página actual
         _this2.videos = response.data.data; // datos de paginación
@@ -5507,64 +5506,57 @@ __webpack_require__.r(__webpack_exports__);
     /**
     * Actualizar en base de datos e interfaz las nueva selección de categorías para el vídeo
     */
-    categoriasSeleccionadas: function categoriasSeleccionadas(listaid) {
-      var _this3 = this;
 
-      var parametros = {
-        cat: listaid
-      };
-      this.selCatTrabajando = true; // llamada a API de aplicación para modificar visibilidad de categoría
-
-      axios.put('/api/video/categorias/' + this.catVideoid, parametros).then(function (respuesta) {
-        if (respuesta.data.error) // error en operación
-          {
-            alert(respuesta.data.error);
-          } else {
-          // crear lista de objetos categorías
-          var lCat = new Array();
-
-          for (var i = 0; i < listaid.length; i++) {
-            lCat.push(new Object({
-              idcategoria: listaid[i]
-            }));
-          } // buscar entrada de video y modificar su listado de categorías
-
-
-          for (var _i = 0; _i < _this3.videos.length; _i++) {
-            if (_this3.videos[_i].id == _this3.catVideoid) {
-              _this3.videos[_i].categorias = lCat; // sustituir por nuevos valores
-
-              break;
+    /*categoriasSeleccionadas(listaid) {
+        const parametros = {cat: listaid};
+        this.selCatTrabajando = true;
+         // llamada a API de aplicación para modificar visibilidad de categoría
+        axios.put('/api/video/categorias/' + this.catVideoid, parametros).then((respuesta) => 
+        {
+            if (respuesta.data.error) // error en operación
+            {
+                alert(respuesta.data.error);
             }
-          } // cerrar ventana modal
-
-
-          var d = document.getElementById('dialogoVideoCategorias');
-          var m = bootstrap.Modal.getInstance(d);
-          m.hide();
-        }
-
-        _this3.selCatTrabajando = false;
-      });
-    },
+            else
+            {
+                // crear lista de objetos categorías
+                let lCat = new Array();
+                for (let i=0; i < listaid.length; i++)
+                {
+                    lCat.push(new Object({idcategoria: listaid[i]}));
+                }
+                // buscar entrada de video y modificar su listado de categorías
+                for(let i=0; i < this.videos.length; i++)
+                {
+                    if (this.videos[i].id == this.catVideoid)
+                    {
+                        this.videos[i].categorias = lCat; // sustituir por nuevos valores
+                        break;
+                    } 
+                }
+                // cerrar ventana modal
+                let d = document.getElementById('dialogoVideoCategorias');
+                let m = bootstrap.Modal.getInstance(d);    
+                m.hide();
+            }
+            this.selCatTrabajando = false;
+        });
+    },*/
 
     /**
      * Se recibe de componente hijo orden de abrir ventana para selección de categorías.
      * @param int idVideo identificadro en base de datos del video
      * @param int[] categorias lista de categorías del vídeo
      */
-    seleccionCategorias: function seleccionCategorias(idVideo, categorias) {
-      this.catVideoid = idVideo; // estbalecer el identificador del video a tratar
 
-      this.$refs.dialogoCat.marcarSelActual(categorias); // marcar en ventana de diálogo las categorías del vídeo actual
-      // abrir ventana de selección de categorías
-
-      var d = document.getElementById('dialogoVideoCategorias');
-      var x = new bootstrap.Modal(d, {
-        backdrop: 'static'
-      });
-      x.show();
-    },
+    /*seleccionCategorias(idVideo, categorias) {
+        this.catVideoid = idVideo; // estbalecer el identificador del video a tratar
+         this.$refs.dialogoCat.marcarSelActual(categorias); // marcar en ventana de diálogo las categorías del vídeo actual
+         // abrir ventana de selección de categorías
+        let d = document.getElementById('dialogoVideoCategorias');
+        let x = new bootstrap.Modal(d, {backdrop: 'static'});
+        x.show();
+    },*/
 
     /**
      * Se recibe de componente hijo orden de abrir ventana para ver video.
@@ -5588,10 +5580,6 @@ __webpack_require__.r(__webpack_exports__);
     cambioFiltro: function cambioFiltro() {
       // la página actual se cambia a la primera
       this.paginaActual = 1;
-      /*console.log("canal: " + this.filtroCanal);
-      console.log("cat: " + this.filtroCategoria);
-      console.log("texto: " + this.filtroTexto);*/
-
       this.datosVideosPagina();
     }
   }
@@ -6641,6 +6629,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * Datos del vídeo a mostrar
@@ -6657,8 +6657,14 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mounted: function mounted() {
+    var _this = this;
+
     // ajustar saltos de línea
-    if (this.video.descripcion) this.des = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />");
+    if (this.video.descripcion) this.des = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />"); // cargar vector de categorías actuales
+
+    this.video.categorias.forEach(function (element) {
+      _this.catVideos.push(element.idcategoria);
+    });
   },
   methods: {
     /**
@@ -6702,10 +6708,8 @@ __webpack_require__.r(__webpack_exports__);
      * Cambiar la visibilidad del vídeo
      */
     cambiarVisibilidad: function cambiarVisibilidad() {
-      var _this = this;
+      var _this2 = this;
 
-      /*if (this.video.visible) console.log("cambiar a no");
-      else console.log("cambiar a si");*/
       var parametros = {
         idvideo: this.video.id,
         visible: this.video.visible == 0 ? 1 : 0
@@ -6716,25 +6720,45 @@ __webpack_require__.r(__webpack_exports__);
           {
             alert(respuesta.data.error);
           } else {
-          _this.video.visible = parametros.visible; // buscar entrada de video y modificar su listado de categorías
-
-          /*for(let i=0; i < this.canales.length; i++)
-          {
-              if (this.canales[i].id == this.catCanalid)
-              {
-                  this.canales[i].categorias.push({idcategoria: catid}); // añadir nueva categoría
-                  //console.log(this.canales[i].categorias);
-                  break;
-              } 
-          }*/
-          // cerrar ventana modal
-
-          /*let d = document.getElementById('dialogoCanalCategorias');
-          let m = bootstrap.Modal.getInstance(d);    
-          m.hide();*/
-        } //this.selCatTrabajando = false;
-
+          _this2.video.visible = parametros.visible;
+        }
       });
+    },
+
+    /**
+     * Actualizar categorías.
+     * Se pulso sobre un checkbox
+     * Añadir o eliminar la categoría para el video
+     */
+    actualizarCat: function actualizarCat(evento) {
+      var _this3 = this;
+
+      var parametros = {
+        idvideo: this.video.id,
+        categoria: evento.target.value
+      };
+
+      if (evento.target.checked) // se selecciona categoría
+        {
+          axios.put('/api/video/categoria/insertar', parametros).then(function (respuesta) {
+            //actualizar listado de objeto vídeo
+            _this3.video.categorias.push({
+              idcategoria: parseInt(evento.target.value)
+            });
+          });
+        } else // se deselecciona categoría
+        {
+          axios.put('/api/video/categoria/eliminar', parametros).then(function (respuesta) {
+            // buscar identificador de categoría para eliminar del listado
+            for (var i = 0; i < _this3.video.categorias.length; i++) {
+              if (_this3.video.categorias[i].idcategoria === parseInt(evento.target.value)) {
+                _this3.video.categorias.splice(i, 1);
+
+                break;
+              }
+            }
+          });
+        }
     }
   }
 });
@@ -7070,29 +7094,33 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       textobuscar: "",
+      // texto a buscar
       titulo: true,
+      // ¿buscar en título?
       descripcion: true,
+      // ¿Buscar en descripción?
       finicial: "",
-      ffinal: ""
+      // fecha inicial para búsqueda
+      ffinal: "" // fecha final para búsqueda
+
     };
   },
   methods: {
     /**
-     * 
+     * Realizar búsqueda de vídeos por los distintos campos
      */
     busqueda: function busqueda() {
-      //console.log(this.textobuscar);
       // comprobar valores de campos
       if (this.textobuscar.trim().length == 0) {
         alert("Debe especificar un texto de búsqueda.");
         return;
-      }
+      } // compoarbar que al menos una de las casillas está seleccionada
+
 
       if (!this.titulo && !this.descripcion) {
         alert("Debe especificar al menos uno de los campos de búsqueda, \"Título\" o \"Descripción\".");
         return;
-      } //vm.$refs.carruseles.buscar(this.textobuscar, this.titulo, this.descripcion, this.finicial, this.ffinal);
-
+      }
 
       var argumentos = {
         texto: this.textobuscar.trim(),
@@ -7101,7 +7129,7 @@ __webpack_require__.r(__webpack_exports__);
         fini: this.finicial,
         ffin: this.ffinal
       };
-      this.$root.$emit('busqueda', argumentos); //like this
+      this.$root.$emit('busqueda', argumentos); // enviar mensaje a componente padre con los valores para la búsqueda
       // cerrar ventana 
 
       var d = document.getElementById(this.identificador);
@@ -7180,8 +7208,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      //listas: [1, 2],
       listados: [],
+      // listado de categorías
       identificadorVentana: "ventanaVideo",
       videorep: null,
       numerobus: 0
@@ -7190,46 +7218,46 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    //const parametros = {listas: this.listas};
     // obtener listado de categorías
     axios.put('api/categoria/convideo', {}
     /*parametros*/
     ).then(function (respuesta) {
-      _this.listados = respuesta.data; //console.log(this.listados);
-
-      /*console.log(respuesta.data);*/
+      _this.listados = respuesta.data;
     });
     this.$root.$on('busqueda', this.buscar);
   },
   methods: {
+    /**
+     * Abrir ventana para reproducir vídeo
+     */
     verVideo: function verVideo(video) {
-      //console.log("lista");
+      // establecer el vídeo a reproducir
       this.$refs.videorep.setVideo(video); // abrir ventana de reproducción de video
 
       var d = document.getElementById('ventanaVideo');
-      this.$refs.videorep.ocultarInfo();
-      this.$refs.videorep.ocultarCompartir();
+      this.$refs.videorep.ocultarInfo(); // ocultar cuadro de información
+
+      this.$refs.videorep.ocultarCompartir(); // ocultar panel de compartir
+
       var x = new bootstrap.Modal(d, {
         backdrop: 'static'
       });
       x.show();
     },
-    buscar: function buscar(valores) {
-      //alert("hola");
-      //console.log(valores);
-      this.listados.splice(0);
-      var listabus = {};
-      listabus.id = this.numerobus--;
-      listabus.nombre = "Búsqueda: \"" + valores.texto + "\"";
-      listabus.parametros = valores;
-      this.listados.push(listabus); //console.log(this.listados);
 
-      /*axios.put('api/video/buscar', valores).then((respuesta) => 
-      {
-          //this.listados = respuesta.data;
-          //console.log(this.listados);
-          console.log(respuesta.data);
-      });*/
+    /**
+     * Crear listado con resultado de búsqueda
+     */
+    buscar: function buscar(valores) {
+      this.listados.splice(0); // limpiar listado de categorías
+
+      var listabus = {};
+      listabus.id = this.numerobus--; // establecer un id para el listado, siempre un número negativo que no se repite
+
+      listabus.nombre = "Búsqueda: \"" + valores.texto + "\""; // nombre para mostrar
+
+      listabus.parametros = valores;
+      this.listados.push(listabus);
     }
   }
 });
@@ -7255,7 +7283,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//btn-outline-success
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * - Identificador para la ventana de búsqueda
@@ -7263,15 +7290,16 @@ __webpack_require__.r(__webpack_exports__);
   props: ['vbus'],
   data: function data() {
     return {
-      //visible:false,
       texto: ""
     };
   },
-  mounted: function mounted() {//console.log('buscar mounted.')
-  },
+  mounted: function mounted() {},
   methods: {
+    /**
+     * Se pulsa sobre el icono de la lupa.
+     * Se abre ventana para búsqueda avanzada.
+     */
     pulsar: function pulsar() {
-      //console.log(this.vbus)
       // abrir ventana de búsqueda
       var d = document.getElementById(this.vbus);
       var x = new bootstrap.Modal(d, {
@@ -7279,42 +7307,23 @@ __webpack_require__.r(__webpack_exports__);
       });
       x.show();
     },
+
+    /**
+     * Evento de pulsación de tecla ENTER en el cuadro de búsqeuda
+     */
     entradaTexto: function entradaTexto(event) {
-      if (this.texto.trim().length > 0) {
-        var argumentos = {
-          texto: this.texto.trim(),
-          titulo: true,
-          des: true,
-          fini: "",
-          ffin: ""
-        };
-        this.$root.$emit('busqueda', argumentos);
-      } //console.log(event.key);
-      //event.target.value += event.key;
-
+      if (this.texto.trim().length > 0) // comprobar si hay texto en el cuadro
+        {
+          var argumentos = {
+            texto: this.texto.trim(),
+            titulo: true,
+            des: true,
+            fini: "",
+            ffin: ""
+          };
+          this.$root.$emit('busqueda', argumentos); // enviar a componente padre mensaje con datos de búsqeuda
+        }
     }
-    /*getData(){
-        axios.get('api/list?page=' + this.current_page)
-            .then((response) => {
-                this.videos = response.data.data;
-                this.current_page = response.data.current_page;
-                this.first_page_url = response.data.first_page_url;
-                this.last_page = response.data.last_page;
-                this.last_page_url = response.data.last_page_url;
-                this.next_page_url = response.data.next_page_url;
-                this.path = response.data.path;
-                this.per_page = response.data.per_page;
-                this.prev_page_url = response.data.prev_page_url;
-                this.to = response.data.to;
-                this.total = response.data.total;
-            });
-    },
-    insertarVideo(video) {
-        //this.videos.push(video);
-        this.getData(); // recargar listado
-        this.nuevovisible = false; // cerrar ventana
-    }*/
-
   }
 });
 
@@ -7661,35 +7670,14 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {};
   },
-  mounted: function mounted() {//console.log('Videos mounted.')
-  },
+  mounted: function mounted() {},
   methods: {
     /**
      * Se pulsa con ratón. Ver vídeo.
      */
     verVideo: function verVideo() {
-      //console.log("videocarrusel");
       this.$emit('verVideo', this.video); // enviar a componente padre datos de video a reproducir
     }
-    /*getImgUrl(hash) {
-        return url_youtube + hash + '/mqdefault.jpg'
-    },
-    getTitle(video) {
-         if (video.data != null && video.data != "") {
-             let dataParse = JSON.parse(video.data);
-             return this.truncateTitulo(dataParse.items[0].snippet.title);
-         } else {
-            return 'No data';
-        }
-    },
-    truncateTitulo(str) {
-        if (str.length > 36) {
-            return str.substring(0, 29) + '...';
-        } else {
-            return str;
-        }
-    }*/
-
   }
 });
 
@@ -38636,17 +38624,6 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("dialogo-video-categorias-componente", {
-        ref: "dialogoCat",
-        attrs: {
-          identificador: "dialogoVideoCategorias",
-          categorias: _vm.categorias,
-          videoid: _vm.catVideoid,
-          trabajando: _vm.selCatTrabajando
-        },
-        on: { seleccionCat: _vm.categoriasSeleccionadas }
-      }),
-      _vm._v(" "),
       _c("dialogo-previsualizar-video-componente", {
         ref: "prevideo",
         attrs: { identificador: "dialogoPrevisualizar" }
@@ -38838,10 +38815,7 @@ var render = function() {
             return _c("entrada-video-componente", {
               key: video.id,
               attrs: { video: video, categorias: _vm.categorias },
-              on: {
-                selCategorias: _vm.seleccionCategorias,
-                preVideo: _vm.preVideo
-              }
+              on: { preVideo: _vm.preVideo }
             })
           }),
           1
@@ -40559,13 +40533,12 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "col", staticStyle: { margin: "15px 0" } }, [
+  return _c("div", { staticClass: "col columnavideo" }, [
     _c(
       "div",
       {
-        staticClass: "card",
-        class: [_vm.video.visible ? "" : "novisible"],
-        staticStyle: { width: "18rem" }
+        staticClass: "card tarjetavideo",
+        class: [_vm.video.visible ? "" : "novisible"]
       },
       [
         _c("img", {
@@ -40605,49 +40578,6 @@ var render = function() {
                 }
               },
               [_vm._v(_vm._s(_vm.preFecha(_vm.video.fecha)))]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-outline-primary float-end ms-2",
-                attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    return _vm.selCategorias()
-                  }
-                }
-              },
-              [
-                _c(
-                  "svg",
-                  {
-                    staticClass: "bi bi-bookmarks",
-                    attrs: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      width: "16",
-                      height: "16",
-                      fill: "currentColor",
-                      viewBox: "0 0 16 16"
-                    }
-                  },
-                  [
-                    _c("path", {
-                      attrs: {
-                        d:
-                          "M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5V4zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1H4z"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("path", {
-                      attrs: {
-                        d:
-                          "M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1z"
-                      }
-                    })
-                  ]
-                )
-              ]
             ),
             _vm._v(" "),
             _c(
@@ -40751,6 +40681,90 @@ var render = function() {
           ],
           2
         )
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "card tarjetavideo",
+        class: [_vm.video.visible ? "" : "novisible"]
+      },
+      [
+        _c("div", { staticClass: "card-body" }, [
+          _c("h5", { staticClass: "card-title" }, [_vm._v("Categorías")]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "listaCat" },
+            _vm._l(_vm.categorias, function(cat) {
+              return _c(
+                "div",
+                { key: cat.id, staticClass: "form-check form-switch" },
+                [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.catVideos,
+                        expression: "catVideos"
+                      }
+                    ],
+                    staticClass: "form-check-input",
+                    attrs: {
+                      type: "checkbox",
+                      id: "seleccion" + cat.id,
+                      "data-idcat": cat.id
+                    },
+                    domProps: {
+                      value: cat.id,
+                      checked: Array.isArray(_vm.catVideos)
+                        ? _vm._i(_vm.catVideos, cat.id) > -1
+                        : _vm.catVideos
+                    },
+                    on: {
+                      change: [
+                        function($event) {
+                          var $$a = _vm.catVideos,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = cat.id,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 && (_vm.catVideos = $$a.concat([$$v]))
+                            } else {
+                              $$i > -1 &&
+                                (_vm.catVideos = $$a
+                                  .slice(0, $$i)
+                                  .concat($$a.slice($$i + 1)))
+                            }
+                          } else {
+                            _vm.catVideos = $$c
+                          }
+                        },
+                        function($event) {
+                          return _vm.actualizarCat($event)
+                        }
+                      ]
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "label",
+                    {
+                      staticClass: "form-check-label",
+                      attrs: { for: "seleccion" + cat.id }
+                    },
+                    [_vm._v(_vm._s(cat.nombre))]
+                  )
+                ]
+              )
+            }),
+            0
+          )
+        ])
       ]
     )
   ])

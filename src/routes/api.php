@@ -33,6 +33,8 @@ Route::put('/video/buscar', 'VideoController@buscar');
     Route::put('/video/categorias/{idvideo}', 'VideoController@establecerCategorias');
     Route::put('/canal/categorias/{idcanal}', 'CanalController@establecerCategoria');
     Route::delete('/canal/categorias/{idcanal}', 'CanalController@quitarCategoria');
+    Route::put('/video/categoria/eliminar', 'VideoController@eliminarCategoria');
+    Route::put('/video/categoria/insertar', 'VideoController@insertarCategoria');
     
 /*});*/
-
+?>

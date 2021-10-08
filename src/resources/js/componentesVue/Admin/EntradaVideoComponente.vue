@@ -1,6 +1,6 @@
 <template>
-    <div class="col" style='margin:15px 0;' >
-        <div class="card" style="width: 18rem;" :class="[video.visible ? '' : 'novisible' ]">
+    <div class="col columnavideo">
+        <div class="card tarjetavideo" :class="[video.visible ? '' : 'novisible' ]">
             <img :src="video.imagen" class="card-img-top" :alt="video.titulo">
             <div class="card-body overflow-auto" style='height:150px'>
                 <h6 class="card-title"><strong>{{ video.titulo }}</strong></h6>
@@ -8,12 +8,12 @@
             </div>
             <div class="card-footer">
                 <small class="text-muted" style="padding-bottom: 15px; display: inline-block;">{{ preFecha(video.fecha) }}</small>
-                <button type="button" class="btn btn-outline-primary float-end ms-2" @click="selCategorias()">
+                <!--<button type="button" class="btn btn-outline-primary float-end ms-2" @click="selCategorias()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmarks" viewBox="0 0 16 16">
                     <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5V4zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1H4z"/>
                     <path d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1z"/>
                     </svg>
-                </button>
+                </button>-->
                 <button type="button" class="btn btn-outline-primary float-end ms-2" @click="preVideo()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -33,7 +33,19 @@
                     <button class="categoriaCanal">
                     {{ nombreCategoria(catcan.idcategoria) }}
                     </button>
-                </div>  
+                </div>
+            </div>
+        </div>
+        <div class="card tarjetavideo" :class="[video.visible ? '' : 'novisible' ]">
+            <div class="card-body">
+                <h5 class="card-title">Categorías</h5>
+                <div class="listaCat">
+                    <div class="form-check form-switch" v-for="cat in categorias" :key="cat.id"> 
+                        <input class="form-check-input" type="checkbox" v-model='catVideos' :value="cat.id" :id="'seleccion' + cat.id" :data-idcat="cat.id" @change="actualizarCat($event)">
+                        <!-- :checked="seleccionado(cat.id)" -->
+                        <label class="form-check-label" :for="'seleccion' + cat.id" >{{ cat.nombre }}</label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -58,6 +70,10 @@
         {
             // ajustar saltos de línea
             if (this.video.descripcion) this.des = this.video.descripcion.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br />");
+            // cargar vector de categorías actuales
+            this.video.categorias.forEach(element => {
+                this.catVideos.push(element.idcategoria);
+            });
          },
 
         methods:{
@@ -103,8 +119,6 @@
              */
             cambiarVisibilidad()
             {
-                /*if (this.video.visible) console.log("cambiar a no");
-                else console.log("cambiar a si");*/
                 const parametros = {idvideo: this.video.id, visible: (this.video.visible == 0 ? 1 : 0)};
                 // llamada a API de aplicación para cambiar visibilidad
                 axios.put('/api/video/visibilidad', parametros).then((respuesta) => 
@@ -116,24 +130,45 @@
                     else
                     {
                         this.video.visible = parametros.visible;
-                        // buscar entrada de video y modificar su listado de categorías
-                        /*for(let i=0; i < this.canales.length; i++)
-                        {
-                            if (this.canales[i].id == this.catCanalid)
-                            {
-                                this.canales[i].categorias.push({idcategoria: catid}); // añadir nueva categoría
-                                //console.log(this.canales[i].categorias);
-                                break;
-                            } 
-                        }*/
-                        // cerrar ventana modal
-                        /*let d = document.getElementById('dialogoCanalCategorias');
-                        let m = bootstrap.Modal.getInstance(d);    
-                        m.hide();*/
                     }
-                    //this.selCatTrabajando = false;
                 });
             },
+            /**
+             * Actualizar categorías.
+             * Se pulso sobre un checkbox
+             * Añadir o eliminar la categoría para el video
+             */
+            actualizarCat(evento)
+            {
+                const parametros = {idvideo: this.video.id, categoria: evento.target.value};
+                if (evento.target.checked) // se selecciona categoría
+                {
+                    axios.put('/api/video/categoria/insertar', parametros).then((respuesta) => 
+                    {
+                        //actualizar listado de objeto vídeo
+                        this.video.categorias.push({idcategoria: parseInt(evento.target.value)});
+                    });
+                    
+                }
+                else // se deselecciona categoría
+                {
+                    
+                    axios.put('/api/video/categoria/eliminar', parametros).then((respuesta) => 
+                    {
+                        // buscar identificador de categoría para eliminar del listado
+                        for( var i = 0; i < this.video.categorias.length; i++)
+                        { 
+                                    
+                            if ( this.video.categorias[i].idcategoria === parseInt(evento.target.value)) 
+                            { 
+                                this.video.categorias.splice(i, 1); 
+                                break; 
+                            }
+                        }
+                    });
+                    
+                }
+             }
         }
     }
 </script>
