@@ -361,6 +361,15 @@ button.categoriaCanal img{
 button.categoriaCanal:hover img{
     display: block;
 }
+
+// administradores
+ul.admin{
+    margin: 0 auto;
+    max-width: 300px;
+}
+span.mano{
+    cursor: pointer;
+}
 // contenedor
 /*.container-sinlimite{
     max-width: 95%;

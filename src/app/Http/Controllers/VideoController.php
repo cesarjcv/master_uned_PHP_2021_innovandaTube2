@@ -183,4 +183,16 @@ class VideoController extends Controller
     {
         DB::table('videocategorias')->insert(['idvideo' => $request->idvideo, 'idcategoria' => $request->categoria]);
     }
+
+    /**
+     * Eliminar vídeo
+     * DELETE 	/api/video/{idvideo}      video.destroy
+     * @param int $id   id de vídeo en base de datos
+     * @return void
+     */
+    public function destroy(int $id) 	
+    {
+        $video = Video::find($id);
+        $video->delete();
+    }
 }

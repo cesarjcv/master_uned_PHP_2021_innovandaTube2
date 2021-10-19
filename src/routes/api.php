@@ -35,6 +35,7 @@ Route::put('/video/buscar', 'VideoController@buscar');
     Route::delete('/canal/categorias/{idcanal}', 'CanalController@quitarCategoria');
     Route::put('/video/categoria/eliminar', 'VideoController@eliminarCategoria');
     Route::put('/video/categoria/insertar', 'VideoController@insertarCategoria');
+    Route::apiResource('/administrador', 'AdministradorController');
     
 /*});*/
 ?>

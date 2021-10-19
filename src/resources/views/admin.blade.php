@@ -32,6 +32,9 @@
                         <a class="btn btn-outline-dark" href="/admin/canales" role="button">Canales</a>
                         <a class="btn btn-outline-dark" href="/admin/categorias" role="button">Categor&iacute;as</a>
                         <a class="btn btn-outline-dark" href="/admin/videos" role="button">V&iacute;deos</a>
+                        @if($administrador)
+                            <a class="btn btn-outline-dark" href="/admin/administradores" role="button">Administradores</a>
+                        @endif
                     </div>
                     @endauth
                 </div>

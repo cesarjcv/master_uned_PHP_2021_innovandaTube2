@@ -28,6 +28,7 @@ class AdminController extends Controller
         return view('admincanales',
             [
                 'usuario' => Auth::guard('admin')->user()->name,
+                'administrador' => session('administrador'),
             ]);
     }
 
@@ -41,6 +42,7 @@ class AdminController extends Controller
         return view('admincategorias',
             [
                 'usuario' => Auth::guard('admin')->user()->name,
+                'administrador' => session('administrador'),
             ]);
     }
 
@@ -54,6 +56,21 @@ class AdminController extends Controller
         return view('adminvideos',
             [
                 'usuario' => Auth::guard('admin')->user()->name,
+                'administrador' => session('administrador'),
+            ]);
+    }
+
+    /**
+     * Página administración de usuarios con permisos de administrador
+     *
+     * @return Renderable
+     */
+    public function administradores()
+    {
+        return view('adminadministradores',
+            [
+                'usuario' => Auth::guard('admin')->user()->name,
+                'administrador' => session('administrador'),
             ]);
     }
 }

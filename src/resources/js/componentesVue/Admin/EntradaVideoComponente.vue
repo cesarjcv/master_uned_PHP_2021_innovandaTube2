@@ -14,11 +14,11 @@
                     <path d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1z"/>
                     </svg>
                 </button>-->
+                <button v-if="administrador" type="button" class="btn btn-outline-danger float-end ms-2" @click="eliminar()">
+                    <i class="bi bi-trash"></i>
+                </button>
                 <button type="button" class="btn btn-outline-primary float-end ms-2" @click="preVideo()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                    <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
-                    </svg>
+                    <i class="bi bi-play-circle"></i>
                 </button>
                 <button type="button" class="btn btn-outline-primary float-end" @click="cambiarVisibilidad()">
                     <!--<i class="bi bi-eye-fill"></i>-->
@@ -56,8 +56,10 @@
 
         /**
          * Datos del vídeo a mostrar
+         * Listado de categorías
+         * Índica si el usuario actual es administrador
          */
-        props: ['video', 'categorias'],
+        props: ['video', 'categorias', 'administrador'],
         data(){
             return {
                 des: "", // descripción con ajuste de saltos de línea
@@ -168,7 +170,14 @@
                     });
                     
                 }
-             }
+            },
+            /**
+             * enviar a componente padre un mensaje de eliminación de este vídeo
+             */
+            eliminar()
+            {
+                this.$emit('eliminar', this.video.id);
+            },
         }
     }
 </script>

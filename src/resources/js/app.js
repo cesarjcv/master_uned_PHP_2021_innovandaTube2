@@ -29,6 +29,9 @@ Vue.component('admin-videos-componente', require('./componentesVue/Admin/AdminVi
 Vue.component('entrada-video-componente', require('./componentesVue/Admin/EntradaVideoComponente.vue').default);
 Vue.component('dialogo-video-categorias-componente', require('./componentesVue/Admin/DialogoVideoCategoriasComponente.vue').default);
 Vue.component('dialogo-previsualizar-video-componente', require('./componentesVue/Admin/DialogoPrevisualizarVideoComponente.vue').default);
+/* administradores */
+Vue.component('admin-administradores-componente', require('./componentesVue/Admin/AdminAdministradoresComponente.vue').default);
+Vue.component('dialogo-nuevo-administrador-componente', require('./componentesVue/Admin/DialogoNuevoAdministradorComponente.vue').default);
 /* diálogos */
 Vue.component('dialogo-confirmacion-componente', require('./componentesVue/Admin/DialogoConfirmacionComponente.vue').default);
 

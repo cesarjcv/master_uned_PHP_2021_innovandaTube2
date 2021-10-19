@@ -7,13 +7,11 @@
 
         <div class='anadir'>
             <button class="btn btn-primary" @click="abrirNuevoCanal()">Añadir canal</button>
-            <!-- data-bs-toggle="modal" data-bs-target="#dialogoNuevo"-->
         </div>
 
         <dialogo-nuevo-canal-componente identificador="dialogoNuevo" ref="tollo"  v-on:nuevoCanal="nuevoCanal" >
-
         </dialogo-nuevo-canal-componente>
-        <!--v-show="nuevovisible" -->
+
         <dialogo-confirmacion-componente id="conf" texto="¿Seguro que quiere eliminar este canal y todos sus videos asociados?"
             v-on:respuesta="respuestaEliminar"></dialogo-confirmacion-componente>
 
@@ -36,7 +34,6 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
         data(){
             return {
                 canales: [], // listado de canales
-                //nuevovisible:false,
                 canalEliminar: null, // id de canal a eliminar
                 catCanalid: 0, // id de canal a cambiar categorías
                 categorias: [], // listado de categorias
@@ -44,7 +41,6 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
             }
         },
         mounted() {
-            //console.log('Montado AdminCanales.')
             // obtener listado de canales
             axios.get('/api/canal').then((response) => 
             {
@@ -129,8 +125,6 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
             seleccionCategoria(idCanal/*, categorias*/) {
                 this.catCanalid = idCanal; // estbalecer el identificador del video a tratar
 
-                //this.$refs.dialogoCat.marcarSelActual(categorias); // marcar en ventana de diálogo las categorías del vídeo actual
-
                 // abrir ventana de selección de categorías
                 let d = document.getElementById('dialogoCanalCategorias');
                 let x = new bootstrap.Modal(d, {backdrop: 'static'});
@@ -142,7 +136,6 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
             categoriaSeleccionada(catid) {
                 const parametros = {cat: catid};
                 this.selCatTrabajando = true;
-                //console.log(catid);
 
                 // llamada a API de aplicación para asignar categoría
                 axios.put('/api/canal/categorias/' + this.catCanalid, parametros).then((respuesta) => 
@@ -159,7 +152,6 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
                             if (this.canales[i].id == this.catCanalid)
                             {
                                 this.canales[i].categorias.push({idcategoria: catid}); // añadir nueva categoría
-                                //console.log(this.canales[i].categorias);
                                 break;
                             } 
                         }

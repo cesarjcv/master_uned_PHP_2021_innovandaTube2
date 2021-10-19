@@ -29,6 +29,12 @@ Compilación javascript y css:
 ~~~
 docker-compose run --rm npm run prod
 ~~~
+### Crear un usuario administrador ###
+Para crear el primer usuario administrador tenemos el siguiente comando de consola:
+~~~
+docker-compose run --rm artisan administrador:nuevo {usuario}
+~~~
+
 ## Acceso ##
 
 ### Administración ###

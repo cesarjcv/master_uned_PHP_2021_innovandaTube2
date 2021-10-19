@@ -16715,6 +16715,15 @@ button.categoriaCanal:hover img {
   display: block;
 }
 
+ul.admin {
+  margin: 0 auto;
+  max-width: 300px;
+}
+
+span.mano {
+  cursor: pointer;
+}
+
 /*.container-sinlimite{
     max-width: 95%;
     margin:0 auto;

@@ -30,6 +30,7 @@ Route::prefix('admin')->group(function ()
         Route::get('/canales', 'AdminController@canales');
         Route::get('/categorias', 'AdminController@categorias');
         Route::get('/videos', 'AdminController@videos');
+        Route::get('/administradores', 'AdminController@administradores');
     });
 });
 ?>

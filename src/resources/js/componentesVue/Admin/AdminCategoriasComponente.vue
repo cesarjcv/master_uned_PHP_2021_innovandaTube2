@@ -44,7 +44,8 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
             /**
              * Abrir ventana para nueva categoría
              */
-            abrirNuevaCat() {
+            abrirNuevaCat() 
+            {
                 // abrir ventana modal
                 let d = document.getElementById('dialogoNuevo');
                 let x = new bootstrap.Modal(d, {backdrop: true});
@@ -53,7 +54,8 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
             /**
              * Añadir al listado de categorías los datos de la categoría añadida
              */
-            nuevaCat(categoria) {
+            nuevaCat(categoria) 
+            {
                 // añadir al inicio del listado
                 this.categorias.unshift(categoria);
 
@@ -67,7 +69,8 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
              * Mostrar ventana modal de confirmación
              * @param int idCategoria identificador en base de datos de la categoría a eliminar
              */
-            eliminar(idCategoria) {
+            eliminar(idCategoria) 
+            {
                 this.idCatEliminar = idCategoria; // guardar valor de categoría a eliminar
                 // abrir ventana de confirmación
                 let d = document.getElementById('conf');
@@ -77,7 +80,8 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
             /**
              * Abrir ventana para modificar categoría
              */
-            abrirModCat(categoria) {
+            abrirModCat(categoria) 
+            {
                 this.catMod = categoria; // datos de categoría a modificar
                 // abrir ventana modal
                 let d = document.getElementById('dialogoModificar');
@@ -87,7 +91,8 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
             /**
              * Actualizar datos de categoría modificada en vista Web
              */
-            modCat(categoria) {
+            modCat(categoria) 
+            {
                 //buscar la posición en el vector de la categoria modificada
                 for(var i=0; i < this.categorias.length; i++)
                 {
@@ -135,7 +140,8 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
              * Se analiza la respuesta del usuario a mensaje de eliminación.
              * Si positivo enviar orden de eliminación a API de aplicación
              */
-            respuestaEliminar(resp){
+            respuestaEliminar(resp)
+            {
                 // ocultar ventana de confiramción
                 let d = document.getElementById('conf');
                 let x = bootstrap.Modal.getInstance(d);

@@ -8,6 +8,9 @@
         <dialogo-previsualizar-video-componente identificador="dialogoPrevisualizar" ref="prevideo">
         </dialogo-previsualizar-video-componente>
 
+        <dialogo-confirmacion-componente id="conf" texto="¿Seguro que quiere eliminar este vídeo?"
+            v-on:respuesta="respuestaEliminar"></dialogo-confirmacion-componente>
+
         <div class="mb-3 row">
             <label for="fcanal" class="col-sm-1 col-form-label tituloFiltro">Canal</label>
             <div class="col-sm-3">
@@ -36,7 +39,7 @@
         <div class="container-fluid" name="inicio">
             <div class="row row-cols-auto">
                 <entrada-video-componente v-for="video in videos" :key="video.id" :video="video" :categorias="categorias" 
-                      v-on:preVideo="preVideo">
+                      v-on:preVideo="preVideo" :administrador="administrador" v-on:eliminar="eliminar">
                  </entrada-video-componente>
                  <!-- v-on:selCategorias="seleccionCategorias" -->
             </div>
@@ -78,9 +81,15 @@
 
 <script>
 import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComponente.vue';
+import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
 
     export default {
-  components: { DialogoPrevisualizarVideoComponente },
+  components: { DialogoPrevisualizarVideoComponente, DialogoConfirmacionComponente },
+
+        /**
+         * Indica si el usuario actual es administrador
+         */
+        props:['administrador'],
 
         data(){
             return {
@@ -95,6 +104,7 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
                 filtroCategoria: 0,
                 filtroCanal: 0,
                 filtroTexto: "",
+                videoEliminar: 0, // identificador del vídeo a eliminar
             }
         },
         mounted() {
@@ -149,7 +159,58 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
                         // datos de paginación
                         this.paginaActual = response.data.current_page;
                         this.ultimaPagina = response.data.last_page;
+
+                        // comporbar si la lista está vacía (es la última página y quedo sin elementos)
+                        if (this.videos.length == 0)
+                        {
+                            // si no es la primera página retrocedemos una
+                            if (this.paginaActual > 1)
+                            {
+                                this.paginaActual--;
+                                this.datosVideosPagina();
+                            } 
+                        }
                 });
+            },
+            /**
+             * Se recibe de componente hijo orden de eliminar vídeo.
+             * Mostrar ventana modal de confirmación
+             * @param int idVideo identificador en base de datos del vídeo a eliminar
+             */
+            eliminar(idVideo) {
+                this.videoEliminar = idVideo;
+                // abrir ventana de confirmación
+                let d = document.getElementById('conf');
+                let x = new bootstrap.Modal(d, {backdrop: 'static'});
+                x.show();
+            },
+            /**
+             * Se analiza la respuesta del usuario a mensaje de eliminación.
+             * Si positivo enviar orden de eliminación a API de aplicación
+             */
+            respuestaEliminar(resp){
+                // ocultar ventana de confiramción
+                let d = document.getElementById('conf');
+                let x = bootstrap.Modal.getInstance(d);
+                x.hide();
+
+                if (resp) // eliminar vídeo
+                {
+                    //console.log(this.videoEliminar);
+                    axios.delete('/api/video/' + this.videoEliminar).then((response) => 
+                    {
+                        /*//buscar la posición en el vector del canal a eliminar
+                        for(var i=0; i < this.canales.length; i++)
+                        {
+                            if (this.canales[i].id == this.canalEliminar) break;
+                        }
+                        // eliminar canal de vector
+                        this.canales.splice(i, 1);*/
+                        // actualizar lista de vídeos visualizados
+                        this.datosVideosPagina();
+                        
+                    });
+                }
             },
              /**
              * Actualizar en base de datos e interfaz las nueva selección de categorías para el vídeo
