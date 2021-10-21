@@ -7,22 +7,60 @@ use Google\Client;
 use App\Models\Canal;
 use App\Models\ListaReproduccion;
 use App\Models\Video;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class DatosYoutube
 {
     private $cliente; // cliente de Google API
+    //private $hora; // hora actual
+    private $fecha; // fecha
+    private $cuenta; // cuenta de solicitudes a servidor de YouTube
+    private $limiteConsultas; // límite de consultas que se pueden realizar en un día
 
     /**
      * constructor
      * Crea el cliente de la API de Youtube
+     * @param string $fecha fecha de referencia en formato aaaa-mm-dd
      */
-    public function __construct()
+    public function __construct($fecha)
     {
         // cliente de youtube
         $this->cliente = new Client();
         $this->cliente->setApplicationName(Config::get('youtube.youtube_app_name'));
         $this->cliente->setDeveloperKey(Config::get('youtube.youtube_key'));
+
+        $this->fecha = $fecha;
+        
+        // leer contador actual
+        $act = DB::table('contadorconsultas')->first();
+        // si el anterior a la fecha actual iniciar contador
+        if ($act->fecha != $this->fecha)
+        {
+            $this->cuenta = 0;
+        }
+        else $this->cuenta = $act->contador;
+
+          $this->limiteConsultas = Config::get('youtube.youtube_maximo_consultas');
+    }
+
+    /**
+     * Destructor.
+     * Guardar información de contador de consultas
+     */
+    public function __destruct()
+    {
+        // guardar datos de contador en base de datos
+        DB::table('contadorconsultas')->update(['fecha' => $this->fecha, 'contador' => $this->cuenta]);
+    }
+
+    /**
+     * Comprueba si el número de consultas está por debajo del límite permitido
+     */
+    public function dentroLimite()
+    {
+        if ($this->cuenta < $this->limiteConsultas) return true;
+        else return false;
     }
     
     /**
@@ -32,12 +70,11 @@ class DatosYoutube
      */
     public function getDatosCanalPorId($id)
     {
-        
-
         // obtener dato de canal por ChannelID
         $servicio = new \Google_Service_YouTube($this->cliente);
         $optParams = array('id' => $id);
         $resultado = $servicio->channels->listChannels("snippet", $optParams);
+        $this->cuenta++; // aumentar contador de consultas
 
         if ($resultado->pageInfo->totalResults == 1)
         {
@@ -62,10 +99,12 @@ class DatosYoutube
      */
     public function getDatosCanalesPorUsuario($usuario)
     {
+
         // buscar lista de canales por usuarios
         $servicio = new \Google_Service_YouTube($this->cliente);
         $optParams = array('forUsername' => $usuario);
         $resultado = $servicio->channels->listChannels("snippet", $optParams);
+        $this->cuenta++; // aumentar contador de consultas
 
         if ($resultado->pageInfo->totalResults > 0)
         {
@@ -139,11 +178,15 @@ class DatosYoutube
      */
     public function getListaSubidosCanalPorId($id, $channelid)
     {
+        // comprobar límite
+        if (!$this->dentroLimite()) return;
+
         // obtener dato de canal por ChannelID
         $servicio = new \Google_Service_YouTube($this->cliente);
         $optParams = array('id' => $channelid);
         // lista de videos subidos
         $resultado = $servicio->channels->listChannels("contentDetails", $optParams);
+        $this->cuenta++; // aumentar contador de consultas
 
         if ($resultado->pageInfo->totalResults == 1)
         {
@@ -212,6 +255,9 @@ class DatosYoutube
      */
     public function getVideosListaReproduccionPorId($id, $listid, &$etag)
     {
+        // comprobar límite
+        if (!$this->dentroLimite()) return;
+
         $vTotal = array();
         // obtener datos de listas de reproducción por ChannelID
         $servicio = new \Google_Service_YouTube($this->cliente);
@@ -221,6 +267,7 @@ class DatosYoutube
             // obtener videos de lista de reproducción
             $optParams = array('playlistId' => $listid, 'pageToken' => $nextToken, 'maxResults' => '50');
             $resultado = $servicio->playlistItems->listPlaylistItems("snippet", $optParams);
+            $this->cuenta++; // aumentar contador de consultas
 
             // comprobar valor etag devuelto
             // si el igual, la lista de reproducción no se modificó desde la última consulta
@@ -250,17 +297,20 @@ class DatosYoutube
 
     /**
      * Obtener datos de un listado de vídeos
-     * @param string $videos  lista de vídeos
-     * @return Videos[]|null
+     * @param Video[] $videos  lista de vídeos
      */
     public function getDatosVideos($videos)
     {
         $gruposVideos = array_chunk($videos, 50); // dividir el listado en grupos de 50 elementos
         // obtener datos de vídeos
         $servicio = new \Google_Service_YouTube($this->cliente);
+
         // recorrer todos los grupos
         foreach($gruposVideos as $grupoactual)
         {
+            // comprobar límite
+            if (!$this->dentroLimite()) return;
+ 
             // crear lista de identificadores
             $ids = array();
             foreach($grupoactual as $vactual) $ids[] = $vactual->videoid;
@@ -268,6 +318,7 @@ class DatosYoutube
             $optParams = array('id' => implode(",", $ids), 'maxResults' => '50', 'maxHeight' => '1000', 'maxWidth' => '1000');
 
             $resultado = $servicio->videos->listVideos("snippet, contentDetails, player, statistics", $optParams);
+            $this->cuenta++; // aumentar contador de consultas
 
             if ($resultado->pageInfo->totalResults > 0)
             {
@@ -300,10 +351,11 @@ class DatosYoutube
                                 $vactual->estfav = (isset($item->statistics->favoriteCount) ? $item->statistics->favoriteCount : 0); // Número de usuarios que actualmente tienen marcado el video como video favorito.
                                 $vactual->estcom = (isset($item->statistics->commentCount) ? $item->statistics->commentCount : 0); // Número de comentarios del video.
 
-                                $vactual->actualizado = date('Y-m-d H:i:s');
                                 $vactual->etagDatos = $item->etag;
-                                $vactual->save(); // actualizar base de datos
                             }
+                            $vactual->actualizado = date('Y-m-d H:i:s'); // nueba fecha de última actualización
+                            $vactual->save(); // actualizar base de datos
+
                             break; // parar recorrido de listado
                         }
                     }

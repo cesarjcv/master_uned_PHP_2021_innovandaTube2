@@ -20,9 +20,10 @@ Modificar la línea 114 en el archivo _src\vendor\jotaelesalinas\laravel-adminle
 cambiar `$userdn = sprintf($this->user_full_dn_fmt, $user_ldap_attribs[$this->bind_field]);`  
 por `$userdn = sprintf($this->user_full_dn_fmt, $identifier);`
   
-Creación de tablas en base datos:
+Creación de tablas y datos inciales en base datos:
 ~~~
 docker-compose run --rm artisan migrate
+docker-compose run --rm artisan db:seed
 ~~~
 
 Compilación javascript y css:
