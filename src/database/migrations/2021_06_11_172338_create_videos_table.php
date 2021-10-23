@@ -32,6 +32,7 @@ class CreateVideosTable extends Migration
             $table->integer('estfav')->default(0);
             $table->integer('estcom')->default(0);
             $table->boolean('visible')->default(true);
+            $table->integer('estrellas')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

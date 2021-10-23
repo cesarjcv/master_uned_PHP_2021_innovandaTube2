@@ -6918,10 +6918,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * Datos del vídeo a mostrar
@@ -7049,6 +7045,22 @@ __webpack_require__.r(__webpack_exports__);
      */
     eliminar: function eliminar() {
       this.$emit('eliminar', this.video.id);
+    },
+
+    /**
+     * Actualizar puntuación de fiabilidad para vídeo
+     */
+    puntuar: function puntuar(puntos) {
+      var _this4 = this;
+
+      var parametros = {
+        idvideo: this.video.id,
+        puntos: puntos
+      };
+      axios.put('/api/video/puntos/puntuar', parametros).then(function (respuesta) {
+        // actualizar elemento de vídeo en página
+        _this4.video.estrellas = puntos;
+      });
     }
   }
 });
@@ -7952,6 +7964,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * datos de vídeo
@@ -7960,7 +7976,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {};
   },
-  mounted: function mounted() {},
+  mounted: function mounted() {//console.log(this.video);
+  },
   methods: {
     /**
      * Se pulsa con ratón. Ver vídeo.
@@ -41325,6 +41342,28 @@ var render = function() {
               ]
             ),
             _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "estrellas" },
+              _vm._l(5, function(n) {
+                return _c("i", {
+                  key: n,
+                  staticClass: "bi",
+                  class: [
+                    _vm.video.estrellas >= n
+                      ? "bi-star-fill text-warning"
+                      : "bi-star"
+                  ],
+                  on: {
+                    click: function($event) {
+                      return _vm.puntuar(n)
+                    }
+                  }
+                })
+              }),
+              0
+            ),
+            _vm._v(" "),
             _vm._l(_vm.video.categorias, function(cat) {
               return _c(
                 "div",
@@ -42421,6 +42460,25 @@ var render = function() {
           "div",
           { staticClass: "gradientContainer w-100 h-100 position-absolute" },
           [
+            _vm.video.estrellas > 0
+              ? _c(
+                  "div",
+                  { staticClass: "fiabilidad" },
+                  _vm._l(5, function(n) {
+                    return _c("i", {
+                      key: n,
+                      staticClass: "bi",
+                      class: [
+                        _vm.video.estrellas >= n
+                          ? "bi-star-fill text-warning"
+                          : "bi-star"
+                      ]
+                    })
+                  }),
+                  0
+                )
+              : _vm._e(),
+            _vm._v(" "),
             _c(
               "span",
               { staticClass: "d-block position-absolute fixed-bottom titulo" },

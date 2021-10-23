@@ -47,6 +47,9 @@ class CanalController extends Controller
      */
     public function store(Request $request) 	
     {
+        // fecha actual para contador (Los Ángeles)
+        $f = new \DateTime("now", new \DateTimeZone('America/Los_Angeles'));
+        
         // búsqueda por ChannelId
         // formatos: código 24 carácteres, https://www.youtube.com/channel/{código}/*
         if (preg_match("/^UC[a-z,A-Z,0-9,_,-]{22}$/", $request->dato) || 
@@ -55,7 +58,7 @@ class CanalController extends Controller
             // obtener código
             if (strlen($request->dato) == 24) $cod = $request->dato;
             else $cod = substr(strstr($request->dato, 'channel/'), 8, 24);
-            $yt = new DatosYoutube();
+            $yt = new DatosYoutube($f->format('Y-m-d'));
             $canal = $yt->getDatosCanalPorId($cod);
             if ($canal === null)
             {
@@ -69,7 +72,7 @@ class CanalController extends Controller
         {
             $nombre = substr(strstr($request->dato, 'user/'), 5);
             if (strpos($nombre, '/') !== false) $nombre = strstr($nombre, '/', true);
-            $yt = new DatosYoutube();
+            $yt = new DatosYoutube($f->format('Y-m-d'));
             $canales = $yt->getDatosCanalesPorUsuario($nombre);
             if ($canales === null)
             {
@@ -100,7 +103,7 @@ class CanalController extends Controller
             if (strpos($nombre, '/') !== false) $nombre = strstr($nombre, '/', true);
             // si no está adaptado el nombre a URL lo convertimos
             if (!preg_match("/%/", $nombre)) $nombre = urlencode($nombre);
-            $yt = new DatosYoutube();
+            $yt = new DatosYoutube($f->format('Y-m-d'));
             $canal = $yt->getDatosCanalPorCURL("https://www.youtube.com/c/" . $nombre);
             if ($canal === null)
             {

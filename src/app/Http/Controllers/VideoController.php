@@ -195,4 +195,15 @@ class VideoController extends Controller
         $video = Video::find($id);
         $video->delete();
     }
+
+    /**
+     * Cambiar puntuación de fiabilidad de vídeo
+     * @param Request $request datos de consulta
+     */
+    public function puntuar(Request $request)
+    {
+        $video = Video::find($request->idvideo);
+        $video->estrellas = $request->puntos;
+        $video->save();
+    }
 }

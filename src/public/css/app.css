@@ -16392,6 +16392,20 @@ div.gradientContainer {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00000000",endColorstr="#bf000000",GradientType=0);
 }
 
+div.fiabilidad {
+  font-size: 1em;
+  display: none;
+  justify-content: center;
+  opacity: 0.9;
+  background-color: white;
+}
+
+div.fiabilidad i {
+  color: #000;
+  opacity: 1;
+  margin: 0 10px;
+}
+
 li.video {
   width: 308px;
   flex-shrink: 0;
@@ -16408,6 +16422,10 @@ li.video:hover {
 
 li.video:hover .titulo {
   opacity: 1;
+}
+
+li.video:hover .fiabilidad {
+  display: flex;
 }
 
 div.contenedorflecha {
@@ -16684,6 +16702,16 @@ div.columnavideo {
 div.tarjetavideo {
   width: 18rem;
   display: inline-flex;
+}
+
+div.estrellas {
+  font-size: 1.5em;
+  display: flex;
+  justify-content: space-around;
+}
+
+div.estrellas i {
+  cursor: pointer;
 }
 
 button.categoriaCanal {
