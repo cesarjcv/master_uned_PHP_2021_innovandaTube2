@@ -14,12 +14,11 @@ use Illuminate\Support\Facades\Log;
 class CategoriaController extends Controller
 {
     /**
-     * Listado de todos las categorías en orden inverso de insercción en base de datos
+     * Listado de todos las categorías en orden alfabético en base de datos
      * GET      /api/categoria    categoria.index
      */
     public function index()
     {
-        //return Categoria::orderBy('created_at', 'desc')->get();
         return Categoria::orderBy('nombre', 'asc')->get();
     }
 
@@ -194,10 +193,9 @@ class CategoriaController extends Controller
     {
         /*return*/$vcat = Categoria::join('videocategorias', 'categorias.id', '=', 'videocategorias.idcategoria')
         ->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('categorias.visible', true)->whereNull('videos.deleted_at')->where('videos.visible', true)
-        ->select('categorias.id', 'categorias.nombre', 'categorias.descripcion')->distinct()/*->get()*/;
+        ->select('categorias.id', 'categorias.nombre', 'categorias.descripcion')->distinct();
 
         return Categoria::join('canalcategorias', 'categorias.id', '=', 'canalcategorias.idcategoria')
-        /*->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('categorias.visible', true)->whereNull('videos.deleted_at')*/
         ->select('categorias.id', 'categorias.nombre', 'categorias.descripcion')->distinct()->union($vcat)->get();
     }
 }

@@ -68,8 +68,8 @@ class VideoController extends Controller
                 if (strlen($pal) > 0) // ignorar los espacios en blanco
                 {
                     // buscar texto en título y descripción de vídeo
-                    if ($videos) $videos = $videos->where(DB::raw("CONCAT(titulo,' ',descripcion)"), 'LIKE', '%' . $pal . '%');
-                    else $videos = Video::where(DB::raw("CONCAT(titulo,' ',descripcion)"), 'LIKE', '%' . $pal . '%');
+                    if ($videos) $videos = $videos->where(DB::raw("CONCAT(titulo,' ',descripcion)"), 'LIKE', '%' . utf8_encode($pal) . '%');
+                     else $videos = Video::where(DB::raw("CONCAT(titulo,' ',descripcion)"), 'LIKE', '%' . utf8_encode($pal) . '%');
                 }
             }
             
@@ -206,4 +206,5 @@ class VideoController extends Controller
         $video->estrellas = $request->puntos;
         $video->save();
     }
+
 }

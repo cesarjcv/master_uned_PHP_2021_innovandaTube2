@@ -25,13 +25,13 @@ class CanalController extends Controller
     }
 
     /**
-     * Listado de todos los canales en orden inverso de insercción en base de datos
+     * Listado de todos los canales en orden alfabético en base de datos
      * GET      /api/canal    canal.index
      */
     public function index()
     {
-        //$canales = Canal::orderBy('created_at', 'desc')->get();
         $canales = Canal::orderBy('nombre', 'asc')->get();
+        // recuperar categoirías de canal
         foreach ($canales as $canal)
         {
             $canal->categorias = DB::table('canalcategorias')->select('idcategoria')->where('idcanal', $canal->id)->get();
@@ -130,7 +130,7 @@ class CanalController extends Controller
         {
             // comporbar si el canal fue eliminado anteriormente
             $auxCanal = Canal::onlyTrashed()->where('channelid', $canal->channelid)->first();
-            if ($auxCanal) // el canla está en la base de datos en estado "eliminado"
+            if ($auxCanal) // el canal está en la base de datos en estado "eliminado"
             {
                 // restaurar canal con nuevos datos
                 $auxCanal->nombre = $canal->nombre;
@@ -213,14 +213,7 @@ class CanalController extends Controller
      */
     public function establecerCategoria(Request $request, $id)
     {
-        // eliminar lista de categorías actuales
-        //DB::table('canalcategorias')->where('idvideo', $id)->delete();
-
-        // insertar nueva lista de categorías
-        //foreach ($request->cat as $idcat)
-        {
-            DB::table('canalcategorias')->insert(['idcanal' => $id, 'idcategoria' => $request->cat]);
-        }
+        DB::table('canalcategorias')->insert(['idcanal' => $id, 'idcategoria' => $request->cat]);
     }
 
     /**
@@ -230,7 +223,6 @@ class CanalController extends Controller
      */
     public function quitarCategoria(Request $request, $id)
     {
-        Log::channel('single')->info($id . " - " . $request->cat );
         DB::table('canalcategorias')->where('idcanal', $id)->where('idcategoria', $request->cat)->delete();
     }
 }
