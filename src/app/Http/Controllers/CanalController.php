@@ -202,6 +202,8 @@ class CanalController extends Controller
             // eliminar lista
             $lista->delete();
         }
+        // eliminar asociación de categorías
+        DB::table('canalcategorias')->where('idcanal', $id)->delete();
         // eliminar canal
         $canal->delete();
     }

@@ -5088,6 +5088,8 @@ __webpack_require__.r(__webpack_exports__);
       // id de canal a eliminar
       catCanalid: 0,
       // id de canal a cambiar categorías
+      catCanalcat: [],
+      // categorías actuales del canal a modificar
       categorias: [],
       // listado de categorias
       selCatTrabajando: false // se están guardnado las categorías seleccionadas en el servidor
@@ -5183,11 +5185,16 @@ __webpack_require__.r(__webpack_exports__);
      * @param int idVideo identificadro en base de datos del canal
      * @param int[] categorias lista de categorías del canal
      */
-    seleccionCategoria: function seleccionCategoria(idCanal
-    /*, categorias*/
-    ) {
+    seleccionCategoria: function seleccionCategoria(idCanal, categorias) {
       this.catCanalid = idCanal; // estbalecer el identificador del video a tratar
-      // abrir ventana de selección de categorías
+
+      this.catCanalcat.splice(0); // vaciar vector
+      // insertar identificadores de categorías actuales del canal
+
+      for (var i = 0; i < categorias.length; i++) {
+        this.catCanalcat.push(categorias[i].idcategoria);
+      } // abrir ventana de selección de categorías
+
 
       var d = document.getElementById('dialogoCanalCategorias');
       var x = new bootstrap.Modal(d, {
@@ -5205,7 +5212,17 @@ __webpack_require__.r(__webpack_exports__);
       var parametros = {
         cat: catid
       };
-      this.selCatTrabajando = true; // llamada a API de aplicación para asignar categoría
+      this.selCatTrabajando = true; // comprobar si el canal ya tiene esa categoría. no enviar datos a servidor.
+
+      if (this.catCanalcat.indexOf(catid) > -1) {
+        // cerrar ventana modal
+        var d = document.getElementById('dialogoCanalCategorias');
+        var m = bootstrap.Modal.getInstance(d);
+        m.hide();
+        this.selCatTrabajando = false;
+        return;
+      } // llamada a API de aplicación para asignar categoría
+
 
       axios.put('/api/canal/categorias/' + this.catCanalid, parametros).then(function (respuesta) {
         if (respuesta.data.error) // error en operación
@@ -5225,9 +5242,11 @@ __webpack_require__.r(__webpack_exports__);
           } // cerrar ventana modal
 
 
-          var d = document.getElementById('dialogoCanalCategorias');
-          var m = bootstrap.Modal.getInstance(d);
-          m.hide();
+          var _d = document.getElementById('dialogoCanalCategorias');
+
+          var _m = bootstrap.Modal.getInstance(_d);
+
+          _m.hide();
         }
 
         _this4.selCatTrabajando = false;
@@ -5780,11 +5799,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * - Identificador para la ventana modal
@@ -5799,56 +5813,8 @@ __webpack_require__.r(__webpack_exports__);
      * @param idCat identificador en base de datos de categoría
      */
     categoriaSel: function categoriaSel(idCat) {
-      //console.log(idCat);
       this.$emit('seleccionCat', idCat);
     }
-    /**
-     * Enviar a componente padre listado de categorías seleccionadas para el vídeo
-     */
-
-    /*guardarCategoriasSel()
-    {
-        // buscar los elementos marcados
-        let lista = document.getElementById(this.identificador).querySelectorAll(".form-check-input:checked");
-         let salida = new Array(); // lista de id de categorías
-        for (let i=0; i < lista.length; i++)
-        {
-            salida.push(lista[i].dataset.idcat); // añadir a vector de salida
-        }
-        this.$emit('seleccionCat', salida); // enviar a componente padre datos de categorías seleccionadas
-    },*/
-
-    /**
-     * desmarca todas las casillas de selección
-     */
-
-    /*limpiarSeleccion()
-    {
-        // buscar todas las entradas señaladas
-        let lista = document.getElementById(this.identificador).querySelectorAll(".form-check-input:checked");
-        for (let i=0; i < lista.length; i++)
-        {
-            lista[i].checked = false; // desmarcar entrada
-        }
-    },*/
-
-    /**
-     * Marcar las categorías del video actual
-     */
-
-    /*marcarSelActual(cat)
-    {
-        let lista = document.getElementById(this.identificador).querySelectorAll("input.form-check-input"); // lista elementos HTMl de categorías
-        // crear vector con id de categorías actuales
-        let catNum = Array();
-        cat.forEach(elemento => catNum.push(parseInt(elemento.idcategoria)));
-         for (let i=0; i < lista.length; i++)
-        {
-            if (catNum.indexOf(parseInt(lista[i].dataset.idcat)) == -1) lista[i].checked = false; // desmarcar entrada
-            else lista[i].checked = true; // desmarcar entrada
-        }
-    }*/
-
   }
 });
 
@@ -6362,13 +6328,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * Identificador para la ventana modal
@@ -6416,16 +6375,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       this.avisoVisible = false; // llamada a API de aplicación para insertar Canal
 
       axios.post('/api/canal', parametros).then(function (respuesta) {
-        console.log(respuesta);
-
+        //console.log(respuesta);
         if (respuesta.data.error) // error en operación
           {
             // mostrar mensaje de error
             if (_typeof(respuesta.data.error) === "object") _this.textoAviso = respuesta.data.error.original.error;else _this.textoAviso = respuesta.data.error;
             _this.avisoVisible = true;
           } else {
-          var canal = respuesta.data;
-          _this.codigo = "";
+          var canal = respuesta.data; // datos de canal
+
+          canal.categorias = []; // listado vacío de categorías para canal
+
+          _this.codigo = ""; // limpiar campo
 
           _this.$emit('nuevoCanal', canal); // enviar a componente padre datos de nuevo canal
 
@@ -6639,12 +6600,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * Datos del canal a mostrar
@@ -6690,9 +6645,7 @@ __webpack_require__.r(__webpack_exports__);
      * enviar mensaje a componente padre
      */
     ventanaCategoria: function ventanaCategoria() {
-      this.$emit('selCategoria', this.canal.id
-      /*, this.video.categorias*/
-      );
+      this.$emit('selCategoria', this.canal.id, this.canal.categorias);
     },
 
     /**
@@ -39594,18 +39547,14 @@ var staticRenderFns = [
         _vm._v("Seleccionar categoría para Canal")
       ]),
       _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-bs-dismiss": "modal",
-            "aria-label": "Cerrar"
-          }
-        },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
+      _c("button", {
+        staticClass: "btn-close",
+        attrs: {
+          type: "button",
+          "data-bs-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      })
     ])
   }
 ]
@@ -40500,34 +40449,6 @@ var render = function() {
               })
             ]),
             _vm._v(" "),
-            _c(
-              "svg",
-              {
-                staticStyle: { display: "none" },
-                attrs: { xmlns: "http://www.w3.org/2000/svg" }
-              },
-              [
-                _c(
-                  "symbol",
-                  {
-                    attrs: {
-                      id: "exclamation-triangle-fill",
-                      fill: "currentColor",
-                      viewBox: "0 0 16 16"
-                    }
-                  },
-                  [
-                    _c("path", {
-                      attrs: {
-                        d:
-                          "M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"
-                      }
-                    })
-                  ]
-                )
-              ]
-            ),
-            _vm._v(" "),
             _vm.avisoVisible
               ? _c(
                   "div",
@@ -40537,23 +40458,10 @@ var render = function() {
                     attrs: { role: "alert" }
                   },
                   [
-                    _c(
-                      "svg",
-                      {
-                        staticClass: "bi flex-shrink-0 me-2",
-                        attrs: {
-                          width: "24",
-                          height: "24",
-                          role: "img",
-                          "aria-label": "Warning:"
-                        }
-                      },
-                      [
-                        _c("use", {
-                          attrs: { "xlink:href": "#exclamation-triangle-fill" }
-                        })
-                      ]
-                    ),
+                    _c("i", {
+                      staticClass: "bi bi-exclamation-triangle-fill",
+                      staticStyle: { "font-size": "2em" }
+                    }),
                     _vm._v(" "),
                     _c("div", [
                       _vm._v(
@@ -40616,18 +40524,14 @@ var staticRenderFns = [
     return _c("div", { staticClass: "modal-header" }, [
       _c("h5", { staticClass: "modal-title" }, [_vm._v("Añadir nuevo canal")]),
       _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-bs-dismiss": "modal",
-            "aria-label": "Cerrar"
-          }
-        },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
+      _c("button", {
+        staticClass: "btn-close",
+        attrs: {
+          type: "button",
+          "data-bs-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      })
     ])
   }
 ]
@@ -40912,37 +40816,7 @@ var render = function() {
                 }
               }
             },
-            [
-              _c(
-                "svg",
-                {
-                  staticClass: "bi bi-trash",
-                  attrs: {
-                    xmlns: "http://www.w3.org/2000/svg",
-                    width: "16",
-                    height: "16",
-                    fill: "currentColor",
-                    viewBox: "0 0 16 16"
-                  }
-                },
-                [
-                  _c("path", {
-                    attrs: {
-                      d:
-                        "M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("path", {
-                    attrs: {
-                      "fill-rule": "evenodd",
-                      d:
-                        "M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
-                    }
-                  })
-                ]
-              )
-            ]
+            [_c("i", { staticClass: "bi bi-trash" })]
           ),
           _vm._v(" "),
           _c(
@@ -40956,36 +40830,7 @@ var render = function() {
                 }
               }
             },
-            [
-              _c(
-                "svg",
-                {
-                  staticClass: "bi bi-link",
-                  attrs: {
-                    xmlns: "http://www.w3.org/2000/svg",
-                    width: "16",
-                    height: "16",
-                    fill: "currentColor",
-                    viewBox: "0 0 16 16"
-                  }
-                },
-                [
-                  _c("path", {
-                    attrs: {
-                      d:
-                        "M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("path", {
-                    attrs: {
-                      d:
-                        "M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z"
-                    }
-                  })
-                ]
-              )
-            ]
+            [_c("i", { staticClass: "bi bi-link" })]
           ),
           _vm._v(" "),
           _c(

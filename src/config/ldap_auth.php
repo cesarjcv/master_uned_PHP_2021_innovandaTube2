@@ -292,14 +292,9 @@ return [
     */
 
     'sync_attributes' => [
-
-        ///////////////'email' => 'userprincipalname',
-
-        ///////////////'name' => 'cn',
         env('AUTH_USER_KEY_FIELD', null) => env('LDAP_USER_SEARCH_ATTRIBUTE', null),
         'name' => 'cn',
         'email' => 'mail',
-        //'phone' => 'telephonenumber',
     ],
 
     /*

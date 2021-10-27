@@ -1,7 +1,7 @@
 <template>
     <div>
         <dialogo-canal-categorias-componente identificador="dialogoCanalCategorias"  ref="dialogoCat"
-            :canalid="catCanalid"  :categorias="categorias" v-on:seleccionCat="categoriaSeleccionada" :trabajando="selCatTrabajando">
+            :canalid="catCanalid" :categorias="categorias" v-on:seleccionCat="categoriaSeleccionada" :trabajando="selCatTrabajando">
         </dialogo-canal-categorias-componente>
         <!--     -->
 
@@ -36,6 +36,7 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
                 canales: [], // listado de canales
                 canalEliminar: null, // id de canal a eliminar
                 catCanalid: 0, // id de canal a cambiar categorías
+                catCanalcat: [], // categorías actuales del canal a modificar
                 categorias: [], // listado de categorias
                 selCatTrabajando: false, // se están guardnado las categorías seleccionadas en el servidor
             }
@@ -122,8 +123,15 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
              * @param int idVideo identificadro en base de datos del canal
              * @param int[] categorias lista de categorías del canal
              */
-            seleccionCategoria(idCanal/*, categorias*/) {
+            seleccionCategoria(idCanal, categorias) {
                 this.catCanalid = idCanal; // estbalecer el identificador del video a tratar
+
+                this.catCanalcat.splice(0); // vaciar vector
+                // insertar identificadores de categorías actuales del canal
+                for (let i=0; i < categorias.length; i++)
+                {
+                    this.catCanalcat.push(categorias[i].idcategoria);
+                }
 
                 // abrir ventana de selección de categorías
                 let d = document.getElementById('dialogoCanalCategorias');
@@ -136,6 +144,19 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
             categoriaSeleccionada(catid) {
                 const parametros = {cat: catid};
                 this.selCatTrabajando = true;
+
+                // comprobar si el canal ya tiene esa categoría. no enviar datos a servidor.
+                if (this.catCanalcat.indexOf(catid) > -1)
+                {
+                    // cerrar ventana modal
+                    let d = document.getElementById('dialogoCanalCategorias');
+                    let m = bootstrap.Modal.getInstance(d);    
+                    m.hide();
+
+                    this.selCatTrabajando = false;
+
+                    return;
+                }
 
                 // llamada a API de aplicación para asignar categoría
                 axios.put('/api/canal/categorias/' + this.catCanalid, parametros).then((respuesta) => 

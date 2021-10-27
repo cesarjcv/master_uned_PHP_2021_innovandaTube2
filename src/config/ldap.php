@@ -101,7 +101,6 @@ return [
                 |
                 */
 
-                //'schema' => Adldap\Schemas\ActiveDirectory::class,
                 /////////////////////////////
                 'schema' => env('LDAP_SCHEMA', '') == 'OpenLDAP' ?
                             Adldap\Schemas\OpenLDAP::class :
@@ -191,7 +190,6 @@ return [
                 |
                 */
 
-                //////////////'base_dn' => env('LDAP_BASE_DN', 'dc=corp,dc=acme,dc=org'),
                 'base_dn' => env('LDAP_BASE_DN', ''),
 
                 /*
@@ -207,8 +205,6 @@ return [
                 |
                 */
 
-                /////////////////'username' => env('LDAP_USERNAME', 'username'),
-                ////////////////'password' => env('LDAP_PASSWORD', 'secret'),
                 'username' => env('LDAP_ADMIN_USERNAME', ''),
                 'password' => env('LDAP_ADMIN_PASSWORD', ''),
 

@@ -81,10 +81,6 @@ return [
             'driver' => 'adminless_ldap',
         ],
         /////////////////////////////
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*
