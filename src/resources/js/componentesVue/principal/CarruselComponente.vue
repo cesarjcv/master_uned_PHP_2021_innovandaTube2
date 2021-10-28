@@ -5,6 +5,7 @@
             <i class="bi bi-calendar3" data-bs-toggle="tooltip" data-bs-placement="top" title="Ordenar por fecha de publicación" @click="ordenFecha()"></i>
             <i class="bi bi-hand-thumbs-up" data-bs-toggle="tooltip" data-bs-placement="top" title="Ordenar por mayor número de votos positivos" @click="ordenVotos()"></i>
             <i class="bi bi-eye" data-bs-toggle="tooltip" data-bs-placement="top" title="Ordenar por número de reproducciones" @click="ordenRepro()"></i>
+            <i class="bi bi-star" data-bs-toggle="tooltip" data-bs-placement="top" title="Ordenar por índice de fiabilidad" @click="ordenFiabilidad()"></i>
         </div>
 
         <flecha-componente v-for="flecha in flechas" :key="flecha.id" :flecha="flecha" @atras="atras" @adelante="adelante">
@@ -238,6 +239,26 @@ export default {
             {  
                 if (elemento1.estrep > elemento2.estrep) return -1;
                 else if (elemento1.estrep < elemento2.estrep) return 1;
+                else return 0;
+            });
+
+            // desplazar hasta el inicio
+            this.posicion.x = 0;
+            // modificar visibilidad de fechas
+            this.vistaFlechas();
+            // mostrar primeros vídeos del listado
+            this.cargaPrimeros();
+        },
+        ordenFiabilidad()
+        {
+            // recuperar vídeos mostrados para listado
+            this.videos = this.videosmostrados.splice(0).concat(this.videos);
+
+            // ordenar por índice de fiabilidad
+            this.videos.sort(function comparar(elemento1, elemento2)
+            {  
+                if (elemento1.estrellas > elemento2.estrellas) return -1;
+                else if (elemento1.estrellas < elemento2.estrellas) return 1;
                 else return 0;
             });
 

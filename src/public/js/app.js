@@ -5127,6 +5127,8 @@ __webpack_require__.r(__webpack_exports__);
     nuevoCanal: function nuevoCanal(canal) {
       var _this2 = this;
 
+      console.log(canal);
+
       if (Array.isArray(canal)) {
         canal.forEach(function (element) {
           _this2.canales.unshift(element);
@@ -5927,8 +5929,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * Identificador para la ventana modal
@@ -6382,8 +6382,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             if (_typeof(respuesta.data.error) === "object") _this.textoAviso = respuesta.data.error.original.error;else _this.textoAviso = respuesta.data.error;
             _this.avisoVisible = true;
           } else {
-          var canal = respuesta.data; // datos de canal
+          var canal; // datos de canal
 
+          if (Array.isArray(respuesta.data)) canal = respuesta.data[0];else canal = respuesta.data;
           canal.categorias = []; // listado vacío de categorías para canal
 
           _this.codigo = ""; // limpiar campo
@@ -6645,6 +6646,7 @@ __webpack_require__.r(__webpack_exports__);
      * enviar mensaje a componente padre
      */
     ventanaCategoria: function ventanaCategoria() {
+      //console.log(this.canal);
       this.$emit('selCategoria', this.canal.id, this.canal.categorias);
     },
 
@@ -7053,6 +7055,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ['categoria'],
   data: function data() {
@@ -7265,6 +7268,20 @@ __webpack_require__.r(__webpack_exports__);
 
       this.videos.sort(function comparar(elemento1, elemento2) {
         if (elemento1.estrep > elemento2.estrep) return -1;else if (elemento1.estrep < elemento2.estrep) return 1;else return 0;
+      }); // desplazar hasta el inicio
+
+      this.posicion.x = 0; // modificar visibilidad de fechas
+
+      this.vistaFlechas(); // mostrar primeros vídeos del listado
+
+      this.cargaPrimeros();
+    },
+    ordenFiabilidad: function ordenFiabilidad() {
+      // recuperar vídeos mostrados para listado
+      this.videos = this.videosmostrados.splice(0).concat(this.videos); // ordenar por índice de fiabilidad
+
+      this.videos.sort(function comparar(elemento1, elemento2) {
+        if (elemento1.estrellas > elemento2.estrellas) return -1;else if (elemento1.estrellas < elemento2.estrellas) return 1;else return 0;
       }); // desplazar hasta el inicio
 
       this.posicion.x = 0; // modificar visibilidad de fechas
@@ -39913,18 +39930,14 @@ var staticRenderFns = [
     return _c("div", { staticClass: "modal-header" }, [
       _c("h5", { staticClass: "modal-title" }, [_vm._v("Modificar categoría")]),
       _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-bs-dismiss": "modal",
-            "aria-label": "Cerrar"
-          }
-        },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
+      _c("button", {
+        staticClass: "btn-close",
+        attrs: {
+          type: "button",
+          "data-bs-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      })
     ])
   }
 ]
@@ -41412,6 +41425,20 @@ var render = function() {
             on: {
               click: function($event) {
                 return _vm.ordenRepro()
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("i", {
+            staticClass: "bi bi-star",
+            attrs: {
+              "data-bs-toggle": "tooltip",
+              "data-bs-placement": "top",
+              title: "Ordenar por índice de fiabilidad"
+            },
+            on: {
+              click: function($event) {
+                return _vm.ordenFiabilidad()
               }
             }
           })

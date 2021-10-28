@@ -77,6 +77,7 @@
              */
             ventanaCategoria()
             {
+                //console.log(this.canal);
                 this.$emit('selCategoria', this.canal.id, this.canal.categorias);
             },
             /**

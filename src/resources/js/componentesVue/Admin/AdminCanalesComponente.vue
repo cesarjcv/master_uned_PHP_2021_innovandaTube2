@@ -69,6 +69,7 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
              * Añadir al listado de canales los datos de los canales añadidos
              */
             nuevoCanal(canal) {
+                console.log(canal);
                 if (Array.isArray(canal))
                 {
                     canal.forEach(element => {

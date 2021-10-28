@@ -85,7 +85,9 @@
                     }
                     else
                     {
-                        const canal = respuesta.data; // datos de canal
+                        let canal;// datos de canal
+                        if (Array.isArray(respuesta.data)) canal = respuesta.data[0];
+                        else canal = respuesta.data; 
                         canal.categorias = []; // listado vacío de categorías para canal
                         this.codigo = ""; // limpiar campo
                         this.$emit('nuevoCanal', canal); // enviar a componente padre datos de nuevo canal
