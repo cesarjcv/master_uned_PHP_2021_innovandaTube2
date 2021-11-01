@@ -195,7 +195,7 @@ class CategoriaController extends Controller
         ->leftJoin('videos', 'videocategorias.idvideo', '=', 'videos.id')->where('categorias.visible', true)->whereNull('videos.deleted_at')->where('videos.visible', true)
         ->select('categorias.id', 'categorias.nombre', 'categorias.descripcion')->distinct();
 
-        return Categoria::join('canalcategorias', 'categorias.id', '=', 'canalcategorias.idcategoria')
+        return Categoria::join('canalcategorias', 'categorias.id', '=', 'canalcategorias.idcategoria')->where('categorias.visible', true)
         ->select('categorias.id', 'categorias.nombre', 'categorias.descripcion')->distinct()->union($vcat)->get();
     }
 }

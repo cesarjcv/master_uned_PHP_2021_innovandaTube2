@@ -3,7 +3,6 @@
         <dialogo-canal-categorias-componente identificador="dialogoCanalCategorias"  ref="dialogoCat"
             :canalid="catCanalid" :categorias="categorias" v-on:seleccionCat="categoriaSeleccionada" :trabajando="selCatTrabajando">
         </dialogo-canal-categorias-componente>
-        <!--     -->
 
         <div class='anadir'>
             <button class="btn btn-primary" @click="abrirNuevoCanal()">Añadir canal</button>
@@ -15,10 +14,13 @@
         <dialogo-confirmacion-componente id="conf" texto="¿Seguro que quiere eliminar este canal y todos sus videos asociados?"
             v-on:respuesta="respuestaEliminar"></dialogo-confirmacion-componente>
 
+        <dialogo-confirmacion-componente id="conf2" texto="¿Seguro que quiere purgar este canal y todos sus videos asociados?"
+            v-on:respuesta="respuestaPurgar"></dialogo-confirmacion-componente>
+
         <div class="container-fluid">
             <div class="row row-cols-auto">
-                <entrada-canal-componente v-for="canal in canales" :key="canal.id" :canal="canal" v-on:eliminar="eliminar" 
-                    v-on:selCategoria="seleccionCategoria" :categorias="categorias" >
+                <entrada-canal-componente v-for="canal in canales" :key="canal.id" :canal="canal" v-on:eliminar="eliminar"  v-on:purgar="purgar"
+                    v-on:selCategoria="seleccionCategoria" :categorias="categorias" :administrador="administrador">
                 </entrada-canal-componente>
             </div>
         </div>
@@ -29,7 +31,12 @@
 import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
 
     export default {
-  components: { DialogoConfirmacionComponente },
+        components: { DialogoConfirmacionComponente },
+
+        /**
+         * Indica si el usuario actual es administrador
+         */
+        props:['administrador'],
 
         data(){
             return {
@@ -96,6 +103,18 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
                 x.show();
             },
             /**
+             * Se recibe de componente hijo orden de purgar canal.
+             * Mostrar ventana modal de confirmación
+             * @param int idCanal identificador en base de datos del canal a purgar
+             */
+            purgar(idCanal) {
+                this.canalEliminar = idCanal;
+                // abrir ventana de confirmación
+                let d = document.getElementById('conf2');
+                let x = new bootstrap.Modal(d, {backdrop: 'static'});
+                x.show();
+            },
+            /**
              * Se analiza la respuesta del usuario a mensaje de eliminación.
              * Si positivo enviar orden de eliminación a API de aplicación
              */
@@ -108,6 +127,30 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
                 if (resp) // eliminar canal
                 {
                     axios.delete('/api/canal/' + this.canalEliminar).then((response) => 
+                    {
+                        //buscar la posición en el vector del canal a eliminar
+                        for(var i=0; i < this.canales.length; i++)
+                        {
+                            if (this.canales[i].id == this.canalEliminar) break;
+                        }
+                        // eliminar canal de vector
+                        this.canales.splice(i, 1);
+                    });
+                }
+            },
+            /**
+             * Se analiza la respuesta del usuario a mensaje de purga.
+             * Si positivo enviar orden de purga a API de aplicación
+             */
+            respuestaPurgar(resp){
+                // ocultar ventana de confiramción
+                let d = document.getElementById('conf2');
+                let x = bootstrap.Modal.getInstance(d);
+                x.hide();
+
+                if (resp) // purgar canal
+                {
+                    axios.put('/api/canal/purgar/' + this.canalEliminar).then((response) => 
                     {
                         //buscar la posición en el vector del canal a eliminar
                         for(var i=0; i < this.canales.length; i++)

@@ -64,7 +64,7 @@ export default {
         window.removeEventListener("resize", this.calculoValores);
     },
     mounted() {
-        if (this.categoria.id <= 0)
+        if (this.categoria.id <= 0) // se trata de una búsqeuda
         {
             //console.log(this.categoria.parametros);
             axios.put('api/video/buscar', this.categoria.parametros).then((respuesta) => 

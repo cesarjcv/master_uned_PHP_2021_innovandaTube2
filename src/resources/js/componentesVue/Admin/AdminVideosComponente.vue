@@ -84,7 +84,7 @@ import DialogoPrevisualizarVideoComponente from './DialogoPrevisualizarVideoComp
 import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
 
     export default {
-  components: { DialogoPrevisualizarVideoComponente, DialogoConfirmacionComponente },
+        components: { DialogoPrevisualizarVideoComponente, DialogoConfirmacionComponente },
 
         /**
          * Indica si el usuario actual es administrador
@@ -196,19 +196,10 @@ import DialogoConfirmacionComponente from './DialogoConfirmacionComponente.vue';
 
                 if (resp) // eliminar vídeo
                 {
-                    //console.log(this.videoEliminar);
                     axios.delete('/api/video/' + this.videoEliminar).then((response) => 
                     {
-                        /*//buscar la posición en el vector del canal a eliminar
-                        for(var i=0; i < this.canales.length; i++)
-                        {
-                            if (this.canales[i].id == this.canalEliminar) break;
-                        }
-                        // eliminar canal de vector
-                        this.canales.splice(i, 1);*/
                         // actualizar lista de vídeos visualizados
                         this.datosVideosPagina();
-                        
                     });
                 }
             },

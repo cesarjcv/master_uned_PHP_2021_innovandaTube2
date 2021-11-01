@@ -227,4 +227,28 @@ class CanalController extends Controller
     {
         DB::table('canalcategorias')->where('idcanal', $id)->where('idcategoria', $request->cat)->delete();
     }
+
+    /**
+     * Eliminar totalmente canal y videos asociados en base de datos
+     * PUT 	/api/canal/purgar/{idcanal}
+     * @param int $id   id de canal en base de datos
+     * @return void
+     */
+    public function purgar(int $id) 	
+    {
+        // datos de canal
+        $canal = Canal::find($id);
+        // listas de reproducción asociadas al canal
+        $listas = ListaReproduccion::where('idcanal', $id)->get();
+
+        foreach ($listas as $lista)
+        {
+            // eliminar videos de lista
+            Video::where('idlistarep', $lista->id)->forceDelete();
+            // eliminar lista
+            $lista->forceDelete();
+        }
+        // eliminar canal
+        $canal->forceDelete();
+    }
 }

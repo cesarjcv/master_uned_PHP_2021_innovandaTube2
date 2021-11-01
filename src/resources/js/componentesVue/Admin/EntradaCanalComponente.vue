@@ -7,16 +7,21 @@
                 <p class="card-text" v-html="this.des"></p>
             </div>
             <div class="card-footer">
-                <small class="text-muted" style="padding-bottom: 15px; display: inline-block;">{{ preFecha(canal.fecha) }}</small>
-                <button type="button" class="btn btn-outline-danger float-end ms-2" @click="eliminar()">
-                    <i class="bi bi-trash"></i>
-                </button>
-                <button type="button" class="btn btn-outline-primary float-end ms-2" @click="irEnlace(canal.channelid)">
-                    <i class="bi bi-link"></i>
-                </button>
-                <button type="button" class="btn btn-outline-success float-end" @click="ventanaCategoria()">
-                    <i class="bi bi-bookmark-plus"></i>
-                </button>
+                <div><small class="text-muted" style="padding-bottom: 15px; display: inline-block;">{{ preFecha(canal.fecha) }}</small></div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-outline-success " @click="ventanaCategoria()">
+                        <i class="bi bi-bookmark-plus"></i>
+                    </button>    
+                    <button type="button" class="btn btn-outline-primary ms-2" @click="irEnlace(canal.channelid)">
+                        <i class="bi bi-link"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger ms-2" @click="eliminar()">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button v-if="administrador" type="button" class="btn btn-outline-danger ms-2" @click="purgar()">
+                        <i class="bi bi-x-square"></i>
+                    </button>
+                </div>
                 <div v-for="cat in canal.categorias" :key="cat.idcategoria" style='margin-top:10px'>
                     <button class="categoriaCanal">
                         {{ nombreCategoria(cat.idcategoria) }}
@@ -33,8 +38,10 @@
 
         /**
          * Datos del canal a mostrar
+         * listado de categorías
+         * Índica si el usuario actual es administrador
          */
-        props: ['canal', 'categorias'],
+        props: ['canal', 'categorias', 'administrador'],
         data(){
             return {
                 des: "", // descripción con ajuste de salots de línea
@@ -63,6 +70,13 @@
             eliminar()
             {
                 this.$emit('eliminar', this.canal.id);
+            },
+            /**
+             * enviar a componente padre un mensaje de purgación de canal
+             */
+            purgar()
+            {
+                this.$emit('purgar', this.canal.id);
             },
             /**
              * Abre nueva ventana con la dirección url del canal
@@ -99,34 +113,16 @@
                     }
                     else
                     {
-                        // crear lista de objetos categorías
-                        /*let lCat = new Array();
-                        for (let i=0; i < listaid.length; i++)
-                        {
-                            lCat.push(new Object({idcategoria: listaid[i]}));
-                        }*/
-                        // buscar entrada de video y modificar su listado de categorías
-                        /*for(let i=0; i < this.canales.length; i++)
-                        {
-                            if (this.canales[i].id == this.catCanalid)
-                            {
-                                this.canales[i].categorias.push({idcategoria: catid}); // añadir nueva categoría
-                                console.log(this.canales[i].categorias);
-                                break;
-                            } 
-                        }*/
                         // eliminar del listado
-                        //console.log(this.canal.categorias.indexOf(idcat));
                         // buscar elemento en listado
                         let i;
                         for(i=0; i < this.canal.categorias.length; i++)
                         {
                             if (this.canal.categorias[i].idcategoria == idcat) break;
                         }
-                        // aliminar de listado
+                        // eliminar de listado
                         this.canal.categorias.splice(i, 1);
                     }
-                    //this.selCatTrabajando = false;
                 });
             },
             /**

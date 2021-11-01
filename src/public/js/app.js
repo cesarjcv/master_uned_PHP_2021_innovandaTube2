@@ -5075,11 +5075,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
     DialogoConfirmacionComponente: _DialogoConfirmacionComponente_vue__WEBPACK_IMPORTED_MODULE_0__.default
   },
+
+  /**
+   * Indica si el usuario actual es administrador
+   */
+  props: ['administrador'],
   data: function data() {
     return {
       canales: [],
@@ -5157,6 +5165,21 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /**
+     * Se recibe de componente hijo orden de purgar canal.
+     * Mostrar ventana modal de confirmación
+     * @param int idCanal identificador en base de datos del canal a purgar
+     */
+    purgar: function purgar(idCanal) {
+      this.canalEliminar = idCanal; // abrir ventana de confirmación
+
+      var d = document.getElementById('conf2');
+      var x = new bootstrap.Modal(d, {
+        backdrop: 'static'
+      });
+      x.show();
+    },
+
+    /**
      * Se analiza la respuesta del usuario a mensaje de eliminación.
      * Si positivo enviar orden de eliminación a API de aplicación
      */
@@ -5178,6 +5201,32 @@ __webpack_require__.r(__webpack_exports__);
 
 
             _this3.canales.splice(i, 1);
+          });
+        }
+    },
+
+    /**
+     * Se analiza la respuesta del usuario a mensaje de purga.
+     * Si positivo enviar orden de purga a API de aplicación
+     */
+    respuestaPurgar: function respuestaPurgar(resp) {
+      var _this4 = this;
+
+      // ocultar ventana de confiramción
+      var d = document.getElementById('conf2');
+      var x = bootstrap.Modal.getInstance(d);
+      x.hide();
+
+      if (resp) // purgar canal
+        {
+          axios.put('/api/canal/purgar/' + this.canalEliminar).then(function (response) {
+            //buscar la posición en el vector del canal a eliminar
+            for (var i = 0; i < _this4.canales.length; i++) {
+              if (_this4.canales[i].id == _this4.canalEliminar) break;
+            } // eliminar canal de vector
+
+
+            _this4.canales.splice(i, 1);
           });
         }
     },
@@ -5209,7 +5258,7 @@ __webpack_require__.r(__webpack_exports__);
      * Actualizar en base de datos e interfaz las nueva selección de categorías para el vídeo
      */
     categoriaSeleccionada: function categoriaSeleccionada(catid) {
-      var _this4 = this;
+      var _this5 = this;
 
       var parametros = {
         cat: catid
@@ -5232,9 +5281,9 @@ __webpack_require__.r(__webpack_exports__);
             alert(respuesta.data.error);
           } else {
           // buscar entrada de video y modificar su listado de categorías
-          for (var i = 0; i < _this4.canales.length; i++) {
-            if (_this4.canales[i].id == _this4.catCanalid) {
-              _this4.canales[i].categorias.push({
+          for (var i = 0; i < _this5.canales.length; i++) {
+            if (_this5.canales[i].id == _this5.catCanalid) {
+              _this5.canales[i].categorias.push({
                 idcategoria: catid
               }); // añadir nueva categoría
 
@@ -5251,7 +5300,7 @@ __webpack_require__.r(__webpack_exports__);
           _m.hide();
         }
 
-        _this4.selCatTrabajando = false;
+        _this5.selCatTrabajando = false;
       });
     }
   }
@@ -6601,11 +6650,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   /**
    * Datos del canal a mostrar
+   * listado de categorías
+   * Índica si el usuario actual es administrador
    */
-  props: ['canal', 'categorias'],
+  props: ['canal', 'categorias', 'administrador'],
   data: function data() {
     return {
       des: "" // descripción con ajuste de salots de línea
@@ -6632,6 +6688,13 @@ __webpack_require__.r(__webpack_exports__);
      */
     eliminar: function eliminar() {
       this.$emit('eliminar', this.canal.id);
+    },
+
+    /**
+     * enviar a componente padre un mensaje de purgación de canal
+     */
+    purgar: function purgar() {
+      this.$emit('purgar', this.canal.id);
     },
 
     /**
@@ -7102,22 +7165,23 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    if (this.categoria.id <= 0) {
-      //console.log(this.categoria.parametros);
-      axios.put('api/video/buscar', this.categoria.parametros).then(function (respuesta) {
-        _this.videos = respuesta.data;
-        _this.totalvideos = _this.videos.length;
+    if (this.categoria.id <= 0) // se trata de una búsqeuda
+      {
+        //console.log(this.categoria.parametros);
+        axios.put('api/video/buscar', this.categoria.parametros).then(function (respuesta) {
+          _this.videos = respuesta.data;
+          _this.totalvideos = _this.videos.length;
 
-        _this.calculoValores(); // calcular dimensiones
-
-
-        _this.vistaFlechas(); // visibilidad flechas
-        // calcular los primeros vídeos a listar
+          _this.calculoValores(); // calcular dimensiones
 
 
-        _this.cargaPrimeros();
-      });
-    } else {
+          _this.vistaFlechas(); // visibilidad flechas
+          // calcular los primeros vídeos a listar
+
+
+          _this.cargaPrimeros();
+        });
+      } else {
       axios.get('api/categoria/' + this.categoria.id + '/videos/').then(function (respuesta) {
         _this.videos = respuesta.data;
         _this.totalvideos = _this.videos.length;
@@ -39007,6 +39071,15 @@ var render = function() {
         on: { respuesta: _vm.respuestaEliminar }
       }),
       _vm._v(" "),
+      _c("dialogo-confirmacion-componente", {
+        attrs: {
+          id: "conf2",
+          texto:
+            "¿Seguro que quiere purgar este canal y todos sus videos asociados?"
+        },
+        on: { respuesta: _vm.respuestaPurgar }
+      }),
+      _vm._v(" "),
       _c("div", { staticClass: "container-fluid" }, [
         _c(
           "div",
@@ -39014,9 +39087,14 @@ var render = function() {
           _vm._l(_vm.canales, function(canal) {
             return _c("entrada-canal-componente", {
               key: canal.id,
-              attrs: { canal: canal, categorias: _vm.categorias },
+              attrs: {
+                canal: canal,
+                categorias: _vm.categorias,
+                administrador: _vm.administrador
+              },
               on: {
                 eliminar: _vm.eliminar,
+                purgar: _vm.purgar,
                 selCategoria: _vm.seleccionCategoria
               }
             })
@@ -40809,56 +40887,79 @@ var render = function() {
         "div",
         { staticClass: "card-footer" },
         [
-          _c(
-            "small",
-            {
-              staticClass: "text-muted",
-              staticStyle: { "padding-bottom": "15px", display: "inline-block" }
-            },
-            [_vm._v(_vm._s(_vm.preFecha(_vm.canal.fecha)))]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-outline-danger float-end ms-2",
-              attrs: { type: "button" },
-              on: {
-                click: function($event) {
-                  return _vm.eliminar()
+          _c("div", [
+            _c(
+              "small",
+              {
+                staticClass: "text-muted",
+                staticStyle: {
+                  "padding-bottom": "15px",
+                  display: "inline-block"
                 }
-              }
-            },
-            [_c("i", { staticClass: "bi bi-trash" })]
-          ),
+              },
+              [_vm._v(_vm._s(_vm.preFecha(_vm.canal.fecha)))]
+            )
+          ]),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-outline-primary float-end ms-2",
-              attrs: { type: "button" },
-              on: {
-                click: function($event) {
-                  return _vm.irEnlace(_vm.canal.channelid)
+          _c("div", { staticClass: "text-center" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-success ",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.ventanaCategoria()
+                  }
                 }
-              }
-            },
-            [_c("i", { staticClass: "bi bi-link" })]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-outline-success float-end",
-              attrs: { type: "button" },
-              on: {
-                click: function($event) {
-                  return _vm.ventanaCategoria()
+              },
+              [_c("i", { staticClass: "bi bi-bookmark-plus" })]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-primary ms-2",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.irEnlace(_vm.canal.channelid)
+                  }
                 }
-              }
-            },
-            [_c("i", { staticClass: "bi bi-bookmark-plus" })]
-          ),
+              },
+              [_c("i", { staticClass: "bi bi-link" })]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-danger ms-2",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.eliminar()
+                  }
+                }
+              },
+              [_c("i", { staticClass: "bi bi-trash" })]
+            ),
+            _vm._v(" "),
+            _vm.administrador
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-outline-danger ms-2",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        return _vm.purgar()
+                      }
+                    }
+                  },
+                  [_c("i", { staticClass: "bi bi-x-square" })]
+                )
+              : _vm._e()
+          ]),
           _vm._v(" "),
           _vm._l(_vm.canal.categorias, function(cat) {
             return _c(

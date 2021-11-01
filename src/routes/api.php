@@ -37,6 +37,7 @@ Route::put('/video/buscar', 'VideoController@buscar');
     Route::put('/video/categoria/insertar', 'VideoController@insertarCategoria');
     Route::apiResource('/administrador', 'AdministradorController');
     Route::put('/video/puntos/puntuar', 'VideoController@puntuar');
+    Route::put('canal/purgar/{idcanal}', 'CanalController@purgar');
     
 /*});*/
 ?>
