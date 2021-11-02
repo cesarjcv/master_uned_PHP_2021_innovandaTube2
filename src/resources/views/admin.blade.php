@@ -6,6 +6,8 @@
 
         <title>{{ config('app.name')}} - Administraci&oacute;n</title>
 
+        <link rel="shortcut icon" href="img/adminflix.ico" type="image/x-icon" />
+
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
