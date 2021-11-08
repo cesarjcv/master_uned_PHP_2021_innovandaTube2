@@ -1,7 +1,5 @@
 require('./bootstrap');
 
-//const vue = require('vue');
-//window.Vue = vue;
 import Vue from 'vue'
 
 // Página principal

@@ -91,7 +91,6 @@
              */
             ventanaCategoria()
             {
-                //console.log(this.canal);
                 this.$emit('selCategoria', this.canal.id, this.canal.categorias);
             },
             /**
@@ -101,8 +100,6 @@
             eliminarCategoria(idcat)
             {
                 const parametros = {data: {cat: idcat}};
-                //this.selCatTrabajando = true;
-                //console.log(idcat);
 
                 // llamada a API de aplicación para asignar categoría
                 axios.delete('/api/canal/categorias/' + this.canal.id, parametros).then((respuesta) => 

@@ -25,7 +25,6 @@ export default {
         return {}
     },
     mounted() {
-        //console.log(this.video);
     },
     methods: {
         /**

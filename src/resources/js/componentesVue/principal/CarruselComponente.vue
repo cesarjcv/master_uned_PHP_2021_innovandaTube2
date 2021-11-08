@@ -66,7 +66,6 @@ export default {
     mounted() {
         if (this.categoria.id <= 0) // se trata de una búsqeuda
         {
-            //console.log(this.categoria.parametros);
             axios.put('api/video/buscar', this.categoria.parametros).then((respuesta) => 
             {
                 this.videos = respuesta.data;

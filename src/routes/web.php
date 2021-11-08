@@ -14,7 +14,4 @@ use App\Http\Controllers\PrincipalController;
 |
 */
 
-/*Route::get('/', function () {
-    return view('welcome');
-});*/
-Route::get('/', 'PrincipalController@inicio'); //->name('inicio');
+Route::get('/', 'PrincipalController@inicio'); 

@@ -26,12 +26,6 @@
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm innovanda_cabecera">
                 <div class="container">
                      <img src="{{ asset('img/LogoAdminFlix.png') }}" class='logo' onclick="window.location.reload()"/>
-                    <!--<a class="navbar-brand" href="{{ url('/') }}">
-                        {{ config('app.name', 'Laravel') }}
-                    </a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>-->
 
                     <!-- búsqueda -->
                     <principal-buscar-componente vbus="ventanabuscar"></principal-buscar-componente>
