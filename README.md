@@ -62,4 +62,5 @@ docker-compose run --rm artisan schedule:work
 docker-compose run --rm artisan queue:work
 ~~~
 El primero se encarga de planificar las tareas e introducirlas en la cola de trabajo. El segunda ejecuta los comandos de la cola de trabajo.
+
 En la documentación de configuración se pueden ver la forma de ejecutar estas tareas en un servidor Linux.
