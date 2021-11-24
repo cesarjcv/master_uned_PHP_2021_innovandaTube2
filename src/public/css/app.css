@@ -16335,6 +16335,19 @@ textarea.form-control-lg {
   content: "";
 }
 
+html {
+  height: 100%;
+}
+
+body {
+  height: calc(100% - 86px);
+  background: #007336;
+}
+
+#app {
+  height: 100%;
+}
+
 nav.innovanda_cabecera {
   position: fixed;
   width: 100%;
@@ -16346,6 +16359,7 @@ nav.innovanda_cabecera {
 div.innovanda_contenido {
   margin-top: 86px;
   padding-top: 10px;
+  min-height: calc(100% - 200px);
 }
 
 img.logo {
@@ -16752,7 +16766,23 @@ span.mano {
   cursor: pointer;
 }
 
-/*.container-sinlimite{
-    max-width: 95%;
-    margin:0 auto;
-}*/
+footer.pie {
+  color: #222222;
+  background-color: #ffffff;
+  padding: 12px 5px;
+}
+
+footer.pie img {
+  margin-left: 15px;
+  vertical-align: top;
+  box-shadow: 10px 10px 18px -3px #004D35;
+}
+
+footer.pie .texto {
+  display: inline-block;
+  padding: 10px 10px 0 15px;
+}
+
+footer.pie span.fun {
+  font-weight: bold;
+}

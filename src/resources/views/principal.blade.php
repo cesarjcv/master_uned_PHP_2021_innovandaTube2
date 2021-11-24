@@ -20,8 +20,8 @@
         <!-- Styles -->
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     </head>
-    <body class="antialiased" style='background: #007336;'>
-        <div id='app'>
+    <body class="antialiased">
+        <div id="app">
             <!-- cabecera -->        
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm innovanda_cabecera">
                 <div class="container">
@@ -31,11 +31,23 @@
                     <principal-buscar-componente vbus="ventanabuscar"></principal-buscar-componente>
                 </div>
             </nav>
+            
             <!-- contenido -->
             <div class='innovanda_contenido'>
                 @yield('contenido')
             </div>
-        </div>
+
+        <footer class='pie'>
+            <a href="https://www.uned.es/" target="_blank"><img src="{{ asset('img/uned.png') }}"/></a>
+            <a href="https://www.uned.es/universidad/facultades/informatica.html" target="_blank"><img src="{{ asset('img/ets_ingInfo.png')}}"/></a>
+            <div class='texto'>
+            <p><span class='fun'>Autores:</span> Luc&iacute;a Quiroga Rey, Jos&eacute; &Aacute;ngel Bernal Bermejo, Francisco Jos&eacute; Alc&aacute;zar Mart&iacute;n, Carlos Luis S&aacute;nchez Bocanegra</p>
+            <p><span class='fun'>Ilustrador:</span> Esteban Espinilla Fern&aacute;ndez.</p>
+            <p><span class='fun'>Desarrollador:</span> C&eacute;sar J. Caraballo Vi&ntilde;a</p>
+            <p><span class='fun'>Director:</span> Rafael Pastor Vargas</p>
+            </div>
+        </footer>
+    </div>
         <script type='text/javascript'>
         document.body.onload = function()
         {

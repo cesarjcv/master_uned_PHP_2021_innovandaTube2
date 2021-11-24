@@ -5077,7 +5077,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -5715,15 +5714,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (resp) // eliminar vídeo
         {
-          //console.log(this.videoEliminar);
           axios["delete"]('/api/video/' + this.videoEliminar).then(function (response) {
-            /*//buscar la posición en el vector del canal a eliminar
-            for(var i=0; i < this.canales.length; i++)
-            {
-                if (this.canales[i].id == this.canalEliminar) break;
-            }
-            // eliminar canal de vector
-            this.canales.splice(i, 1);*/
             // actualizar lista de vídeos visualizados
             _this3.datosVideosPagina();
           });
@@ -6709,7 +6700,6 @@ __webpack_require__.r(__webpack_exports__);
      * enviar mensaje a componente padre
      */
     ventanaCategoria: function ventanaCategoria() {
-      //console.log(this.canal);
       this.$emit('selCategoria', this.canal.id, this.canal.categorias);
     },
 
@@ -6724,46 +6714,24 @@ __webpack_require__.r(__webpack_exports__);
         data: {
           cat: idcat
         }
-      }; //this.selCatTrabajando = true;
-      //console.log(idcat);
-      // llamada a API de aplicación para asignar categoría
+      }; // llamada a API de aplicación para asignar categoría
 
       axios["delete"]('/api/canal/categorias/' + this.canal.id, parametros).then(function (respuesta) {
         if (respuesta.data.error) // error en operación
           {
             alert(respuesta.data.error);
           } else {
-          // crear lista de objetos categorías
-
-          /*let lCat = new Array();
-          for (let i=0; i < listaid.length; i++)
-          {
-              lCat.push(new Object({idcategoria: listaid[i]}));
-          }*/
-          // buscar entrada de video y modificar su listado de categorías
-
-          /*for(let i=0; i < this.canales.length; i++)
-          {
-              if (this.canales[i].id == this.catCanalid)
-              {
-                  this.canales[i].categorias.push({idcategoria: catid}); // añadir nueva categoría
-                  console.log(this.canales[i].categorias);
-                  break;
-              } 
-          }*/
           // eliminar del listado
-          //console.log(this.canal.categorias.indexOf(idcat));
           // buscar elemento en listado
           var i;
 
           for (i = 0; i < _this.canal.categorias.length; i++) {
             if (_this.canal.categorias[i].idcategoria == idcat) break;
-          } // aliminar de listado
+          } // eliminar de listado
 
 
           _this.canal.categorias.splice(i, 1);
-        } //this.selCatTrabajando = false;
-
+        }
       });
     },
 
@@ -7167,7 +7135,6 @@ __webpack_require__.r(__webpack_exports__);
 
     if (this.categoria.id <= 0) // se trata de una búsqeuda
       {
-        //console.log(this.categoria.parametros);
         axios.put('api/video/buscar', this.categoria.parametros).then(function (respuesta) {
           _this.videos = respuesta.data;
           _this.totalvideos = _this.videos.length;
@@ -8010,8 +7977,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {};
   },
-  mounted: function mounted() {//console.log(this.video);
-  },
+  mounted: function mounted() {},
   methods: {
     /**
      * Se pulsa con ratón. Ver vídeo.
@@ -8033,9 +7999,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js"); //const vue = require('vue');
-//window.Vue = vue;
-
+__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
  // Página principal
 
@@ -8097,20 +8061,6 @@ window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allows your team to easily build robust real-time web applications.
- */
-// import Echo from 'laravel-echo';
-// window.Pusher = require('pusher-js');
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: process.env.MIX_PUSHER_APP_KEY,
-//     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-//     forceTLS: true
-// });
-
 window.bootstrap = __webpack_require__(/*! bootstrap/dist/js/bootstrap.bundle.js */ "./node_modules/bootstrap/dist/js/bootstrap.bundle.js");
 
 

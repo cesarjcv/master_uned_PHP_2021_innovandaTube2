@@ -1,6 +1,18 @@
 // valores
 $separacionContenido: 86px;
 
+html{
+    height: 100%;
+}
+
+body{
+    height: calc(100% - #{$separacionContenido});
+    background: #007336;
+}
+
+#app{
+    height: 100%;
+}
 // cabecera página
 nav.innovanda_cabecera{
     position:fixed;
@@ -10,9 +22,12 @@ nav.innovanda_cabecera{
     top: 0;
 }
 
+
 div.innovanda_contenido{
     margin-top: $separacionContenido;
     padding-top:10px;
+    //padding-bottom: 210px;
+    min-height: calc(100% - 200px);
 }
 
 img.logo{
@@ -390,4 +405,25 @@ ul.admin{
 }
 span.mano{
     cursor: pointer;
+}
+
+// pie página principal
+footer.pie{
+    color: #222222;
+    background-color: #ffffff;
+    padding: 12px 5px;
+    //position: relative;
+    //margin-top: -200px;
+}
+footer.pie img{
+    margin-left: 15px;
+    vertical-align: top;
+    box-shadow: 10px 10px 18px -3px #004D35;
+}
+footer.pie .texto{
+    display: inline-block;
+    padding: 10px 10px 0 15px;
+}
+footer.pie span.fun{
+    font-weight: bold;
 }
