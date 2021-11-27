@@ -38,9 +38,10 @@
             </div>
 
         <footer class='pie'>
-            <a href="https://www.uned.es/" target="_blank"><img src="{{ asset('img/uned.png') }}"/></a>
-            <a href="https://www.uned.es/universidad/facultades/informatica.html" target="_blank"><img src="{{ asset('img/ets_ingInfo.png')}}"/></a>
+            
             <div class='texto'>
+            <div class="icono"><a href="https://www.uned.es/" target="_blank"><img src="{{ asset('img/uned.png') }}"/></a>
+            <a href="https://www.uned.es/universidad/facultades/informatica.html" target="_blank"><img src="{{ asset('img/ets_ingInfo.png')}}"/></a></div>
             <p><span class='fun'>Autores:</span> Luc&iacute;a Quiroga Rey, Jos&eacute; &Aacute;ngel Bernal Bermejo, Francisco Jos&eacute; Alc&aacute;zar Mart&iacute;n, Carlos Luis S&aacute;nchez Bocanegra</p>
             <p><span class='fun'>Ilustrador:</span> Esteban Espinilla Fern&aacute;ndez.</p>
             <p><span class='fun'>Desarrollador:</span> C&eacute;sar J. Caraballo Vi&ntilde;a</p>
